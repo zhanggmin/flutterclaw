@@ -12,9 +12,7 @@ import 'package:flutterclaw/services/secure_key_store.dart';
 import 'package:flutterclaw/ui/screens/home_screen.dart';
 import 'package:flutterclaw/ui/screens/onboarding/accessibility_page.dart';
 import 'package:flutterclaw/ui/screens/onboarding/auth_page.dart';
-import 'package:flutterclaw/ui/screens/onboarding/channels_page.dart';
 import 'package:flutterclaw/ui/screens/onboarding/completion_page.dart';
-import 'package:flutterclaw/ui/screens/onboarding/gateway_page.dart';
 import 'package:flutterclaw/ui/screens/onboarding/provider_page.dart';
 import 'package:flutterclaw/ui/screens/onboarding/welcome_page.dart';
 
@@ -33,22 +31,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // Collected state
   String? _selectedProviderId;
   AuthResult? _authResult;
-  GatewayPageResult _gatewayResult = const GatewayPageResult(
-    host: '127.0.0.1',
-    port: 18789,
-    autoStart: true,
-  );
-  ChannelsPageResult _channelsResult = const ChannelsPageResult();
+  bool _keyValidated = false; // true once API key passes live validation
 
-  // Android gets an extra Accessibility Service page between Channels and Completion.
-  int get _pageCount => Platform.isAndroid ? 7 : 6;
+  // Gateway and channels use defaults; users configure them later in Settings.
+  // Pages: 0=Welcome, 1=Provider, 2=Auth, 3=Accessibility(Android only), 3/4=Completion
+  int get _pageCount => Platform.isAndroid ? 4 : 3;
 
   bool get _canAdvance {
     switch (_currentPage) {
       case 1:
         return _selectedProviderId != null;
       case 2:
-        return _authResult != null && _authResult!.apiKey.isNotEmpty;
+        return _authResult != null &&
+            _authResult!.apiKey.isNotEmpty &&
+            _keyValidated;
       default:
         return true;
     }
@@ -101,36 +97,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         isFree: _authResult!.isFree,
       );
 
-      var telegramConfig = configManager.config.channels.telegram;
-      var discordConfig = configManager.config.channels.discord;
-      var whatsappConfig = configManager.config.channels.whatsapp;
-
-      if (_channelsResult.telegramEnabled &&
-          _channelsResult.telegramToken != null) {
-        telegramConfig = TelegramConfig(
-          enabled: true,
-          token: _channelsResult.telegramToken,
-        );
-      }
-
-      if (_channelsResult.discordEnabled &&
-          _channelsResult.discordToken != null) {
-        discordConfig = DiscordConfig(
-          enabled: true,
-          token: _channelsResult.discordToken,
-        );
-      }
-
-      if (_channelsResult.whatsappEnabled) {
-        whatsappConfig = WhatsAppConfig(
-          enabled: true,
-          authDir: whatsappConfig.authDir,
-          allowFrom: whatsappConfig.allowFrom,
-          dmPolicy: whatsappConfig.dmPolicy,
-          selfChatMode: _channelsResult.whatsappSelfChatMode,
-        );
-      }
-
       // Update any existing agent profiles to use the new model.
       // Without this, profiles created during app startup (migration) would
       // retain the default 'gpt-4o' model name and cause a "not configured" error.
@@ -138,6 +104,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           .map((a) => a.copyWith(modelName: modelEntry.modelName))
           .toList();
 
+      // Gateway uses defaults (host:port:autoStart=true); user can adjust in Settings.
+      // Channels keep existing config — user configures them from the Channels screen.
       final newConfig = configManager.config.copyWith(
         modelList: [modelEntry],
         providerCredentials: {_selectedProviderId!: credential},
@@ -145,16 +113,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           defaults: AgentsDefaults(modelName: modelEntry.modelName),
         ),
         agentProfiles: updatedProfiles,
-        gateway: GatewayConfig(
-          host: _gatewayResult.host,
-          port: _gatewayResult.port,
-          autoStart: _gatewayResult.autoStart,
-        ),
-        channels: ChannelsConfig(
-          telegram: telegramConfig,
-          discord: discordConfig,
-          whatsapp: whatsappConfig,
-        ),
         onboardingCompleted: true,
       );
 
@@ -183,8 +141,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       // Start channel adapters (Telegram, Discord) now that config is saved
       await ref.read(channelStartupProvider.future);
 
-      // Start gateway
-      if (_gatewayResult.autoStart) {
+      // Start gateway with default config (autoStart=true)
+      final gwConfig = configManager.config.gateway;
+      if (gwConfig.autoStart) {
         if (Platform.isAndroid) {
           await ref
               .read(notificationServiceProvider)
@@ -193,8 +152,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         await BackgroundService.startService();
         ref.read(gatewayStateProvider.notifier).setRunning(true);
         await LiveActivityService.startActivity(
-          host: _gatewayResult.host,
-          port: _gatewayResult.port,
+          host: gwConfig.host,
+          port: gwConfig.port,
           model: modelEntry.modelName,
         );
       }
@@ -277,6 +236,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       setState(() {
                         _selectedProviderId = id;
                         _authResult = null;
+                        _keyValidated = false;
                       });
                       Future.delayed(const Duration(milliseconds: 250), () {
                         if (mounted) _nextPage();
@@ -295,28 +255,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       onChanged: (result) {
                         setState(() => _authResult = result);
                       },
+                      onValidated: (ok) {
+                        setState(() => _keyValidated = ok);
+                      },
                     )
                   else
                     const Center(child: Text('Select a provider first')),
 
-                  // 3: Gateway
-                  GatewayPage(
-                    initialHost: _gatewayResult.host,
-                    initialPort: _gatewayResult.port,
-                    initialAutoStart: _gatewayResult.autoStart,
-                    onChanged: (result) {
-                      _gatewayResult = result;
-                    },
-                  ),
-
-                  // 4: Channels
-                  ChannelsPage(
-                    onChanged: (result) {
-                      _channelsResult = result;
-                    },
-                  ),
-
-                  // 5 (Android only): Accessibility Service permission
+                  // 3 (Android only): Accessibility Service permission
                   if (Platform.isAndroid)
                     AccessibilityPage(
                       service: ref.read(uiAutomationServiceProvider),
@@ -324,17 +270,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       onSkip: _nextPage,
                     ),
 
-                  // 5 (iOS) / 6 (Android): Completion
+                  // 3 (iOS) / 4 (Android): Completion
                   CompletionPage(
                     summary: CompletionSummary(
                       providerName: providerName,
                       modelName: _authResult?.modelDisplayName ?? '',
                       isFreeModel: _authResult?.isFree ?? false,
-                      gatewayHost: _gatewayResult.host,
-                      gatewayPort: _gatewayResult.port,
-                      telegramEnabled: _channelsResult.telegramEnabled,
-                      discordEnabled: _channelsResult.discordEnabled,
-                      whatsappEnabled: _channelsResult.whatsappEnabled,
+                      gatewayHost: '127.0.0.1',
+                      gatewayPort: 18789,
+                      telegramEnabled: false,
+                      discordEnabled: false,
+                      whatsappEnabled: false,
                     ),
                     onStart: _completeOnboarding,
                     isStarting: _isStarting,
@@ -343,20 +289,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
             ),
 
-            // Bottom navigation (not on welcome, provider, completion, or
-            // the accessibility page which has its own inline buttons).
-            if (_currentPage > 1 &&
-                _currentPage < _pageCount - 1 &&
-                !(Platform.isAndroid && _currentPage == 5))
+            // Bottom navigation: show Continue on page 2 (Auth) only.
+            // Welcome and Provider auto-advance; Accessibility has inline buttons;
+            // Completion has its own Start button.
+            if (_currentPage == 2)
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
                 child: Row(
                   children: [
-                    if (_currentPage == 4)
-                      TextButton(
-                        onPressed: _nextPage,
-                        child: const Text('Skip'),
-                      ),
                     const Spacer(),
                     FilledButton(
                       onPressed: _canAdvance ? _nextPage : null,

@@ -312,10 +312,67 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         host: config.gateway.host,
                         port: config.gateway.port,
                         autoStart: val,
+                        token: config.gateway.token,
                       ),
                     ));
                     await configManager.save();
                     setState(() {});
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: const Text('Access token'),
+                  subtitle: Text(
+                    config.gateway.token.isEmpty
+                        ? 'Not set — open access (loopback only)'
+                        : '••••••••',
+                    style: TextStyle(
+                      color: config.gateway.token.isEmpty
+                          ? Theme.of(context).colorScheme.error
+                          : null,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.edit_outlined),
+                  onTap: () async {
+                    final current = config.gateway.token;
+                    final controller = TextEditingController(text: current);
+                    final result = await showDialog<String>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Gateway access token'),
+                        content: TextField(
+                          controller: controller,
+                          decoration: const InputDecoration(
+                            labelText: 'Token',
+                            hintText: 'Leave empty to disable auth',
+                          ),
+                          obscureText: false,
+                          autofocus: true,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () =>
+                                Navigator.pop(ctx, controller.text.trim()),
+                            child: const Text('Save'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (result == null) return;
+                    configManager.update(config.copyWith(
+                      gateway: GatewayConfig(
+                        host: config.gateway.host,
+                        port: config.gateway.port,
+                        autoStart: config.gateway.autoStart,
+                        token: result,
+                      ),
+                    ));
+                    await configManager.save();
+                    if (mounted) setState(() {});
                   },
                 ),
               ],

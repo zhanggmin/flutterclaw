@@ -56,6 +56,9 @@ import 'package:flutterclaw/services/notification_service.dart';
 import 'package:flutterclaw/services/sandbox_service.dart';
 import 'package:flutterclaw/services/ui_automation_service.dart';
 import 'package:flutterclaw/tools/sandbox_tools.dart';
+import 'package:flutterclaw/tools/image_gen_tools.dart';
+import 'package:flutterclaw/services/voice_recording_service.dart';
+import 'package:flutterclaw/services/audio_transcription_service.dart';
 
 final configManagerProvider = Provider<ConfigManager>((ref) {
   return ConfigManager();
@@ -182,6 +185,7 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
   final headlessBrowser = HeadlessBrowserTool();
   registry.register(WebFetchTool(headlessBrowser: headlessBrowser));
   registry.register(HttpRequestTool());
+  registry.register(ImageGenTool(configManager: configManager));
   registry.register(headlessBrowser);
   registry.register(MemorySearchTool(wsPath));
   registry.register(MemoryGetTool(wsPath));
@@ -788,6 +792,14 @@ final chatProvider = NotifierProvider<ChatNotifier, List<ChatMessage>>(
   ChatNotifier.new,
 );
 
+/// Singleton voice recorder — shared between the provider and UI so
+/// [isRecording] can be read without extra state.
+final voiceRecordingServiceProvider = Provider<VoiceRecordingService>((ref) {
+  final svc = VoiceRecordingService();
+  ref.onDispose(svc.dispose);
+  return svc;
+});
+
 class ChatNotifier extends Notifier<List<ChatMessage>> {
   bool _processing = false;
   bool get isProcessing => _processing;
@@ -1352,6 +1364,22 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
 
     try {
       final buffer = StringBuffer();
+      // Throttle text-delta state updates to ~30 fps to avoid rebuilding the
+      // full message list on every streamed character. Tool events and isDone
+      // always flush immediately regardless of the throttle.
+      var lastFlush = DateTime.now();
+      const flushInterval = Duration(milliseconds: 33);
+
+      void flushBuffer() {
+        if (state.isEmpty) return;
+        final updated = List<ChatMessage>.from(state);
+        updated[updated.length - 1] = updated.last.copyWith(
+          text: buffer.toString(),
+        );
+        state = updated;
+        lastFlush = DateTime.now();
+      }
+
       await for (final event in agentLoop.processMessageStream(
         _getSessionKey(),
         text,
@@ -1361,6 +1389,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
         if (_cancelled) break;
 
         if (event.toolName != null) {
+          flushBuffer(); // flush pending text before inserting tool pill
           final updated = List<ChatMessage>.from(state);
           updated.insert(
             updated.length - 1,
@@ -1369,14 +1398,13 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
               isUser: false,
               timestamp: DateTime.now(),
               isToolStatus: true,
-              isStreaming: true, // spinner while tool is running
+              isStreaming: true,
             ),
           );
           state = updated;
         }
 
         if (event.toolResult != null) {
-          // Mark the most recent running tool pill as completed and store result.
           final updated = List<ChatMessage>.from(state);
           for (var i = updated.length - 1; i >= 0; i--) {
             if (updated[i].isToolStatus && updated[i].isStreaming == true) {
@@ -1392,11 +1420,9 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
 
         if (event.textDelta != null) {
           buffer.write(event.textDelta);
-          final updated = List<ChatMessage>.from(state);
-          updated[updated.length - 1] = updated.last.copyWith(
-            text: buffer.toString(),
-          );
-          state = updated;
+          if (DateTime.now().difference(lastFlush) >= flushInterval) {
+            flushBuffer();
+          }
         }
 
         if (event.isDone) {
@@ -1412,6 +1438,10 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
             _sendBackgroundNotification(finalText);
           }
         }
+      }
+      // Flush any remaining buffered text if stream ended without isDone
+      if (buffer.isNotEmpty && state.isNotEmpty && state.last.isStreaming) {
+        flushBuffer();
       }
     } catch (e) {
       final updated = List<ChatMessage>.from(state);
@@ -1435,6 +1465,40 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
       }
       unawaited(_syncActiveAgentIdentity());
     }
+  }
+
+  /// Transcribe the given audio file and send the result as a chat message.
+  ///
+  /// Uses the configured model's API base (falls back to OpenAI). If the API
+  /// key is for a provider that doesn't support Whisper (e.g. Anthropic), the
+  /// transcription will fail gracefully and return false.
+  Future<bool> transcribeAndSend(String audioFilePath, {String? language}) async {
+    if (_processing) return false;
+
+    final config = ref.read(configManagerProvider).config;
+    final modelName =
+        config.activeAgent?.modelName ?? config.agents.defaults.modelName;
+    final entry = config.getModel(modelName);
+    if (entry == null) return false;
+
+    final apiKey = config.resolveApiKey(entry);
+    if (apiKey.isEmpty) return false;
+
+    // Use the model's configured API base; Anthropic doesn't have Whisper so
+    // fall back to OpenAI for transcription in that case.
+    final rawBase = config.resolveApiBase(entry);
+    final apiBase = rawBase.contains('anthropic.com')
+        ? 'https://api.openai.com/v1'
+        : rawBase;
+
+    final svc = AudioTranscriptionService(apiKey: apiKey, apiBase: apiBase);
+    final text = await svc.transcribe(audioFilePath, language: language);
+    await VoiceRecordingService.deleteFile(audioFilePath);
+
+    if (text == null || text.isEmpty) return false;
+
+    await sendMessage(text);
+    return true;
   }
 
   /// Builds a human-readable label for a tool status pill.

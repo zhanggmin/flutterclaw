@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +13,8 @@ class AuthPage extends StatefulWidget {
   final String? initialModelId;
   final String? initialApiBase;
   final ValueChanged<AuthResult> onChanged;
+  /// Called with `true` when the key validates successfully, `false` on failure.
+  final ValueChanged<bool>? onValidated;
 
   const AuthPage({
     super.key,
@@ -19,6 +23,7 @@ class AuthPage extends StatefulWidget {
     this.initialModelId,
     this.initialApiBase,
     required this.onChanged,
+    this.onValidated,
   });
 
   @override
@@ -49,6 +54,7 @@ class _AuthPageState extends State<AuthPage> {
   bool _useCustomModel = false;
   bool _isValidating = false;
   _ValidationResult? _validationResult;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -68,12 +74,24 @@ class _AuthPageState extends State<AuthPage> {
       _selectedModelId = freeModel?.id ?? models.first.id;
     }
 
-    _apiKeyController.addListener(_emitChange);
+    _apiKeyController.addListener(_onApiKeyChanged);
+  }
+
+  void _onApiKeyChanged() {
+    _emitChange();
+    // Clear previous result and auto-validate after 800ms of no typing.
+    if (_validationResult != null) setState(() => _validationResult = null);
+    _debounce?.cancel();
+    final key = _apiKeyController.text.trim();
+    if (key.isNotEmpty) {
+      _debounce = Timer(const Duration(milliseconds: 800), _validate);
+    }
   }
 
   @override
   void dispose() {
-    _apiKeyController.removeListener(_emitChange);
+    _debounce?.cancel();
+    _apiKeyController.removeListener(_onApiKeyChanged);
     _apiKeyController.dispose();
     _apiBaseController.dispose();
     _customModelController.dispose();
@@ -143,25 +161,20 @@ class _AuthPageState extends State<AuthPage> {
 
       final status = response.statusCode ?? 0;
 
+      _ValidationResult result;
       if (isOpenRouter) {
-        // OpenRouter /auth/key returns 200 with {data: {label, ...}} for valid keys
         if (status == 200 && response.data is Map<String, dynamic>) {
           final data = (response.data as Map<String, dynamic>)['data'];
-          if (data != null) {
-            setState(() => _validationResult = _ValidationResult.success);
-          } else {
-            setState(() => _validationResult =
-                _ValidationResult.failed('Invalid API key'));
-          }
+          result = data != null
+              ? _ValidationResult.success
+              : _ValidationResult.failed('Invalid API key');
         } else {
-          setState(() => _validationResult =
-              _ValidationResult.failed('Invalid API key'));
+          result = _ValidationResult.failed('Invalid API key');
         }
       } else if (status >= 200 && status < 300) {
-        setState(() => _validationResult = _ValidationResult.success);
+        result = _ValidationResult.success;
       } else if (status == 401 || status == 403) {
-        setState(() =>
-            _validationResult = _ValidationResult.failed('Invalid API key'));
+        result = _ValidationResult.failed('Invalid API key');
       } else {
         String msg = 'HTTP $status';
         if (response.data is Map<String, dynamic>) {
@@ -171,8 +184,10 @@ class _AuthPageState extends State<AuthPage> {
             msg = '${error['message']}';
           }
         }
-        setState(() => _validationResult = _ValidationResult.failed(msg));
+        result = _ValidationResult.failed(msg);
       }
+      setState(() => _validationResult = result);
+      widget.onValidated?.call(result.isSuccess);
     } on DioException catch (e) {
       if (!mounted) return;
       final msg = e.type == DioExceptionType.connectionTimeout ||
@@ -180,10 +195,11 @@ class _AuthPageState extends State<AuthPage> {
           ? 'Request timed out'
           : e.message ?? 'Connection error';
       setState(() => _validationResult = _ValidationResult.failed(msg));
+      widget.onValidated?.call(false);
     } catch (e) {
       if (!mounted) return;
-      setState(() =>
-          _validationResult = _ValidationResult.failed('$e'));
+      setState(() => _validationResult = _ValidationResult.failed('$e'));
+      widget.onValidated?.call(false);
     } finally {
       if (mounted) setState(() => _isValidating = false);
     }

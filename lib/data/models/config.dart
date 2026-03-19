@@ -353,23 +353,30 @@ class GatewayConfig {
   final String host;
   final int port;
   final bool autoStart;
+  /// Optional bearer token. When non-empty, clients must send it in the
+  /// `connect` payload as `token`. Unauthenticated connections are rejected.
+  /// Empty string means no authentication (open access — only safe on loopback).
+  final String token;
 
   const GatewayConfig({
     this.host = '127.0.0.1',
     this.port = 18789,
     this.autoStart = true,
+    this.token = '',
   });
 
   factory GatewayConfig.fromJson(Map<String, dynamic> json) => GatewayConfig(
     host: json['host'] as String? ?? '127.0.0.1',
     port: json['port'] as int? ?? 18789,
     autoStart: json['auto_start'] as bool? ?? true,
+    token: json['token'] as String? ?? '',
   );
 
   Map<String, dynamic> toJson() => {
     'host': host,
     'port': port,
     'auto_start': autoStart,
+    if (token.isNotEmpty) 'token': token,
   };
 }
 

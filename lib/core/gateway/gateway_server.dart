@@ -219,7 +219,17 @@ class GatewayServer {
   }
 
   Future<Map<String, dynamic>> _handleConnect(Map<String, dynamic> params) async {
-    // In a minimal implementation we accept any connect
+    // Token authentication: if a token is configured, reject clients that
+    // don't supply the correct bearer token. Empty token = open access
+    // (safe only when bound to loopback 127.0.0.1).
+    final requiredToken = configManager.config.gateway.token;
+    if (requiredToken.isNotEmpty) {
+      final clientToken = params['token'] as String? ?? '';
+      if (clientToken != requiredToken) {
+        throw Exception('Unauthorized: invalid or missing gateway token');
+      }
+    }
+
     return {
       'type': 'hello-ok',
       'protocol': 3,
