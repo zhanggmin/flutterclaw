@@ -14,8 +14,8 @@ import 'package:logging/logging.dart';
 final _log = Logger('VoiceRecordingService');
 
 class VoiceRecordingService {
-  // record v4 uses the `Record` class (v5 renamed it to `AudioRecorder`)
-  final Record _recorder = Record();
+  // record v5+ uses `AudioRecorder` (the old `Record` class was renamed).
+  final AudioRecorder _recorder = AudioRecorder();
   bool _recording = false;
   String? _currentPath;
 
@@ -35,10 +35,13 @@ class VoiceRecordingService {
       _currentPath = path;
 
       await _recorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          bitRate: 64000,
+          sampleRate: 16000, // Whisper prefers 16 kHz
+          numChannels: 1,
+        ),
         path: path,
-        encoder: AudioEncoder.aacLc,
-        bitRate: 64000,
-        samplingRate: 16000, // Whisper prefers 16 kHz
       );
       _recording = true;
       _log.info('Recording started: $path');
@@ -53,12 +56,12 @@ class VoiceRecordingService {
   Future<String?> stop() async {
     if (!_recording) return null;
     try {
-      await _recorder.stop();
+      final recordedPath = await _recorder.stop();
       _recording = false;
-      final path = _currentPath;
+      final resolvedPath = recordedPath ?? _currentPath;
       _currentPath = null;
-      _log.info('Recording stopped: $path');
-      return path;
+      _log.info('Recording stopped: $resolvedPath');
+      return resolvedPath;
     } catch (e) {
       _log.severe('Failed to stop recording', e);
       _recording = false;
@@ -70,7 +73,7 @@ class VoiceRecordingService {
   Future<void> cancel() async {
     if (!_recording) return;
     try {
-      await _recorder.stop();
+      await _recorder.cancel();
       if (_currentPath != null) await VoiceRecordingService.deleteFile(_currentPath!);
     } catch (_) {}
     _recording = false;
