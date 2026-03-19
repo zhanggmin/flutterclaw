@@ -45,9 +45,9 @@ class WhatsAppPairingStatusCard extends StatelessWidget {
       children: [
         Card(
           color: isConnected
-              ? Colors.green.withValues(alpha: 0.15)
+              ? const Color(0xFF2E7D32).withValues(alpha: 0.12)
               : isConnecting
-              ? Colors.orange.withValues(alpha: 0.15)
+              ? colors.secondaryContainer
               : colors.surfaceContainerHighest,
           margin: EdgeInsets.zero,
           child: ListTile(
@@ -58,9 +58,9 @@ class WhatsAppPairingStatusCard extends StatelessWidget {
                   ? Icons.hourglass_top
                   : Icons.radio_button_unchecked,
               color: isConnected
-                  ? Colors.green
+                  ? const Color(0xFF2E7D32)
                   : isConnecting
-                  ? Colors.orange
+                  ? colors.onSecondaryContainer
                   : colors.onSurfaceVariant,
             ),
             title: Text(
@@ -69,9 +69,18 @@ class WhatsAppPairingStatusCard extends StatelessWidget {
                   : isConnecting
                   ? 'Connecting...'
                   : 'Not connected',
-              style: theme.textTheme.titleSmall,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: isConnecting ? colors.onSecondaryContainer : null,
+              ),
             ),
-            subtitle: Text(effectiveSubtitle),
+            subtitle: Text(
+              effectiveSubtitle,
+              style: TextStyle(
+                color: isConnecting
+                    ? colors.onSecondaryContainer.withValues(alpha: 0.8)
+                    : null,
+              ),
+            ),
           ),
         ),
         if (qrCode != null && !isConnected) ...[
