@@ -14,6 +14,7 @@ import 'package:flutterclaw/channels/telegram.dart';
 import 'package:flutterclaw/channels/webchat.dart';
 import 'package:flutterclaw/channels/whatsapp.dart';
 import 'package:flutterclaw/channels/slack.dart';
+import 'package:flutterclaw/channels/signal.dart';
 import 'package:flutterclaw/core/agent/chat_commands.dart';
 import 'package:flutterclaw/core/agent/message_queue.dart';
 import 'package:flutterclaw/core/providers/provider_interface.dart';
@@ -693,6 +694,24 @@ final channelStartupProvider = FutureProvider<void>((ref) async {
       },
     );
     router.registerAdapter(slack);
+  }
+
+  // Wire Signal adapter (via signal-cli-rest-api proxy)
+  if (config.channels.signal.enabled &&
+      config.channels.signal.apiUrl != null &&
+      config.channels.signal.apiUrl!.isNotEmpty &&
+      config.channels.signal.account != null &&
+      config.channels.signal.account!.isNotEmpty) {
+    final signal = SignalChannelAdapter(
+      apiUrl: config.channels.signal.apiUrl!,
+      account: config.channels.signal.account!,
+      allowedNumbers: config.channels.signal.allowFrom,
+      chatCommandHandler: (sessionKey, command) async {
+        final result = await commandHandler.handle(sessionKey, command);
+        return result.handled ? result.response : null;
+      },
+    );
+    router.registerAdapter(signal);
   }
 
   // Start all registered adapters
@@ -1423,6 +1442,26 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
               isStreaming: true,
             ),
           );
+          state = updated;
+        }
+
+        // Streaming tool output chunk — update the live result text on the pill.
+        if (event.toolResultChunk != null) {
+          final chunk = event.toolResultChunk!;
+          final updated = List<ChatMessage>.from(state);
+          for (var i = updated.length - 1; i >= 0; i--) {
+            if (updated[i].isToolStatus && updated[i].isStreaming == true) {
+              final String newText;
+              if (chunk.startsWith('\x00CLEAR\x00')) {
+                // Replace accumulated text with the final authoritative output.
+                newText = chunk.substring(8);
+              } else {
+                newText = (updated[i].toolResultText ?? '') + chunk;
+              }
+              updated[i] = updated[i].copyWith(toolResultText: newText);
+              break;
+            }
+          }
           state = updated;
         }
 

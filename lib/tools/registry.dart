@@ -10,6 +10,15 @@ abstract class Tool {
   String get description;
   Map<String, dynamic> get parameters; // JSON Schema for parameters
   Future<ToolResult> execute(Map<String, dynamic> args);
+
+  /// Optional streaming execution. Tools that produce incremental output
+  /// (e.g. sandbox_exec, web_fetch) can override this to yield progress chunks.
+  /// The final [ToolResult] is returned after the stream completes.
+  /// Default: null (no streaming; falls back to [execute]).
+  Stream<String>? executeStream(Map<String, dynamic> args) => null;
+
+  /// True when this tool supports streaming output.
+  bool get supportsStreaming => false;
 }
 
 /// Result of a tool execution.
@@ -127,6 +136,49 @@ class ToolRegistry {
     if (tool == null) {
       return ToolResult.error('Tool "$name" not found or expired');
     }
+    return tool.execute(args);
+  }
+
+  /// Executes a tool and yields incremental output chunks via [onChunk] if the
+  /// tool supports streaming ([Tool.supportsStreaming] == true). Falls back to
+  /// plain [execute] for non-streaming tools.
+  ///
+  /// [onChunk] is called for each output chunk BEFORE the final result is
+  /// returned. The final [ToolResult] is the return value.
+  Future<ToolResult> executeWithProgress(
+    String name,
+    Map<String, dynamic> args, {
+    required void Function(String chunk) onChunk,
+  }) async {
+    if (_disabled.contains(name)) {
+      return ToolResult.error(
+          'Tool "$name" is disabled by policy.');
+    }
+    final tool = get(name);
+    if (tool == null) {
+      return ToolResult.error('Tool "$name" not found or expired');
+    }
+
+    if (tool.supportsStreaming) {
+      final stream = tool.executeStream(args);
+      if (stream != null) {
+        var resultContent = '';
+        await for (final chunk in stream) {
+          // \x00CLEAR\x00 prefix: reset the accumulated result to this chunk.
+          // Used by tools that first yield progress indicators and then yield
+          // the authoritative final content (e.g. sandbox_exec).
+          if (chunk.startsWith('\x00CLEAR\x00')) {
+            resultContent = chunk.substring(8); // skip the 8-char sentinel
+            onChunk(chunk); // pass through so UI can handle the clear
+          } else {
+            resultContent += chunk;
+            onChunk(chunk);
+          }
+        }
+        return ToolResult.success(resultContent);
+      }
+    }
+    // Non-streaming fallback
     return tool.execute(args);
   }
 

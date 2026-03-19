@@ -221,6 +221,37 @@ class WhatsAppConfig {
   };
 }
 
+/// Signal channel configuration (via signal-cli-rest-api proxy).
+class SignalConfig {
+  final bool enabled;
+  /// Base URL of signal-cli-rest-api instance (e.g. http://192.168.1.100:8080)
+  final String? apiUrl;
+  /// Registered Signal phone number (e.g. +12025551234)
+  final String? account;
+  final List<String> allowFrom;
+
+  const SignalConfig({
+    this.enabled = false,
+    this.apiUrl,
+    this.account,
+    this.allowFrom = const [],
+  });
+
+  factory SignalConfig.fromJson(Map<String, dynamic> json) => SignalConfig(
+    enabled: json['enabled'] as bool? ?? false,
+    apiUrl:  json['api_url'] as String?,
+    account: json['account'] as String?,
+    allowFrom: (json['allow_from'] as List<dynamic>?)?.cast<String>() ?? [],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'enabled': enabled,
+    if (apiUrl != null)  'api_url':  apiUrl,
+    if (account != null) 'account':  account,
+    'allow_from': allowFrom,
+  };
+}
+
 /// Slack channel configuration.
 /// Uses Socket Mode (WSS) so no public inbound URL is required.
 /// Requires a Slack App with Socket Mode enabled:
@@ -261,12 +292,14 @@ class ChannelsConfig {
   final DiscordConfig discord;
   final WhatsAppConfig whatsapp;
   final SlackConfig slack;
+  final SignalConfig signal;
 
   const ChannelsConfig({
     this.telegram = const TelegramConfig(),
     this.discord = const DiscordConfig(),
     this.whatsapp = const WhatsAppConfig(),
     this.slack = const SlackConfig(),
+    this.signal = const SignalConfig(),
   });
 
   factory ChannelsConfig.fromJson(Map<String, dynamic> json) => ChannelsConfig(
@@ -282,6 +315,9 @@ class ChannelsConfig {
     slack: json['slack'] != null
         ? SlackConfig.fromJson(json['slack'] as Map<String, dynamic>)
         : const SlackConfig(),
+    signal: json['signal'] != null
+        ? SignalConfig.fromJson(json['signal'] as Map<String, dynamic>)
+        : const SignalConfig(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -289,6 +325,7 @@ class ChannelsConfig {
     'discord': discord.toJson(),
     'whatsapp': whatsapp.toJson(),
     'slack': slack.toJson(),
+    'signal': signal.toJson(),
   };
 }
 

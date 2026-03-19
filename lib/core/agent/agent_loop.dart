@@ -38,6 +38,9 @@ class AgentStreamEvent {
   final String? toolName;
   final Map<String, dynamic>? toolArgs;
   final String? toolResult;
+  /// Incremental output chunk from a streaming tool (e.g. sandbox_exec).
+  /// The UI appends this to the expandable tool result card in real time.
+  final String? toolResultChunk;
   final bool isDone;
   final AgentResponse? finalResponse;
 
@@ -46,6 +49,7 @@ class AgentStreamEvent {
     this.toolName,
     this.toolArgs,
     this.toolResult,
+    this.toolResultChunk,
     this.isDone = false,
     this.finalResponse,
   });
@@ -365,7 +369,28 @@ class AgentLoop {
         for (final tc in toolCallsBuffer) {
           final args = _parseToolArgs(tc.function.arguments);
           yield AgentStreamEvent(toolName: tc.function.name, toolArgs: args);
-          final result = await toolRegistry.execute(tc.function.name, args);
+
+          // Use streaming execution when the tool supports it so incremental
+          // output is shown in the expandable tool card as it arrives.
+          final StreamController<AgentStreamEvent> chunkCtrl =
+              StreamController<AgentStreamEvent>();
+          final chunkFuture = Stream.fromFuture(
+            toolRegistry.executeWithProgress(
+              tc.function.name,
+              args,
+              onChunk: (chunk) => chunkCtrl.add(
+                AgentStreamEvent(toolResultChunk: chunk),
+              ),
+            ),
+          ).first.then((result) {
+            chunkCtrl.close();
+            return result;
+          });
+
+          await for (final chunkEvent in chunkCtrl.stream) {
+            yield chunkEvent;
+          }
+          final result = await chunkFuture;
           toolCallsExecuted++;
           yield AgentStreamEvent(toolResult: result.content);
 

@@ -66,6 +66,23 @@ class RunShellCommandTool extends Tool {
       };
 
   @override
+  bool get supportsStreaming => true;
+
+  @override
+  Stream<String>? executeStream(Map<String, dynamic> args) async* {
+    // Yield a "running" notice immediately so the tool card shows activity,
+    // then yield the full output once the command completes.
+    yield '⏳ Running…\n';
+    final result = await execute(args);
+    if (!result.isError) {
+      // Replace the placeholder with the real output.
+      yield '\x00CLEAR\x00${result.content}';
+    } else {
+      yield '\x00CLEAR\x00Error: ${result.content}';
+    }
+  }
+
+  @override
   Future<ToolResult> execute(Map<String, dynamic> args) async {
     final command = args['command'] as String?;
     if (command == null || command.isEmpty) {

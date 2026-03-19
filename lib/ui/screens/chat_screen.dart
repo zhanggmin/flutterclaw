@@ -427,6 +427,18 @@ class _MessageBubbleState extends ConsumerState<_MessageBubble> {
   bool _toolExpanded = false;
 
   @override
+  void didUpdateWidget(_MessageBubble oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Auto-expand the card when streaming tool output starts arriving.
+    if (!_toolExpanded &&
+        widget.message.isToolStatus &&
+        widget.message.toolResultText != null &&
+        oldWidget.message.toolResultText == null) {
+      setState(() => _toolExpanded = true);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
