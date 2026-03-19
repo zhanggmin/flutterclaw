@@ -101,7 +101,7 @@ class ModelCatalog {
     CatalogProvider(
       id: 'groq',
       displayName: 'Groq',
-      description: 'Ultra-fast inference. Llama, Mixtral and more.',
+      description: 'Groq.com — ultra-fast inference for Llama, Mixtral. Not related to xAI Grok.',
       icon: Icons.flash_on,
       signupUrl: 'https://console.groq.com/keys',
       apiBase: 'https://api.groq.com/openai/v1',
@@ -133,7 +133,7 @@ class ModelCatalog {
       isFree: true,
       contextWindow: 200000,
       description: 'Auto-selects from available free models',
-      input: ['text'],
+      input: ['text', 'image'],
     ),
     CatalogModel(
       id: 'openrouter/xiaomi/mimo-v2-omni',

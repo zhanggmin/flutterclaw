@@ -7,6 +7,7 @@ import 'package:flutterclaw/data/models/agent_profile.dart';
 import 'package:flutterclaw/data/models/config.dart';
 import 'package:flutterclaw/data/models/model_catalog.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/screens/settings/providers_models_screen.dart';
 
 class CreateAgentScreen extends ConsumerStatefulWidget {
   final AgentProfile? agent;
@@ -57,7 +58,27 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
       _maxTokens = agent.maxTokens;
       _maxIterations = agent.maxToolIterations;
       _restrictToWorkspace = agent.restrictToWorkspace;
+
+      // If vibe wasn't stored in config, try to read it from IDENTITY.md
+      if (agent.vibe == null) {
+        _loadVibeFromIdentityFile(agent);
+      }
     }
+  }
+
+  Future<void> _loadVibeFromIdentityFile(AgentProfile agent) async {
+    try {
+      final configManager = ref.read(configManagerProvider);
+      final ws = await configManager.getAgentWorkspace(agent.id);
+      final identityFile = File('$ws/IDENTITY.md');
+      if (!await identityFile.exists()) return;
+      final content = await identityFile.readAsString();
+      final match = RegExp(r'^Vibe:\s*(.+)$', multiLine: true).firstMatch(content);
+      final vibe = match?.group(1)?.trim();
+      if (vibe != null && vibe.isNotEmpty && mounted) {
+        setState(() => _vibeController.text = vibe);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -148,6 +169,17 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
                     color: colors.onSurfaceVariant,
                   ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) =>
+                        const ProvidersModelsScreen()),
+              ),
+              icon: const Icon(Icons.add),
+              label: Text(context.l10n.addModel),
             ),
           ],
         ),
@@ -293,15 +325,27 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
               },
             ),
             const SizedBox(height: 16),
-            Text(
-              context.l10n.temperatureLabel(_temperature.toStringAsFixed(1)),
-              style: theme.textTheme.bodyMedium,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  context.l10n.temperatureLabel(_temperature.toStringAsFixed(1)),
+                  style: theme.textTheme.bodyMedium,
+                ),
+                Text(
+                  _temperatureDescription(_temperature),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
             Slider(
-              value: _temperature,
+              value: _temperature.clamp(0.0, 1.0),
               min: 0.0,
-              max: 2.0,
-              divisions: 20,
+              max: 1.0,
+              divisions: 10,
               label: _temperature.toStringAsFixed(1),
               onChanged: (value) {
                 setState(() {
@@ -309,6 +353,14 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
                   _temperatureController.text = value.toStringAsFixed(1);
                 });
               },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Focused', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                Text('Balanced', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                Text('Creative', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+              ],
             ),
             const SizedBox(height: 8),
             TextFormField(
@@ -405,15 +457,33 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
     );
   }
 
+  String _temperatureDescription(double t) {
+    if (t <= 0.2) return 'Focused';
+    if (t <= 0.5) return 'Precise';
+    if (t <= 0.7) return 'Balanced';
+    if (t <= 0.9) return 'Expressive';
+    return 'Creative';
+  }
+
   void _showEmojiPicker() {
-    final emojis = [
+    const emojis = [
+      // People & Roles
       '🤖', '💻', '✍️', '🎨', '🔬', '📚', '🎭', '🎵', '🏃', '💼',
+      '👨‍💻', '👩‍💻', '🧑‍🔬', '🧑‍🎨', '🧑‍🏫', '🧑‍⚕️', '🧑‍🍳', '🧑‍🚀', '🕵️', '🦸',
+      // Objects & Tools
       '🌟', '🔥', '💡', '🚀', '🎯', '🧠', '💬', '📱', '⚡', '🌈',
-      '🎓', '🏆', '💪', '🎪', '🎬', '📷', '🎮', '🏀', '⚽', '🎸',
+      '🎓', '🏆', '💪', '🔧', '📊', '🗂️', '📝', '🔍', '💰', '🛡️',
+      // Nature
+      '🌿', '🦋', '🐉', '🦁', '🐺', '🦊', '🐘', '🦅', '🐬', '🌸',
+      // Activities
+      '🎪', '🎬', '📷', '🎮', '🏀', '⚽', '🎸', '🎲', '🎯', '🏄',
+      // Symbols
+      '💎', '🔮', '⚗️', '🧬', '🌍', '☀️', '🌙', '⭐', '🎭', '🃏',
     ];
 
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       builder: (ctx) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -428,9 +498,10 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
               GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 6,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
+                  crossAxisCount: 8,
+                  mainAxisSpacing: 6,
+                  crossAxisSpacing: 6,
+                  childAspectRatio: 1.1,
                 ),
                 itemCount: emojis.length,
                 itemBuilder: (context, index) {

@@ -8,12 +8,16 @@ import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/ui/screens/home_screen.dart';
 import 'package:flutterclaw/ui/screens/onboarding/onboarding_screen.dart';
+import 'package:flutterclaw/ui/theme/semantic_colors.dart';
 
 ThemeData _buildTheme(Brightness brightness) {
   return ThemeData(
     colorSchemeSeed: const Color(0xFF6750A4),
     useMaterial3: true,
     brightness: brightness,
+    extensions: [
+      brightness == Brightness.dark ? SemanticColors.dark : SemanticColors.light,
+    ],
   );
 }
 

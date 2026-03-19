@@ -36,6 +36,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
 
     final configManager = ref.read(configManagerProvider);
     final ws = await configManager.workspacePath;
+    // Root workspace files
     final fileNames = [
       'IDENTITY.md',
       'SOUL.md',
@@ -45,12 +46,25 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
       'HEARTBEAT.md',
     ];
 
+    // Files in subdirectories (shown with relative path as key)
+    final subFiles = [
+      'memory/MEMORY.md',
+    ];
+
     final loaded = <String, String>{};
     for (final name in fileNames) {
       try {
         final file = File('$ws/$name');
         if (await file.exists()) {
           loaded[name] = await file.readAsString();
+        }
+      } catch (_) {}
+    }
+    for (final path in subFiles) {
+      try {
+        final file = File('$ws/$path');
+        if (await file.exists()) {
+          loaded[path] = await file.readAsString();
         }
       } catch (_) {}
     }
@@ -130,11 +144,11 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                     value: 'delete',
                     child: Row(
                       children: [
-                        const Icon(Icons.delete_outline, color: Colors.red),
+                        Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
                         const SizedBox(width: 12),
                         Text(
                           context.l10n.delete,
-                          style: const TextStyle(color: Colors.red),
+                          style: TextStyle(color: Theme.of(context).colorScheme.error),
                         ),
                       ],
                     ),
@@ -148,71 +162,47 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Agent switcher header
+            // Agent switcher hero card
             _buildAgentSwitcher(context, theme, colors, agents, activeAgent),
-            const SizedBox(height: 24),
 
-            // Workspace files section (collapsible)
             if (activeAgent != null) ...[
-              Card(
-                child: ExpansionTile(
-                  leading: Icon(Icons.folder_outlined, color: colors.primary),
-                  title: Text(
-                    'Workspace Files',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.primary,
-                      fontWeight: FontWeight.w600,
+              const SizedBox(height: 12),
+
+              // Quick-access buttons: Workspace, Tasks, Skills
+              Row(
+                children: [
+                  Expanded(
+                    child: _AgentQuickButton(
+                      icon: Icons.folder_outlined,
+                      label: 'Files',
+                      onPressed: () => _showWorkspaceSheet(context, colors),
                     ),
                   ),
-                  children: _buildWorkspaceFiles(context, colors),
-                ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _AgentQuickButton(
+                      icon: Icons.schedule_outlined,
+                      label: 'Tasks',
+                      onPressed: () => _showCronSheet(context, theme, colors),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _AgentQuickButton(
+                      icon: Icons.extension_outlined,
+                      label: 'Skills',
+                      onPressed: () => _showSkillsSheet(context, theme, colors),
+                    ),
+                  ),
+                ],
               ),
+
               const SizedBox(height: 24),
 
-              // Active sessions section
+              // Active sessions (limited to 5)
               _buildSectionHeader(context, 'Active Sessions', Icons.chat_outlined),
               const SizedBox(height: 8),
               _buildSessionsCard(context, theme, colors),
-              const SizedBox(height: 24),
-
-              // Cron jobs section
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildSectionHeader(context, 'Scheduled Tasks', Icons.schedule_outlined),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () => _showAddCronJob(context),
-                    tooltip: context.l10n.addCronJob,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              _buildCronCard(context, theme, colors),
-              const SizedBox(height: 24),
-
-              // Skills section
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildSectionHeader(context, 'Skills', Icons.extension_outlined),
-                  ),
-                  FilledButton.tonal(
-                    onPressed: () => _showClawHubBrowser(context),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.explore, size: 18),
-                        const SizedBox(width: 6),
-                        Text(context.l10n.browseClawHub),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              _buildSkillsCard(context, theme, colors),
             ],
           ],
         ),
@@ -609,7 +599,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                       const SizedBox(width: 8),
                       Text(
                         context.l10n.delete,
-                        style: const TextStyle(color: Colors.red),
+                        style: TextStyle(color: Theme.of(context).colorScheme.error),
                       ),
                     ],
                   ),
@@ -726,6 +716,154 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
               style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showWorkspaceSheet(BuildContext context, ColorScheme colors) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (ctx, sc) => Column(
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colors.onSurfaceVariant.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('Workspace Files',
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600)),
+            ),
+            Expanded(
+              child: ListView(
+                controller: sc,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: _buildWorkspaceFiles(context, colors),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCronSheet(BuildContext context, ThemeData theme, ColorScheme colors) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (ctx, sc) => Column(
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colors.onSurfaceVariant.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text('Scheduled Tasks',
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600)),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () => _showAddCronJob(context),
+                    tooltip: 'Add scheduled task',
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                controller: sc,
+                padding: const EdgeInsets.all(16),
+                children: [_buildCronCard(context, theme, colors)],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showSkillsSheet(BuildContext context, ThemeData theme, ColorScheme colors) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (ctx, sc) => Column(
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colors.onSurfaceVariant.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text('Skills',
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600)),
+                  ),
+                  FilledButton.tonal(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _showClawHubBrowser(context);
+                    },
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.explore, size: 18),
+                        SizedBox(width: 6),
+                        Text('Browse'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                controller: sc,
+                padding: const EdgeInsets.all(16),
+                children: [_buildSkillsCard(context, theme, colors)],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1755,6 +1893,36 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _AgentQuickButton extends StatelessWidget {
+  const _AgentQuickButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 20),
+          const SizedBox(height: 3),
+          Text(label, style: const TextStyle(fontSize: 11)),
+        ],
       ),
     );
   }
