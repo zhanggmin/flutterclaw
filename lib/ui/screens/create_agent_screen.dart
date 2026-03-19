@@ -245,11 +245,17 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _vibeController,
+              maxLines: 3,
+              minLines: 1,
               decoration: InputDecoration(
                 labelText: context.l10n.vibe,
                 hintText: context.l10n.vibeHint,
                 border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.mood_outlined),
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.only(bottom: 40),
+                  child: Icon(Icons.mood_outlined),
+                ),
+                alignLabelWithHint: true,
               ),
             ),
           ],
