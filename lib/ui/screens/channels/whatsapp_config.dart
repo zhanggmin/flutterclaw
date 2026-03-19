@@ -1,0 +1,556 @@
+// ignore_for_file: unused_import
+import "dart:async";
+import "package:flutter/material.dart";
+import "package:flutterclaw/ui/theme/tokens.dart";
+import "package:flutter/services.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutterclaw/channels/whatsapp.dart";
+import "package:flutterclaw/channels/channel_interface.dart";
+import "package:flutterclaw/core/app_providers.dart";
+import "package:flutterclaw/l10n/l10n_extension.dart";
+import "package:flutterclaw/services/pairing_service.dart";
+import "package:flutterclaw/data/models/config.dart";
+import "package:flutterclaw/ui/widgets/security_method_card.dart";
+import "package:flutterclaw/ui/widgets/whatsapp_pairing_status_card.dart";
+class WhatsAppConfigScreen extends ConsumerStatefulWidget {
+  const WhatsAppConfigScreen({super.key});
+  @override
+  ConsumerState<WhatsAppConfigScreen> createState() =>
+      _WhatsAppConfigScreenState();
+}
+
+class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
+  late String _dmPolicy;
+  late bool _selfChatMode;
+  Map<String, String> _approvedDevices = {};
+  bool _isLoading = false;
+  String? _qrCode;
+  StreamSubscription<String>? _qrSub;
+  StreamSubscription<WAConnectionStatus>? _connSub;
+  WAConnectionStatus _connStatus = WAConnectionStatus.disconnected;
+  WhatsAppChannelAdapter? _adapter;
+  bool _restartPending = false;
+  bool _requiresRelink = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final config = ref.read(configManagerProvider).config.channels.whatsapp;
+    _dmPolicy = config.dmPolicy;
+    _selfChatMode = config.selfChatMode ?? true;
+    _loadApprovedDevices();
+    _attachToAdapter();
+  }
+
+  @override
+  void dispose() {
+    _qrSub?.cancel();
+    _connSub?.cancel();
+    super.dispose();
+  }
+
+  void _attachToAdapter() {
+    final router = ref.read(channelRouterProvider);
+    final adapter = router.adapters
+        .whereType<WhatsAppChannelAdapter>()
+        .firstOrNull;
+    if (adapter == null) return;
+    _adapter = adapter;
+    _connStatus = adapter.connectionStatus;
+    _restartPending = adapter.isRestartPending;
+    _requiresRelink = adapter.requiresRelink;
+    // Show the cached QR immediately if it was emitted before this screen opened.
+    if (adapter.lastQrCode != null) {
+      _qrCode = adapter.lastQrCode;
+    }
+    _qrSub = adapter.qrStream.listen((qr) {
+      if (mounted) setState(() => _qrCode = qr);
+    });
+    _connSub = adapter.connectionStateStream.listen((s) {
+      if (mounted) {
+        setState(() {
+          _connStatus = s;
+          _restartPending = adapter.isRestartPending;
+          _requiresRelink = adapter.requiresRelink;
+          if (s == WAConnectionStatus.connected) {
+            _qrCode = null;
+            _requiresRelink = false;
+          }
+        });
+      }
+    });
+  }
+
+  Future<void> _stopActiveAdapter({bool clearAuth = false}) async {
+    final router = ref.read(channelRouterProvider);
+    final adapter =
+        _adapter ??
+        router.adapters.whereType<WhatsAppChannelAdapter>().firstOrNull;
+
+    router.unregisterAdapter('whatsapp');
+    await _qrSub?.cancel();
+    await _connSub?.cancel();
+    _qrSub = null;
+    _connSub = null;
+
+    if (adapter != null) {
+      await adapter.stop();
+      adapter.dispose();
+    }
+
+    if (clearAuth) {
+      final authDir = ref
+          .read(configManagerProvider)
+          .config
+          .channels
+          .whatsapp
+          .authDir;
+      await WhatsAppChannelAdapter.clearAuth(authDir);
+    }
+
+    _adapter = null;
+  }
+
+  Future<void> _loadApprovedDevices() async {
+    final map = await ref.read(pairingServiceProvider).getApproved('whatsapp');
+    if (mounted) setState(() => _approvedDevices = map);
+  }
+
+  Future<void> _removeDevice(String id) async {
+    setState(() => _approvedDevices.remove(id));
+    ref.read(pairingServiceProvider).removeApproved('whatsapp', id);
+  }
+
+  Future<void> _addDevice() async {
+    final id = await showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        final ctl = TextEditingController();
+        return AlertDialog(
+          title: const Text('Add Number'),
+          content: TextField(
+            controller: ctl,
+            decoration: const InputDecoration(
+              labelText: 'Phone number / JID',
+              hintText: 'e.g. 5511999123456',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.phone,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, ctl.text.trim()),
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+    if (id != null && id.isNotEmpty && !_approvedDevices.containsKey(id)) {
+      setState(() => _approvedDevices[id] = '');
+      await ref.read(pairingServiceProvider).addApproved('whatsapp', id, '');
+    }
+  }
+
+  Future<void> _save() async {
+    setState(() => _isLoading = true);
+    try {
+      final configManager = ref.read(configManagerProvider);
+      final currentConfig = configManager.config.channels.whatsapp;
+      configManager.update(
+        configManager.config.copyWith(
+          channels: ChannelsConfig(
+            telegram: configManager.config.channels.telegram,
+            discord: configManager.config.channels.discord,
+            whatsapp: WhatsAppConfig(
+              enabled: true,
+              authDir: currentConfig.authDir,
+              dmPolicy: _dmPolicy,
+              allowFrom: _dmPolicy == 'allowlist'
+                  ? _approvedDevices.keys.toList()
+                  : [],
+              selfChatMode: _selfChatMode,
+            ),
+          ),
+        ),
+      );
+      await configManager.save();
+
+      final router = ref.read(channelRouterProvider);
+      final forceRelink = _requiresRelink;
+      await _stopActiveAdapter(clearAuth: forceRelink);
+
+      final pairingService = ref.read(pairingServiceProvider);
+      final cmdHandler = ref.read(chatCommandHandlerProvider);
+      final agentLoop = ref.read(agentLoopProvider);
+
+      final adapter = WhatsAppChannelAdapter(
+        authDir: currentConfig.authDir,
+        allowedUserIds: _dmPolicy == 'allowlist'
+            ? _approvedDevices.keys.toList()
+            : [],
+        dmPolicy: _dmPolicy,
+        selfChatMode: _selfChatMode,
+        pairingService: pairingService,
+        chatCommandHandler: (sessionKey, command) async {
+          final result = await cmdHandler.handle(sessionKey, command);
+          return result.handled ? result.response : null;
+        },
+      );
+
+      router.registerAdapter(adapter);
+      _adapter = adapter;
+      _qrSub?.cancel();
+      _connSub?.cancel();
+      _qrSub = adapter.qrStream.listen((qr) {
+        if (mounted) setState(() => _qrCode = qr);
+      });
+      _connSub = adapter.connectionStateStream.listen((s) {
+        if (mounted) {
+          setState(() {
+            _connStatus = s;
+            _restartPending = adapter.isRestartPending;
+            _requiresRelink = adapter.requiresRelink;
+            if (s == WAConnectionStatus.connected) {
+              _qrCode = null;
+              _requiresRelink = false;
+            }
+          });
+        }
+      });
+
+      await adapter.start((msg) async {
+        final response = await agentLoop.processMessage(
+          msg.sessionKey,
+          msg.text,
+          channelType: msg.channelType,
+          chatId: msg.chatId,
+          contentBlocks: msg.contentBlocks,
+          channelContext: msg.channelContext,
+        );
+        await adapter.sendMessage(
+          OutgoingMessage(
+            channelType: msg.channelType,
+            chatId: msg.chatId,
+            text: response.content,
+          ),
+        );
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('WhatsApp configuration saved')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _disconnect() async {
+    await _stopActiveAdapter(clearAuth: true);
+    final configManager = ref.read(configManagerProvider);
+    final currentConfig = configManager.config.channels.whatsapp;
+    configManager.update(
+      configManager.config.copyWith(
+        channels: ChannelsConfig(
+          telegram: configManager.config.channels.telegram,
+          discord: configManager.config.channels.discord,
+          whatsapp: WhatsAppConfig(
+            enabled: false,
+            authDir: currentConfig.authDir,
+            allowFrom: currentConfig.allowFrom,
+            dmPolicy: currentConfig.dmPolicy,
+            selfChatMode: _selfChatMode,
+          ),
+        ),
+      ),
+    );
+    await configManager.save();
+    setState(() {
+      _qrCode = null;
+      _connStatus = WAConnectionStatus.disconnected;
+      _adapter = null;
+      _restartPending = false;
+      _requiresRelink = false;
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('WhatsApp disconnected')));
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isConnected = _connStatus == WAConnectionStatus.connected;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('WhatsApp'),
+        actions: [
+          if (_adapter != null && isConnected)
+            TextButton.icon(
+              onPressed: _disconnect,
+              icon: const Icon(Icons.logout),
+              label: const Text('Disconnect'),
+            ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Status + QR card always at top
+          WhatsAppPairingStatusCard(
+            status: _connStatus,
+            qrCode: _qrCode,
+            isRestartPending: _restartPending,
+            idleDescription: _requiresRelink
+                ? 'Session expired. Tap "Reconnect" below to scan a fresh QR code.'
+                : 'Tap "Connect WhatsApp" below to link your account.',
+            connectingDescription: _restartPending
+                ? 'WhatsApp accepted the QR. Finalizing the link...'
+                : 'Waiting for WhatsApp to complete the link...',
+          ),
+          const SizedBox(height: 12),
+
+          // Primary action button — always visible near top
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: FilledButton.icon(
+              onPressed: _isLoading ? null : _save,
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(isConnected ? Icons.save_outlined : Icons.link),
+              label: Text(
+                _isLoading
+                    ? 'Connecting...'
+                    : _requiresRelink
+                    ? 'Reconnect WhatsApp'
+                    : isConnected
+                    ? 'Save Settings'
+                    : 'Connect WhatsApp',
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+          Text('WhatsApp Mode', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          SecurityMethodCard(
+            title: 'My personal number',
+            description:
+                'Messages you send to your own WhatsApp chat wake the agent.',
+            icon: Icons.person,
+            isSelected: _selfChatMode,
+            onTap: () => setState(() => _selfChatMode = true),
+            color: Colors.teal,
+          ),
+          SecurityMethodCard(
+            title: 'Dedicated bot account',
+            description:
+                'Messages sent from the linked account itself are ignored as outbound.',
+            icon: Icons.smart_toy,
+            isSelected: !_selfChatMode,
+            onTap: () => setState(() => _selfChatMode = false),
+            color: Colors.indigo,
+          ),
+          const SizedBox(height: 24),
+
+          Text('Security Method', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          SecurityMethodCard(
+            title: 'Pairing (Recommended)',
+            description: 'New senders get a pairing code. You approve them.',
+            icon: Icons.link,
+            isSelected: _dmPolicy == 'pairing',
+            onTap: () => setState(() => _dmPolicy = 'pairing'),
+            color: Colors.blue,
+          ),
+          SecurityMethodCard(
+            title: 'Allowlist',
+            description: 'Only specific phone numbers can message the bot.',
+            icon: Icons.list_alt,
+            isSelected: _dmPolicy == 'allowlist',
+            onTap: () => setState(() => _dmPolicy = 'allowlist'),
+            color: Colors.green,
+          ),
+          SecurityMethodCard(
+            title: 'Open',
+            description: 'Anyone who messages you can use the bot.',
+            icon: Icons.public,
+            isSelected: _dmPolicy == 'open',
+            onTap: () => setState(() => _dmPolicy = 'open'),
+            color: Colors.orange,
+          ),
+          SecurityMethodCard(
+            title: 'Disabled',
+            description: 'Bot will not respond to any incoming messages.',
+            icon: Icons.block,
+            isSelected: _dmPolicy == 'disabled',
+            onTap: () => setState(() => _dmPolicy = 'disabled'),
+            color: Colors.red,
+          ),
+          const SizedBox(height: 24),
+
+          if (_dmPolicy == 'pairing' || _dmPolicy == 'allowlist') ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _dmPolicy == 'pairing'
+                        ? 'Approved Devices'
+                        : 'Allowed Numbers',
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ),
+                if (_dmPolicy == 'allowlist')
+                  IconButton.filledTonal(
+                    icon: const Icon(Icons.add),
+                    tooltip: 'Add number',
+                    onPressed: _addDevice,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (_approvedDevices.isEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Icon(
+                        _dmPolicy == 'pairing'
+                            ? Icons.link_off
+                            : Icons.info_outline,
+                        size: 40,
+                        color: colors.onSurfaceVariant,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _dmPolicy == 'pairing'
+                            ? 'No approved devices yet'
+                            : 'No allowed numbers configured',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _dmPolicy == 'pairing'
+                            ? 'Devices appear here after you approve pairing requests'
+                            : 'Add phone numbers to allow them to use the bot',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              ..._approvedDevices.entries.map(
+                (entry) => Card(
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: colors.primaryContainer,
+                      child: Icon(Icons.person, color: colors.primary),
+                    ),
+                    title: Text(
+                      entry.value.isNotEmpty ? entry.value : entry.key,
+                    ),
+                    subtitle: Text(
+                      entry.value.isNotEmpty
+                          ? entry.key
+                          : (_dmPolicy == 'pairing'
+                                ? 'Approved device'
+                                : 'Allowed number'),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      tooltip: 'Remove',
+                      onPressed: () async {
+                        final ok = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Remove device?'),
+                            content: Text(
+                              'Remove access for ${entry.value.isNotEmpty ? entry.value : entry.key}?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text('Cancel'),
+                              ),
+                              FilledButton(
+                                onPressed: () => Navigator.pop(ctx, true),
+                                child: const Text('Remove'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (ok == true) await _removeDevice(entry.key);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 24),
+          ],
+
+          Card(
+            color: colors.primaryContainer.withValues(alpha: 0.3),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.help_outline, size: 20, color: colors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'How to connect',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: colors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '1. Tap "Connect WhatsApp" above\n'
+                    '2. A QR code will appear — scan it with WhatsApp\n'
+                    '   (Settings → Linked Devices → Link a Device)\n'
+                    '3. Once connected, incoming messages are routed\n'
+                    '   to your active AI agent automatically',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Slack Configuration Screen
+// ---------------------------------------------------------------------------
+
