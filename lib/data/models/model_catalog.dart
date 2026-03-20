@@ -136,6 +136,15 @@ class ModelCatalog {
       input: ['text', 'image'],
     ),
     CatalogModel(
+      id: 'nvidia/nemotron-3-super-120b-a12b:free',
+      displayName: 'Nemotron 3 Super 120B',
+      providerId: 'openrouter',
+      isFree: true,
+      contextWindow: 262144,
+      description: 'NVIDIA MoE — 120B params, 12B active, free',
+      input: ['text'],
+    ),
+    CatalogModel(
       id: 'xiaomi/mimo-v2-omni',
       displayName: 'MiMo-V2-Omni',
       providerId: 'openrouter',
