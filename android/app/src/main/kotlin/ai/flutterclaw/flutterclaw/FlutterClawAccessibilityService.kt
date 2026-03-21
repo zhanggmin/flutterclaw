@@ -150,34 +150,39 @@ class FlutterClawAccessibilityService : AccessibilityService() {
             callback(null)
             return
         }
-        val executor = Executors.newSingleThreadExecutor()
-        takeScreenshot(
-            android.view.Display.DEFAULT_DISPLAY,
-            executor,
-            object : TakeScreenshotCallback {
-                override fun onSuccess(screenshot: ScreenshotResult) {
-                    val bmp = android.graphics.Bitmap.wrapHardwareBuffer(
-                        screenshot.hardwareBuffer, screenshot.colorSpace
-                    )
-                    screenshot.hardwareBuffer.close()
-                    if (bmp == null) {
-                        callback(null)
-                        return
+        try {
+            val executor = Executors.newSingleThreadExecutor()
+            takeScreenshot(
+                android.view.Display.DEFAULT_DISPLAY,
+                executor,
+                object : TakeScreenshotCallback {
+                    override fun onSuccess(screenshot: ScreenshotResult) {
+                        val bmp = android.graphics.Bitmap.wrapHardwareBuffer(
+                            screenshot.hardwareBuffer, screenshot.colorSpace
+                        )
+                        screenshot.hardwareBuffer.close()
+                        if (bmp == null) {
+                            callback(null)
+                            return
+                        }
+                        // Copy to software bitmap for PNG encoding
+                        val softBmp = bmp.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
+                        bmp.recycle()
+                        val baos = ByteArrayOutputStream()
+                        softBmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 90, baos)
+                        softBmp.recycle()
+                        callback(baos.toByteArray())
                     }
-                    // Copy to software bitmap for PNG encoding
-                    val softBmp = bmp.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
-                    bmp.recycle()
-                    val baos = ByteArrayOutputStream()
-                    softBmp.compress(android.graphics.Bitmap.CompressFormat.PNG, 90, baos)
-                    softBmp.recycle()
-                    callback(baos.toByteArray())
-                }
 
-                override fun onFailure(errorCode: Int) {
-                    callback(null)
+                    override fun onFailure(errorCode: Int) {
+                        callback(null)
+                    }
                 }
-            }
-        )
+            )
+        } catch (_: Exception) {
+            // SecurityException if canTakeScreenshot capability is missing — fall back to PixelCopy
+            callback(null)
+        }
     }
 
     // ─── Node traversal helpers ──────────────────────────────────────────────

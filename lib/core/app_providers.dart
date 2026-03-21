@@ -63,6 +63,7 @@ import 'package:flutterclaw/tools/sandbox_tools.dart';
 import 'package:flutterclaw/tools/image_gen_tools.dart';
 import 'package:flutterclaw/services/voice_recording_service.dart';
 import 'package:flutterclaw/services/audio_transcription_service.dart';
+import 'package:flutterclaw/services/overlay_service.dart';
 import 'package:flutterclaw/services/text_to_speech_service.dart';
 
 final configManagerProvider = Provider<ConfigManager>((ref) {
@@ -559,6 +560,10 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
   return NotificationService();
 });
 
+final overlayServiceProvider = Provider<OverlayService>((ref) {
+  return OverlayService();
+});
+
 final cronServiceProvider = Provider<CronService>((ref) {
   return CronService(configManager: ref.read(configManagerProvider));
 });
@@ -1011,16 +1016,22 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
 
   void _sendBackgroundToolNotification(String toolName, Map<String, dynamic>? toolArgs) {
     try {
+      final label = _formatToolStatus(toolName, toolArgs);
       final notifService = ref.read(notificationServiceProvider);
       final configManager = ref.read(configManagerProvider);
       final agentName = configManager.config.activeAgent?.name ?? 'Agent';
-      notifService.showToolStatusNotification(
-        agentName,
-        _formatToolStatus(toolName, toolArgs),
-      );
+      notifService.showToolStatusNotification(agentName, label);
+      // Also show floating overlay chip on top of all apps
+      ref.read(overlayServiceProvider).show(label);
     } catch (_) {
       // Non-fatal — notification failure must not break agent processing.
     }
+  }
+
+  void _hideOverlay() {
+    try {
+      ref.read(overlayServiceProvider).hide();
+    } catch (_) {}
   }
 
   void _sendBackgroundNotification(String responseText) {
@@ -1184,6 +1195,9 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
             ),
           );
           state = updated;
+          if (_isAppInBackground) {
+            _sendBackgroundToolNotification(event.toolName!, event.toolArgs);
+          }
         }
 
         if (event.textDelta != null) {
@@ -1196,6 +1210,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
         }
 
         if (event.isDone) {
+          _hideOverlay();
           final resp = event.finalResponse;
           final finalText = resp?.content ?? buffer.toString();
           final updated = List<ChatMessage>.from(state);
@@ -1213,6 +1228,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
         }
       }
     } catch (e) {
+      _hideOverlay();
       final updated = List<ChatMessage>.from(state);
       if (updated.isNotEmpty) {
         final errorMsg = _buildErrorMessage(e);
@@ -1608,6 +1624,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
         }
 
         if (event.isDone) {
+          _hideOverlay();
           final resp = event.finalResponse;
           final finalText = resp?.content ?? buffer.toString();
           final updated = List<ChatMessage>.from(state);
@@ -1629,6 +1646,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
         flushBuffer();
       }
     } catch (e) {
+      _hideOverlay();
       final updated = List<ChatMessage>.from(state);
       updated[updated.length - 1] = updated.last.copyWith(
         text: _cancelled

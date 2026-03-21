@@ -75,6 +75,38 @@ class AgentLoop {
     this.skillsPromptGetter,
   });
 
+  // Android UI automation strategy injected into system prompt
+  static const _uiAutomationGuidance = '''
+# Android UI Automation
+
+You have tools to control the device screen (tap, swipe, type, find/click elements, screenshot, global actions).
+
+## Workflow
+1. **Screenshot first** — always call `ui_screenshot` before acting so you know what's on screen.
+2. **Act** — use the appropriate tool (prefer semantic tools over coordinates).
+3. **Verify** — take another screenshot to confirm the action succeeded.
+
+## Tool priority (prefer higher)
+1. `ui_click_element` (by text/description/id) — most reliable
+2. `ui_global_action` (back, home, recents, notifications)
+3. `ui_find_elements` — discover what's on screen when screenshot is ambiguous
+4. `ui_tap` / `ui_swipe` — coordinate-based, use when semantic tools can't target the element
+5. `ui_type_text` — type into the focused field (tap the field first)
+
+## Common patterns
+- **Open an app**: global_action "home" → find & click the app icon, or use `ui_click_element` by text
+- **Search within an app**: click the search icon/bar → type query
+- **Navigate back**: `ui_global_action` "back"
+- **Scroll to find content**: `ui_swipe` from center-bottom to center-top (scroll down) or reverse
+- **Fill a form**: tap field → `ui_type_text` → tap next field → repeat → tap submit
+
+## Important
+- Coordinates are in screen pixels. Use `centerX`/`centerY` from `ui_find_elements` results.
+- Prefer clicking buttons by their text label or content description over raw coordinates.
+- After navigation or taps, wait briefly then screenshot — screens may take a moment to transition.
+- The `run_shell_command` sandbox is Alpine Linux, NOT the Android system. Never use `am`, `input`, `monkey`, or `dumpsys` there — use `ui_*` tools instead.
+''';
+
   /// Non-streaming: process a message and return the final response.
   Future<AgentResponse> processMessage(
     String sessionKey,
@@ -818,6 +850,11 @@ class AgentLoop {
     );
 
     sections.add(runtimeSection.toString().trim());
+
+    // Android UI automation strategy guidance
+    if (Platform.isAndroid) {
+      sections.add(_uiAutomationGuidance);
+    }
 
     // Workspace files in OpenClaw injection order
     final bootstrapFiles = <String, String>{};

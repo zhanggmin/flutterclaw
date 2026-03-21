@@ -25,9 +25,11 @@ class MainActivity : FlutterActivity() {
     companion object {
         private const val CHANNEL = "ai.flutterclaw/ui_automation"
         private const val SANDBOX_CHANNEL = "ai.flutterclaw/sandbox"
+        private const val OVERLAY_CHANNEL = "ai.flutterclaw/overlay"
     }
 
     private var sandboxHandler: SandboxHandler? = null
+    private var overlayView: OverlayStatusView? = null
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,9 +63,41 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 sandboxHandler?.handleMethodCall(call, result) ?: result.notImplemented()
             }
+
+        // Overlay status chip (floating on top of all apps)
+        overlayView = OverlayStatusView(applicationContext)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, OVERLAY_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "overlay_check_permission" -> result.success(overlayView?.canShow() == true)
+                    "overlay_request_permission" -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            val intent = Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                android.net.Uri.parse("package:$packageName"),
+                            ).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK }
+                            startActivity(intent)
+                            result.success(true)
+                        } else {
+                            result.success(false)
+                        }
+                    }
+                    "overlay_show" -> {
+                        val text = call.argument<String>("text") ?: ""
+                        overlayView?.show(text)
+                        result.success(true)
+                    }
+                    "overlay_hide" -> {
+                        overlayView?.hide()
+                        result.success(true)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
     }
 
     override fun onDestroy() {
+        overlayView?.hide()
         sandboxHandler?.cleanup()
         super.onDestroy()
     }
