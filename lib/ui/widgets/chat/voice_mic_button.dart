@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterclaw/core/app_providers.dart';
+import 'package:flutterclaw/l10n/l10n_extension.dart';
 
 /// Microphone button in the chat input bar. Tap to start/stop recording; auto-transcribes on stop.
 class VoiceMicButton extends ConsumerStatefulWidget {
@@ -25,9 +26,9 @@ class _VoiceMicButtonState extends ConsumerState<VoiceMicButton> {
       final ok = await ref.read(chatProvider.notifier).transcribeAndSend(path);
       if (!ok && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not transcribe audio'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(context.l10n.couldNotTranscribeAudio),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -36,9 +37,9 @@ class _VoiceMicButtonState extends ConsumerState<VoiceMicButton> {
       final started = await svc.start();
       if (!started && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Microphone permission denied'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(context.l10n.microphonePermissionDenied),
+            duration: const Duration(seconds: 2),
           ),
         );
         return;
@@ -74,7 +75,7 @@ class _VoiceMicButtonState extends ConsumerState<VoiceMicButton> {
             )
           : null,
       icon: Icon(recording ? Icons.stop_rounded : Icons.mic),
-      tooltip: recording ? 'Stop recording' : 'Voice input',
+      tooltip: recording ? context.l10n.stopRecording : context.l10n.voiceInput,
     );
   }
 }

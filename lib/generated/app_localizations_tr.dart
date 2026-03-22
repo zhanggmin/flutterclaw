@@ -1088,5 +1088,593 @@ class AppLocalizationsTr extends AppLocalizations {
   String get messagesAbbrev => 'msj';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'Bu model zaten listenizde';
+
+  @override
+  String get bothTokensRequired => 'Her iki token de gereklidir';
+
+  @override
+  String get slackSavedRestart =>
+      'Slack kaydedildi — bağlanmak için gateway\'i yeniden başlatın';
+
+  @override
+  String get slackConfiguration => 'Slack Yapılandırması';
+
+  @override
+  String get setupTitle => 'Kurulum';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. api.slack.com/apps adresinde bir Slack Uygulaması oluşturun\n2. Socket Mode\'u etkinleştirin → App-Level Token (xapp-…) oluşturun\n   kapsam ile: connections:write\n3. Bot Token Kapsamları ekleyin: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Uygulamayı workspace\'e yükleyin → Bot Token\'ı kopyalayın (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'App-Level Token (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired =>
+      'API URL\'si ve telefon numarası gereklidir';
+
+  @override
+  String get signalSavedRestart =>
+      'Signal kaydedildi — bağlanmak için gateway\'i yeniden başlatın';
+
+  @override
+  String get signalConfiguration => 'Signal Yapılandırması';
+
+  @override
+  String get requirementsTitle => 'Gereksinimler';
+
+  @override
+  String get signalRequirements =>
+      'Bir sunucuda signal-cli-rest-api çalıştırmayı gerektirir:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nREST API aracılığıyla Signal numaranızı kaydedin/bağlayın, ardından aşağıya URL\'yi ve telefon numaranızı girin.';
+
+  @override
+  String get signalApiUrl => 'signal-cli-rest-api URL\'si';
+
+  @override
+  String get signalPhoneNumber => 'Signal telefon numaranız';
+
+  @override
+  String get userIdLabel => 'Kullanıcı ID\'si';
+
+  @override
+  String get enterDiscordUserId => 'Discord kullanıcı ID\'sini girin';
+
+  @override
+  String get enterTelegramUserId => 'Telegram kullanıcı ID\'sini girin';
+
+  @override
+  String get fromDiscordDevPortal => 'Discord Geliştirici Portalından';
+
+  @override
+  String get allowedUserIdsTitle => 'İzin Verilen Kullanıcı ID\'leri';
+
+  @override
+  String get approvedDevice => 'Onaylı cihaz';
+
+  @override
+  String get allowedUser => 'İzin verilen kullanıcı';
+
+  @override
+  String get howToGetBotToken => 'Bot tokeninizi nasıl alırsınız';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. Discord Geliştirici Portalına gidin\n2. Yeni bir uygulama ve bot oluşturun\n3. Tokeni kopyalayın ve yukarı yapıştırın\n4. Message Content Intent\'i etkinleştirin';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. Telegram\'ı açın ve @BotFather\'ı arayın\n2. /newbot gönderin ve talimatları izleyin\n3. Tokeni kopyalayın ve yukarı yapıştırın';
+
+  @override
+  String get fromBotFatherHint => '@BotFather\'dan alın';
+
+  @override
+  String get accessTokenLabel => 'Erişim tokeni';
+
+  @override
+  String get notSetOpenAccess =>
+      'Ayarlanmadı — açık erişim (yalnızca loopback)';
+
+  @override
+  String get gatewayAccessToken => 'Gateway erişim tokeni';
+
+  @override
+  String get tokenFieldLabel => 'Token';
+
+  @override
+  String get leaveEmptyDisableAuth =>
+      'Kimlik doğrulamayı devre dışı bırakmak için boş bırakın';
+
+  @override
+  String get toolPolicies => 'Araç Politikaları';
+
+  @override
+  String get toolPoliciesDesc =>
+      'Ajanın nelere erişebileceğini kontrol edin. Devre dışı bırakılan araçlar AI\'den gizlidir ve çalışma zamanında engellenir.';
+
+  @override
+  String get privacySensors => 'Gizlilik ve Sensörler';
+
+  @override
+  String get networkCategory => 'Ağ';
+
+  @override
+  String get systemCategory => 'Sistem';
+
+  @override
+  String get toolTakePhotos => 'Fotoğraf Çek';
+
+  @override
+  String get toolTakePhotosDesc =>
+      'Ajanın kamera kullanarak fotoğraf çekmesine izin ver';
+
+  @override
+  String get toolRecordVideo => 'Video Kaydet';
+
+  @override
+  String get toolRecordVideoDesc => 'Ajanın video kaydetmesine izin ver';
+
+  @override
+  String get toolLocation => 'Konum';
+
+  @override
+  String get toolLocationDesc =>
+      'Ajanın mevcut GPS konumunuzu okumasına izin ver';
+
+  @override
+  String get toolHealthData => 'Sağlık Verileri';
+
+  @override
+  String get toolHealthDataDesc =>
+      'Ajanın sağlık/fitness verilerini okumasına izin ver';
+
+  @override
+  String get toolContacts => 'Kişiler';
+
+  @override
+  String get toolContactsDesc => 'Ajanın kişilerinizi aramasına izin ver';
+
+  @override
+  String get toolScreenshots => 'Ekran Görüntüleri';
+
+  @override
+  String get toolScreenshotsDesc => 'Ajanın ekran görüntüsü almasına izin ver';
+
+  @override
+  String get toolWebFetch => 'Web Getirme';
+
+  @override
+  String get toolWebFetchDesc =>
+      'Ajanın URL\'lerden içerik getirmesine izin ver';
+
+  @override
+  String get toolWebSearch => 'Web Araması';
+
+  @override
+  String get toolWebSearchDesc => 'Ajanın web\'de arama yapmasına izin ver';
+
+  @override
+  String get toolHttpRequests => 'HTTP İstekleri';
+
+  @override
+  String get toolHttpRequestsDesc =>
+      'Ajanın rastgele HTTP istekleri yapmasına izin ver';
+
+  @override
+  String get toolSandboxShell => 'Sandbox Kabuğu';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'Ajanın sandbox\'ta kabuk komutları çalıştırmasına izin ver';
+
+  @override
+  String get toolImageGeneration => 'Görsel Oluşturma';
+
+  @override
+  String get toolImageGenerationDesc =>
+      'Ajanın AI ile görsel oluşturmasına izin ver';
+
+  @override
+  String get toolLaunchApps => 'Uygulama Başlatma';
+
+  @override
+  String get toolLaunchAppsDesc =>
+      'Ajanın yüklü uygulamaları açmasına izin ver';
+
+  @override
+  String get toolLaunchIntents => 'Intent Başlatma';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'Ajanın Android intent\'leri başlatmasına izin ver (derin bağlantılar, sistem ekranları)';
+
+  @override
+  String get renameSession => 'Oturumu yeniden adlandır';
+
+  @override
+  String get myConversationName => 'Sohbet adım';
+
+  @override
+  String get renameAction => 'Yeniden Adlandır';
+
+  @override
+  String get couldNotTranscribeAudio => 'Ses yazıya dökülememedi';
+
+  @override
+  String get stopRecording => 'Kaydı durdur';
+
+  @override
+  String get voiceInput => 'Sesli giriş';
+
+  @override
+  String get copyTooltip => 'Kopyala';
+
+  @override
+  String get commandsTooltip => 'Komutlar';
+
+  @override
+  String get providersAndModels => 'Sağlayıcılar ve Modeller';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count model yapılandırıldı',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'Otomatik başlatma etkin';
+
+  @override
+  String get autoStartOffLabel => 'Otomatik başlatma kapalı';
+
+  @override
+  String get allToolsEnabled => 'Tüm araçlar etkin';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count araç devre dışı',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests => 'Bekleyen eşleştirme isteği yok';
+
+  @override
+  String get pairingRequestsTitle => 'Eşleştirme İstekleri';
+
+  @override
+  String get gatewayStartingStatus => 'Gateway başlatılıyor...';
+
+  @override
+  String get gatewayRetryingStatus => 'Gateway başlatma yeniden deneniyor...';
+
+  @override
+  String get errorStartingGateway => 'Gateway başlatma hatası';
+
+  @override
+  String get runningStatus => 'Çalışıyor';
+
+  @override
+  String get stoppedStatus => 'Durduruldu';
+
+  @override
+  String get notSetUpStatus => 'Kurulmamış';
+
+  @override
+  String get configuredStatus => 'Yapılandırıldı';
+
+  @override
+  String get whatsAppConfigSaved => 'WhatsApp yapılandırması kaydedildi';
+
+  @override
+  String get whatsAppDisconnected => 'WhatsApp bağlantısı kesildi';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'Uygulanıyor...';
+
+  @override
+  String get reconnectWhatsApp => 'WhatsApp\'ı Yeniden Bağla';
+
+  @override
+  String get saveSettingsLabel => 'Ayarları Kaydet';
+
+  @override
+  String get applySettingsRestart => 'Ayarları Uygula ve Yeniden Başlat';
+
+  @override
+  String get whatsAppMode => 'WhatsApp Modu';
+
+  @override
+  String get myPersonalNumber => 'Kişisel numaram';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'Kendi WhatsApp sohbetinize gönderdiğiniz mesajlar ajanı uyandırır.';
+
+  @override
+  String get dedicatedBotAccount => 'Özel bot hesabı';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'Bağlı hesabın kendisinden gönderilen mesajlar giden olarak yoksayılır.';
+
+  @override
+  String get allowedNumbers => 'İzin Verilen Numaralar';
+
+  @override
+  String get addNumberTitle => 'Numara Ekle';
+
+  @override
+  String get phoneNumberJid => 'Telefon numarası / JID';
+
+  @override
+  String get noAllowedNumbersConfigured =>
+      'İzin verilen numara yapılandırılmamış';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'Eşleştirme isteklerini onayladıktan sonra cihazlar burada görünür';
+
+  @override
+  String get addPhoneNumbersHint =>
+      'Botu kullanmalarına izin vermek için telefon numaraları ekleyin';
+
+  @override
+  String get allowedNumber => 'İzin verilen numara';
+
+  @override
+  String get howToConnect => 'Nasıl bağlanılır';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. Yukarıdaki \"WhatsApp\'ı Bağla\"ya dokunun\n2. Bir QR kod görünecek — WhatsApp ile tarayın\n   (Ayarlar → Bağlı Cihazlar → Cihaz Bağla)\n3. Bağlandıktan sonra gelen mesajlar otomatik olarak\n   aktif AI ajanınıza yönlendirilir';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'Yeni gönderenler eşleştirme kodu alır. Siz onaylarsınız.';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'Yalnızca belirli telefon numaraları bota mesaj gönderebilir.';
+
+  @override
+  String get whatsAppOpenDesc =>
+      'Size mesaj gönderen herkes botu kullanabilir.';
+
+  @override
+  String get whatsAppDisabledDesc => 'Bot gelen hiçbir mesaja yanıt vermez.';
+
+  @override
+  String get sessionExpiredRelink =>
+      'Oturum süresi doldu. Yeni bir QR kod taramak için aşağıdaki \"Yeniden Bağlan\"a dokunun.';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'Hesabınızı bağlamak için aşağıdaki \"WhatsApp\'ı Bağla\"ya dokunun.';
+
+  @override
+  String get whatsAppAcceptedQr =>
+      'WhatsApp QR\'ı kabul etti. Bağlantı tamamlanıyor...';
+
+  @override
+  String get waitingForWhatsApp =>
+      'WhatsApp\'ın bağlantıyı tamamlaması bekleniyor...';
+
+  @override
+  String get focusedLabel => 'Odaklanmış';
+
+  @override
+  String get balancedLabel => 'Dengeli';
+
+  @override
+  String get creativeLabel => 'Yaratıcı';
+
+  @override
+  String get preciseLabel => 'Kesin';
+
+  @override
+  String get expressiveLabel => 'Etkileyici';
+
+  @override
+  String get browseLabel => 'Gözat';
+
+  @override
+  String get apiTokenLabel => 'API Token';
+
+  @override
+  String get connectToClawHub => 'ClawHub\'a Bağlan';
+
+  @override
+  String get clawHubLoginHint =>
+      'Premium becerilere erişmek ve paketler yüklemek için ClawHub\'a giriş yapın';
+
+  @override
+  String get howToGetApiToken => 'API tokeninizi nasıl alırsınız:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. clawhub.ai\'yi ziyaret edin ve GitHub ile giriş yapın\n2. Terminalde \"clawhub login\" çalıştırın\n3. Tokeninizi kopyalayın ve buraya yapıştırın';
+
+  @override
+  String connectionFailed(String error) {
+    return 'Bağlantı başarısız: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count çalıştırma',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'Sonraki çalıştırma: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'Son hata: $error';
+  }
+
+  @override
+  String get cronJobHintText => 'Bu iş tetiklendiğinde ajan için talimatlar…';
+
+  @override
+  String get androidPermissions => 'Android İzinleri';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw sizin adınıza ekranınızı kontrol edebilir — düğmelere dokunma, formları doldurma, kaydırma ve herhangi bir uygulamada tekrarlayan görevleri otomatikleştirme.';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'Tam deneyim için iki izin gereklidir. Bunu atlayabilir ve daha sonra Ayarlar\'da etkinleştirebilirsiniz.';
+
+  @override
+  String get accessibilityService => 'Erişilebilirlik Hizmeti';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'Dokunmaya, kaydırmaya, yazmaya ve ekran içeriğini okumaya izin verir';
+
+  @override
+  String get displayOverOtherApps => 'Diğer Uygulamaların Üzerinde Görüntüle';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'Ajanın ne yaptığını görebilmeniz için kayan bir durum chip\'i gösterir';
+
+  @override
+  String get changeDefaultModel => 'Varsayılan modeli değiştir';
+
+  @override
+  String setModelAsDefault(String name) {
+    return '$name modelini varsayılan model olarak ayarla.';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ajanı',
+    );
+    return 'Ayrıca $_temp0 güncelle';
+  }
+
+  @override
+  String get startNewSessions => 'Yeni oturumlar başlat';
+
+  @override
+  String get currentConversationsArchived => 'Mevcut konuşmalar arşivlenecek';
+
+  @override
+  String get applyAction => 'Uygula';
+
+  @override
+  String applyModelQuestion(String name) {
+    return '$name uygulansın mı?';
+  }
+
+  @override
+  String get setAsDefaultModel => 'Varsayılan model olarak ayarla';
+
+  @override
+  String get usedByAgentsWithout =>
+      'Belirli bir modeli olmayan ajanlar tarafından kullanılır';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ajana',
+    );
+    return '$_temp0 uygula';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'Sağlayıcı zaten kimlik doğrulandı — API anahtarı gerekmiyor.';
+
+  @override
+  String get selectFromList => 'Listeden seç';
+
+  @override
+  String get enterCustomModelId => 'Özel model ID\'si gir';
+
+  @override
+  String get removeSkillTitle => 'Beceri kaldırılsın mı?';
+
+  @override
+  String get browseClawHubToDiscover =>
+      'Beceriler keşfetmek ve yüklemek için ClawHub\'a göz atın';
+
+  @override
+  String get addDeviceTooltip => 'Cihaz ekle';
+
+  @override
+  String get addNumberTooltip => 'Numara ekle';
+
+  @override
+  String get searchSkillsHint => 'Becerileri ara...';
+
+  @override
+  String get loginToClawHub => 'ClawHub\'a giriş yap';
+
+  @override
+  String get accountTooltip => 'Hesap';
+
+  @override
+  String get editAction => 'Düzenle';
+
+  @override
+  String get setAsDefaultAction => 'Varsayılan olarak ayarla';
+
+  @override
+  String get chooseProviderTitle => 'Sağlayıcı seç';
+
+  @override
+  String get apiKeyTitle => 'API Anahtarı';
+
+  @override
+  String get slackConfigSaved =>
+      'Slack kaydedildi — bağlanmak için gateway\'i yeniden başlatın';
+
+  @override
+  String get signalConfigSaved =>
+      'Signal kaydedildi — bağlanmak için gateway\'i yeniden başlatın';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'Cihaz ekle';
+
+  @override
+  String get skipAction => 'Atla';
 }

@@ -277,7 +277,7 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
                         const SizedBox(width: 8),
                         IconButton.filledTonal(
                           icon: const Icon(Icons.restart_alt),
-                          tooltip: 'Restart Gateway',
+                          tooltip: context.l10n.restartGateway,
                           onPressed: () async {
                             if (Platform.isIOS) {
                               await IosGatewayService.stop();
@@ -447,14 +447,14 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          Text('Channels', style: theme.textTheme.titleLarge),
+          Text(context.l10n.channelsLabel, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
 
           // Chat (always available) — app primary color
           _ChannelTile(
             icon: Icons.chat_rounded,
-            name: 'Chat',
-            subtitle: 'Built-in chat interface',
+            name: context.l10n.webChat,
+            subtitle: context.l10n.webChatBuiltIn,
             isConnected: true,
             isConfigured: true,
           ),
@@ -554,22 +554,22 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
   ) {
     switch (gatewayState.state) {
       case 'starting':
-        return 'Starting gateway...';
+        return context.l10n.gatewayStartingStatus;
       case 'retrying':
-        return 'Retrying gateway start...';
+        return context.l10n.gatewayRetryingStatus;
       case 'error':
-        return gatewayState.lastError ?? 'Error starting gateway';
+        return gatewayState.lastError ?? context.l10n.errorStartingGateway;
       case 'running':
-        return 'Running';
+        return context.l10n.runningStatus;
       default:
-        return 'Stopped';
+        return context.l10n.stoppedStatus;
     }
   }
 
   String _channelStatus(bool configured, bool running) {
-    if (!configured) return 'Not configured';
-    if (running) return 'Connected';
-    return 'Configured (starting...)';
+    if (!configured) return context.l10n.notSetUpStatus;
+    if (running) return context.l10n.connected;
+    return context.l10n.configuredStatus;
   }
 
   void _showTelegramConfig(BuildContext context, WidgetRef ref) {
@@ -639,10 +639,10 @@ class _ChannelTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final (statusLabel, statusColor) = isConnected
-        ? ('Connected', const Color(0xFF2E7D32))
+        ? (context.l10n.connected, const Color(0xFF2E7D32))
         : isConfigured
-            ? ('Configured', const Color(0xFFE65100))
-            : ('Not set up', theme.colorScheme.onSurfaceVariant);
+            ? (context.l10n.configuredStatus, const Color(0xFFE65100))
+            : (context.l10n.notSetUpStatus, theme.colorScheme.onSurfaceVariant);
 
     return Card(
       child: ListTile(
@@ -746,7 +746,7 @@ class _PairingSectionState extends State<_PairingSection> {
       children: [
         Row(
           children: [
-            Text('Pairing Requests', style: theme.textTheme.titleLarge),
+            Text(context.l10n.pairingRequestsTitle, style: theme.textTheme.titleLarge),
             const SizedBox(width: 8),
             if (_requests.isNotEmpty)
               Container(
@@ -780,7 +780,7 @@ class _PairingSectionState extends State<_PairingSection> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'No pending pairing requests',
+                      context.l10n.noPendingPairingRequests,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -815,14 +815,14 @@ class _PairingSectionState extends State<_PairingSection> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.check_circle, color: Colors.green),
-                      tooltip: 'Approve',
+                      tooltip: context.l10n.approve,
                       onPressed: () async {
                         await widget.pairingService.approve(r.channel, r.code);
                         await _loadRequests();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Pairing request approved'),
+                            SnackBar(
+                              content: Text(context.l10n.pairingRequestApproved),
                             ),
                           );
                         }
@@ -830,14 +830,14 @@ class _PairingSectionState extends State<_PairingSection> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.cancel, color: Colors.red),
-                      tooltip: 'Reject',
+                      tooltip: context.l10n.reject,
                       onPressed: () async {
                         await widget.pairingService.reject(r.channel, r.code);
                         await _loadRequests();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Pairing request rejected'),
+                            SnackBar(
+                              content: Text(context.l10n.pairingRequestRejected),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -856,8 +856,8 @@ class _PairingSectionState extends State<_PairingSection> {
   String _timeLeft(DateTime createdAt) {
     final expires = createdAt.add(const Duration(hours: 1));
     final diff = expires.difference(DateTime.now());
-    if (diff.isNegative) return 'Expired';
-    return '${diff.inMinutes}m left';
+    if (diff.isNegative) return context.l10n.expired;
+    return context.l10n.minutesLeft(diff.inMinutes);
   }
 }
 

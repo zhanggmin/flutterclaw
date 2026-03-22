@@ -50,7 +50,7 @@ class AboutScreen extends ConsumerWidget {
           const SizedBox(height: 24),
 
           Text(
-            'Danger zone',
+            context.l10n.dangerZone,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: colors.error,
                   fontWeight: FontWeight.w600,
@@ -88,23 +88,21 @@ class AboutScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (d) => AlertDialog(
-        title: const Text('Reset all configuration?'),
-        content: const Text(
-          'This will delete your API keys, models, and all settings. '
-          'The app will return to the setup wizard.\n\n'
-          'Your conversation history is not deleted.',
+        title: Text(context.l10n.resetAllConfiguration),
+        content: Text(
+          context.l10n.resetAllConfigurationDesc,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(d, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(d).colorScheme.error,
             ),
             onPressed: () => Navigator.pop(d, true),
-            child: const Text('Reset'),
+            child: Text(context.l10n.reset),
           ),
         ],
       ),

@@ -122,7 +122,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
                 IconButton(
                   onPressed: widget.isProcessing ? null : _openSlashCommands,
                   icon: const Icon(Icons.terminal, size: 20),
-                  tooltip: 'Commands',
+                  tooltip: context.l10n.commandsTooltip,
                   visualDensity: VisualDensity.compact,
                 ),
                 if (widget.onAttach != null || widget.onAttachDocument != null)

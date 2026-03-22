@@ -1070,5 +1070,580 @@ class AppLocalizationsTh extends AppLocalizations {
   String get messagesAbbrev => 'ข้อความ';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'โมเดลนี้มีในรายการของคุณแล้ว';
+
+  @override
+  String get bothTokensRequired => 'ต้องการโทเค็นทั้งสอง';
+
+  @override
+  String get slackSavedRestart =>
+      'บันทึก Slack แล้ว — รีสตาร์ทเกตเวย์เพื่อเชื่อมต่อ';
+
+  @override
+  String get slackConfiguration => 'การกำหนดค่า Slack';
+
+  @override
+  String get setupTitle => 'การตั้งค่า';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. สร้างแอป Slack ที่ api.slack.com/apps\n2. เปิดใช้งาน Socket Mode → สร้าง App-Level Token (xapp-…)\n   ด้วยขอบเขต: connections:write\n3. เพิ่ม Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. ติดตั้งแอปในเวิร์กสเปซ → คัดลอก Bot Token (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'App-Level Token (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired => 'ต้องการ API URL และหมายเลขโทรศัพท์';
+
+  @override
+  String get signalSavedRestart =>
+      'บันทึก Signal แล้ว — รีสตาร์ทเกตเวย์เพื่อเชื่อมต่อ';
+
+  @override
+  String get signalConfiguration => 'การกำหนดค่า Signal';
+
+  @override
+  String get requirementsTitle => 'ข้อกำหนด';
+
+  @override
+  String get signalRequirements =>
+      'ต้องใช้ signal-cli-rest-api บนเซิร์ฟเวอร์:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nลงทะเบียน/เชื่อมโยงหมายเลข Signal ของคุณผ่าน REST API จากนั้นป้อน URL และหมายเลขโทรศัพท์ของคุณด้านล่าง';
+
+  @override
+  String get signalApiUrl => 'URL signal-cli-rest-api';
+
+  @override
+  String get signalPhoneNumber => 'หมายเลขโทรศัพท์ Signal ของคุณ';
+
+  @override
+  String get userIdLabel => 'ID ผู้ใช้';
+
+  @override
+  String get enterDiscordUserId => 'ป้อน ID ผู้ใช้ Discord';
+
+  @override
+  String get enterTelegramUserId => 'ป้อน ID ผู้ใช้ Telegram';
+
+  @override
+  String get fromDiscordDevPortal => 'จาก Discord Developer Portal';
+
+  @override
+  String get allowedUserIdsTitle => 'ID ผู้ใช้ที่อนุญาต';
+
+  @override
+  String get approvedDevice => 'อุปกรณ์ที่อนุมัติ';
+
+  @override
+  String get allowedUser => 'ผู้ใช้ที่อนุญาต';
+
+  @override
+  String get howToGetBotToken => 'วิธีรับโทเค็นบอทของคุณ';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. ไปที่ Discord Developer Portal\n2. สร้างแอปพลิเคชันและบอทใหม่\n3. คัดลอกโทเค็นและวางด้านบน\n4. เปิดใช้งาน Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. เปิด Telegram และค้นหา @BotFather\n2. ส่ง /newbot และทำตามคำแนะนำ\n3. คัดลอกโทเค็นและวางด้านบน';
+
+  @override
+  String get fromBotFatherHint => 'รับจาก @BotFather';
+
+  @override
+  String get accessTokenLabel => 'โทเค็นการเข้าถึง';
+
+  @override
+  String get notSetOpenAccess =>
+      'ไม่ได้ตั้งค่า — เข้าถึงแบบเปิด (เฉพาะ loopback)';
+
+  @override
+  String get gatewayAccessToken => 'โทเค็นการเข้าถึงเกตเวย์';
+
+  @override
+  String get tokenFieldLabel => 'โทเค็น';
+
+  @override
+  String get leaveEmptyDisableAuth => 'ปล่อยว่างเพื่อปิดการตรวจสอบสิทธิ์';
+
+  @override
+  String get toolPolicies => 'นโยบายเครื่องมือ';
+
+  @override
+  String get toolPoliciesDesc =>
+      'ควบคุมสิ่งที่ตัวแทนสามารถเข้าถึงได้ เครื่องมือที่ปิดใช้งานจะถูกซ่อนจาก AI และถูกบล็อกที่รันไทม์';
+
+  @override
+  String get privacySensors => 'ความเป็นส่วนตัวและเซ็นเซอร์';
+
+  @override
+  String get networkCategory => 'เครือข่าย';
+
+  @override
+  String get systemCategory => 'ระบบ';
+
+  @override
+  String get toolTakePhotos => 'ถ่ายภาพ';
+
+  @override
+  String get toolTakePhotosDesc => 'อนุญาตให้ตัวแทนถ่ายภาพโดยใช้กล้อง';
+
+  @override
+  String get toolRecordVideo => 'บันทึกวิดีโอ';
+
+  @override
+  String get toolRecordVideoDesc => 'อนุญาตให้ตัวแทนบันทึกวิดีโอ';
+
+  @override
+  String get toolLocation => 'ตำแหน่ง';
+
+  @override
+  String get toolLocationDesc =>
+      'อนุญาตให้ตัวแทนอ่านตำแหน่ง GPS ปัจจุบันของคุณ';
+
+  @override
+  String get toolHealthData => 'ข้อมูลสุขภาพ';
+
+  @override
+  String get toolHealthDataDesc => 'อนุญาตให้ตัวแทนอ่านข้อมูลสุขภาพ/ฟิตเนส';
+
+  @override
+  String get toolContacts => 'รายชื่อติดต่อ';
+
+  @override
+  String get toolContactsDesc => 'อนุญาตให้ตัวแทนค้นหารายชื่อติดต่อของคุณ';
+
+  @override
+  String get toolScreenshots => 'ภาพหน้าจอ';
+
+  @override
+  String get toolScreenshotsDesc => 'อนุญาตให้ตัวแทนถ่ายภาพหน้าจอ';
+
+  @override
+  String get toolWebFetch => 'ดึงข้อมูลจากเว็บ';
+
+  @override
+  String get toolWebFetchDesc => 'อนุญาตให้ตัวแทนดึงเนื้อหาจาก URL';
+
+  @override
+  String get toolWebSearch => 'ค้นหาเว็บ';
+
+  @override
+  String get toolWebSearchDesc => 'อนุญาตให้ตัวแทนค้นหาเว็บ';
+
+  @override
+  String get toolHttpRequests => 'คำขอ HTTP';
+
+  @override
+  String get toolHttpRequestsDesc => 'อนุญาตให้ตัวแทนทำคำขอ HTTP ใดๆ';
+
+  @override
+  String get toolSandboxShell => 'เชลล์แซนด์บ็อกซ์';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'อนุญาตให้ตัวแทนรันคำสั่งเชลล์ในแซนด์บ็อกซ์';
+
+  @override
+  String get toolImageGeneration => 'สร้างภาพ';
+
+  @override
+  String get toolImageGenerationDesc => 'อนุญาตให้ตัวแทนสร้างภาพผ่าน AI';
+
+  @override
+  String get toolLaunchApps => 'เปิดแอป';
+
+  @override
+  String get toolLaunchAppsDesc => 'อนุญาตให้ตัวแทนเปิดแอปที่ติดตั้ง';
+
+  @override
+  String get toolLaunchIntents => 'เรียก Intents';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'อนุญาตให้ตัวแทนเรียก Android intents (ลิงก์ลึก, หน้าจอระบบ)';
+
+  @override
+  String get renameSession => 'เปลี่ยนชื่อเซสชัน';
+
+  @override
+  String get myConversationName => 'ชื่อการสนทนาของฉัน';
+
+  @override
+  String get renameAction => 'เปลี่ยนชื่อ';
+
+  @override
+  String get couldNotTranscribeAudio => 'ไม่สามารถถอดความเสียงได้';
+
+  @override
+  String get stopRecording => 'หยุดการบันทึก';
+
+  @override
+  String get voiceInput => 'อินพุตเสียง';
+
+  @override
+  String get copyTooltip => 'คัดลอก';
+
+  @override
+  String get commandsTooltip => 'คำสั่ง';
+
+  @override
+  String get providersAndModels => 'ผู้ให้บริการและโมเดล';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count โมเดลที่กำหนดค่า',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'เปิดใช้งานการเริ่มอัตโนมัติ';
+
+  @override
+  String get autoStartOffLabel => 'ปิดการเริ่มอัตโนมัติ';
+
+  @override
+  String get allToolsEnabled => 'เปิดใช้งานเครื่องมือทั้งหมด';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count เครื่องมือปิดใช้งาน',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests => 'ไม่มีคำขอจับคู่ที่รอดำเนินการ';
+
+  @override
+  String get pairingRequestsTitle => 'คำขอจับคู่';
+
+  @override
+  String get gatewayStartingStatus => 'กำลังเริ่มเกตเวย์...';
+
+  @override
+  String get gatewayRetryingStatus => 'กำลังลองเริ่มเกตเวย์อีกครั้ง...';
+
+  @override
+  String get errorStartingGateway => 'ข้อผิดพลาดในการเริ่มเกตเวย์';
+
+  @override
+  String get runningStatus => 'กำลังทำงาน';
+
+  @override
+  String get stoppedStatus => 'หยุดแล้ว';
+
+  @override
+  String get notSetUpStatus => 'ไม่ได้ตั้งค่า';
+
+  @override
+  String get configuredStatus => 'กำหนดค่าแล้ว';
+
+  @override
+  String get whatsAppConfigSaved => 'บันทึกการกำหนดค่า WhatsApp แล้ว';
+
+  @override
+  String get whatsAppDisconnected => 'ตัดการเชื่อมต่อ WhatsApp แล้ว';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'กำลังนำไปใช้...';
+
+  @override
+  String get reconnectWhatsApp => 'เชื่อมต่อ WhatsApp อีกครั้ง';
+
+  @override
+  String get saveSettingsLabel => 'บันทึกการตั้งค่า';
+
+  @override
+  String get applySettingsRestart => 'ใช้การตั้งค่าและรีสตาร์ท';
+
+  @override
+  String get whatsAppMode => 'โหมด WhatsApp';
+
+  @override
+  String get myPersonalNumber => 'หมายเลขส่วนตัวของฉัน';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'ข้อความที่คุณส่งไปยังแชท WhatsApp ของคุณเองจะปลุกตัวแทน';
+
+  @override
+  String get dedicatedBotAccount => 'บัญชีบอทเฉพาะ';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'ข้อความที่ส่งจากบัญชีที่เชื่อมโยงเองจะถูกละเว้นเป็นขาออก';
+
+  @override
+  String get allowedNumbers => 'หมายเลขที่อนุญาต';
+
+  @override
+  String get addNumberTitle => 'เพิ่มหมายเลข';
+
+  @override
+  String get phoneNumberJid => 'หมายเลขโทรศัพท์ / JID';
+
+  @override
+  String get noAllowedNumbersConfigured => 'ไม่มีหมายเลขที่อนุญาตที่กำหนดค่า';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'อุปกรณ์จะปรากฏที่นี่หลังจากคุณอนุมัติคำขอจับคู่';
+
+  @override
+  String get addPhoneNumbersHint => 'เพิ่มหมายเลขโทรศัพท์เพื่ออนุญาตให้ใช้บอท';
+
+  @override
+  String get allowedNumber => 'หมายเลขที่อนุญาต';
+
+  @override
+  String get howToConnect => 'วิธีการเชื่อมต่อ';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. แตะ \"เชื่อมต่อ WhatsApp\" ด้านบน\n2. โค้ด QR จะปรากฏ — สแกนด้วย WhatsApp\n   (การตั้งค่า → อุปกรณ์ที่เชื่อมโยง → เชื่อมโยงอุปกรณ์)\n3. เมื่อเชื่อมต่อแล้ว ข้อความขาเข้าจะถูกส่งไปยัง\n   ตัวแทน AI ที่ใช้งานอยู่โดยอัตโนมัติ';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'ผู้ส่งใหม่จะได้รับรหัสจับคู่ คุณอนุมัติพวกเขา';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'เฉพาะหมายเลขโทรศัพท์เฉพาะเท่านั้นที่สามารถส่งข้อความถึงบอทได้';
+
+  @override
+  String get whatsAppOpenDesc => 'ทุกคนที่ส่งข้อความถึงคุณสามารถใช้บอทได้';
+
+  @override
+  String get whatsAppDisabledDesc => 'บอทจะไม่ตอบข้อความขาเข้าใดๆ';
+
+  @override
+  String get sessionExpiredRelink =>
+      'เซสชันหมดอายุ แตะ \"เชื่อมต่ออีกครั้ง\" ด้านล่างเพื่อสแกนโค้ด QR ใหม่';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'แตะ \"เชื่อมต่อ WhatsApp\" ด้านล่างเพื่อเชื่อมโยงบัญชีของคุณ';
+
+  @override
+  String get whatsAppAcceptedQr =>
+      'WhatsApp ยอมรับ QR แล้ว กำลังเชื่อมโยงให้เสร็จสิ้น...';
+
+  @override
+  String get waitingForWhatsApp => 'รอ WhatsApp เสร็จสิ้นการเชื่อมโยง...';
+
+  @override
+  String get focusedLabel => 'มุ่งเน้น';
+
+  @override
+  String get balancedLabel => 'สมดุล';
+
+  @override
+  String get creativeLabel => 'สร้างสรรค์';
+
+  @override
+  String get preciseLabel => 'แม่นยำ';
+
+  @override
+  String get expressiveLabel => 'แสดงออก';
+
+  @override
+  String get browseLabel => 'เรียกดู';
+
+  @override
+  String get apiTokenLabel => 'โทเค็น API';
+
+  @override
+  String get connectToClawHub => 'เชื่อมต่อกับ ClawHub';
+
+  @override
+  String get clawHubLoginHint =>
+      'เข้าสู่ระบบ ClawHub เพื่อเข้าถึงทักษะพรีเมียมและติดตั้งแพ็คเกจ';
+
+  @override
+  String get howToGetApiToken => 'วิธีรับโทเค็น API ของคุณ:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. ไปที่ clawhub.ai และเข้าสู่ระบบด้วย GitHub\n2. รัน \"clawhub login\" ในเทอร์มินัล\n3. คัดลอกโทเค็นของคุณและวางที่นี่';
+
+  @override
+  String connectionFailed(String error) {
+    return 'การเชื่อมต่อล้มเหลว: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count การรัน',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'การรันครั้งถัดไป: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'ข้อผิดพลาดล่าสุด: $error';
+  }
+
+  @override
+  String get cronJobHintText => 'คำแนะนำสำหรับตัวแทนเมื่องานนี้ทำงาน…';
+
+  @override
+  String get androidPermissions => 'สิทธิ์ Android';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw สามารถควบคุมหน้าจอของคุณแทนคุณ — แตะปุ่ม กรอกแบบฟอร์ม เลื่อน และทำงานซ้ำๆ โดยอัตโนมัติในแอปใดก็ได้';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'ต้องการสิทธิ์สองรายการเพื่อรับประสบการณ์เต็มรูปแบบ คุณสามารถข้ามและเปิดใช้งานภายหลังในการตั้งค่า';
+
+  @override
+  String get accessibilityService => 'บริการการเข้าถึง';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'อนุญาตให้แตะ เลื่อน พิมพ์ และอ่านเนื้อหาบนหน้าจอ';
+
+  @override
+  String get displayOverOtherApps => 'แสดงทับแอปอื่น';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'แสดงชิปสถานะลอยตัวเพื่อให้คุณเห็นว่าตัวแทนกำลังทำอะไร';
+
+  @override
+  String get changeDefaultModel => 'เปลี่ยนโมเดลเริ่มต้น';
+
+  @override
+  String setModelAsDefault(String name) {
+    return 'ตั้ง $name เป็นโมเดลเริ่มต้น';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ตัวแทน',
+    );
+    return 'อัปเดต $_temp0 ด้วย';
+  }
+
+  @override
+  String get startNewSessions => 'เริ่มเซสชันใหม่';
+
+  @override
+  String get currentConversationsArchived => 'การสนทนาปัจจุบันจะถูกเก็บถาวร';
+
+  @override
+  String get applyAction => 'นำไปใช้';
+
+  @override
+  String applyModelQuestion(String name) {
+    return 'นำไปใช้ $name?';
+  }
+
+  @override
+  String get setAsDefaultModel => 'ตั้งเป็นโมเดลเริ่มต้น';
+
+  @override
+  String get usedByAgentsWithout => 'ใช้โดยตัวแทนที่ไม่มีโมเดลเฉพาะ';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ตัวแทน',
+    );
+    return 'นำไปใช้กับ $_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'ผู้ให้บริการได้รับการตรวจสอบสิทธิ์แล้ว — ไม่ต้องใช้คีย์ API';
+
+  @override
+  String get selectFromList => 'เลือกจากรายการ';
+
+  @override
+  String get enterCustomModelId => 'ป้อน ID โมเดลกำหนดเอง';
+
+  @override
+  String get removeSkillTitle => 'ลบทักษะ?';
+
+  @override
+  String get browseClawHubToDiscover =>
+      'เรียกดู ClawHub เพื่อค้นพบและติดตั้งทักษะ';
+
+  @override
+  String get addDeviceTooltip => 'เพิ่มอุปกรณ์';
+
+  @override
+  String get addNumberTooltip => 'เพิ่มหมายเลข';
+
+  @override
+  String get searchSkillsHint => 'ค้นหาทักษะ...';
+
+  @override
+  String get loginToClawHub => 'เข้าสู่ระบบ ClawHub';
+
+  @override
+  String get accountTooltip => 'บัญชี';
+
+  @override
+  String get editAction => 'แก้ไข';
+
+  @override
+  String get setAsDefaultAction => 'ตั้งเป็นค่าเริ่มต้น';
+
+  @override
+  String get chooseProviderTitle => 'เลือกผู้ให้บริการ';
+
+  @override
+  String get apiKeyTitle => 'คีย์ API';
+
+  @override
+  String get slackConfigSaved =>
+      'บันทึก Slack แล้ว — รีสตาร์ทเกตเวย์เพื่อเชื่อมต่อ';
+
+  @override
+  String get signalConfigSaved =>
+      'บันทึก Signal แล้ว — รีสตาร์ทเกตเวย์เพื่อเชื่อมต่อ';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'เพิ่มอุปกรณ์';
+
+  @override
+  String get skipAction => 'ข้าม';
 }

@@ -1072,5 +1072,601 @@ class AppLocalizationsAr extends AppLocalizations {
   String get messagesAbbrev => 'رسائل';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'هذا النموذج موجود بالفعل في قائمتك';
+
+  @override
+  String get bothTokensRequired => 'كلا الرمزين مطلوبان';
+
+  @override
+  String get slackSavedRestart => 'تم حفظ Slack — أعد تشغيل البوابة للاتصال';
+
+  @override
+  String get slackConfiguration => 'إعداد Slack';
+
+  @override
+  String get setupTitle => 'الإعداد';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. أنشئ تطبيق Slack على api.slack.com/apps\n2. فعّل وضع Socket → أنشئ رمز مستوى التطبيق (xapp-…)\n   مع النطاق: connections:write\n3. أضف نطاقات رمز البوت: chat:write، channels:history،\n   groups:history، im:history، mpim:history\n4. ثبت التطبيق في مساحة العمل → انسخ رمز البوت (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'رمز البوت (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'رمز مستوى التطبيق (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired => 'عنوان URL لـ API ورقم الهاتف مطلوبان';
+
+  @override
+  String get signalSavedRestart => 'تم حفظ Signal — أعد تشغيل البوابة للاتصال';
+
+  @override
+  String get signalConfiguration => 'إعداد Signal';
+
+  @override
+  String get requirementsTitle => 'المتطلبات';
+
+  @override
+  String get signalRequirements =>
+      'يتطلب تشغيل signal-cli-rest-api على خادم:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nسجل/اربط رقم Signal الخاص بك عبر REST API، ثم أدخل عنوان URL ورقم هاتفك أدناه.';
+
+  @override
+  String get signalApiUrl => 'عنوان URL لـ signal-cli-rest-api';
+
+  @override
+  String get signalPhoneNumber => 'رقم هاتف Signal الخاص بك';
+
+  @override
+  String get userIdLabel => 'معرف المستخدم';
+
+  @override
+  String get enterDiscordUserId => 'أدخل معرف مستخدم Discord';
+
+  @override
+  String get enterTelegramUserId => 'أدخل معرف مستخدم Telegram';
+
+  @override
+  String get fromDiscordDevPortal => 'من بوابة مطور Discord';
+
+  @override
+  String get allowedUserIdsTitle => 'معرفات المستخدمين المسموح بها';
+
+  @override
+  String get approvedDevice => 'جهاز معتمد';
+
+  @override
+  String get allowedUser => 'مستخدم مسموح به';
+
+  @override
+  String get howToGetBotToken => 'كيفية الحصول على رمز البوت الخاص بك';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. انتقل إلى بوابة مطور Discord\n2. أنشئ تطبيقاً وبوتاً جديدين\n3. انسخ الرمز والصقه أعلاه\n4. فعّل Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. افتح Telegram وابحث عن @BotFather\n2. أرسل /newbot واتبع التعليمات\n3. انسخ الرمز والصقه أعلاه';
+
+  @override
+  String get fromBotFatherHint => 'احصل عليه من @BotFather';
+
+  @override
+  String get accessTokenLabel => 'رمز الوصول';
+
+  @override
+  String get notSetOpenAccess => 'غير معين — وصول مفتوح (loopback فقط)';
+
+  @override
+  String get gatewayAccessToken => 'رمز وصول البوابة';
+
+  @override
+  String get tokenFieldLabel => 'الرمز';
+
+  @override
+  String get leaveEmptyDisableAuth => 'اتركه فارغاً لتعطيل المصادقة';
+
+  @override
+  String get toolPolicies => 'سياسات الأدوات';
+
+  @override
+  String get toolPoliciesDesc =>
+      'تحكم في ما يمكن للوكيل الوصول إليه. الأدوات المعطلة مخفية عن الذكاء الاصطناعي ومحظورة في وقت التشغيل.';
+
+  @override
+  String get privacySensors => 'الخصوصية والمستشعرات';
+
+  @override
+  String get networkCategory => 'الشبكة';
+
+  @override
+  String get systemCategory => 'النظام';
+
+  @override
+  String get toolTakePhotos => 'التقاط الصور';
+
+  @override
+  String get toolTakePhotosDesc =>
+      'السماح للوكيل بالتقاط الصور باستخدام الكاميرا';
+
+  @override
+  String get toolRecordVideo => 'تسجيل الفيديو';
+
+  @override
+  String get toolRecordVideoDesc => 'السماح للوكيل بتسجيل الفيديو';
+
+  @override
+  String get toolLocation => 'الموقع';
+
+  @override
+  String get toolLocationDesc =>
+      'السماح للوكيل بقراءة موقع GPS الحالي الخاص بك';
+
+  @override
+  String get toolHealthData => 'البيانات الصحية';
+
+  @override
+  String get toolHealthDataDesc => 'السماح للوكيل بقراءة بيانات الصحة/اللياقة';
+
+  @override
+  String get toolContacts => 'جهات الاتصال';
+
+  @override
+  String get toolContactsDesc => 'السماح للوكيل بالبحث في جهات اتصالك';
+
+  @override
+  String get toolScreenshots => 'لقطات الشاشة';
+
+  @override
+  String get toolScreenshotsDesc => 'السماح للوكيل بالتقاط لقطات شاشة';
+
+  @override
+  String get toolWebFetch => 'جلب الويب';
+
+  @override
+  String get toolWebFetchDesc => 'السماح للوكيل بجلب المحتوى من عناوين URL';
+
+  @override
+  String get toolWebSearch => 'البحث على الويب';
+
+  @override
+  String get toolWebSearchDesc => 'السماح للوكيل بالبحث على الويب';
+
+  @override
+  String get toolHttpRequests => 'طلبات HTTP';
+
+  @override
+  String get toolHttpRequestsDesc => 'السماح للوكيل بإجراء طلبات HTTP عشوائية';
+
+  @override
+  String get toolSandboxShell => 'صدفة وضع الحماية';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'السماح للوكيل بتشغيل أوامر الصدفة في وضع الحماية';
+
+  @override
+  String get toolImageGeneration => 'توليد الصور';
+
+  @override
+  String get toolImageGenerationDesc =>
+      'السماح للوكيل بتوليد الصور عبر الذكاء الاصطناعي';
+
+  @override
+  String get toolLaunchApps => 'تشغيل التطبيقات';
+
+  @override
+  String get toolLaunchAppsDesc => 'السماح للوكيل بفتح التطبيقات المثبتة';
+
+  @override
+  String get toolLaunchIntents => 'تشغيل النوايا';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'السماح للوكيل بتشغيل نوايا Android (الروابط العميقة، شاشات النظام)';
+
+  @override
+  String get renameSession => 'إعادة تسمية الجلسة';
+
+  @override
+  String get myConversationName => 'اسم محادثتي';
+
+  @override
+  String get renameAction => 'إعادة التسمية';
+
+  @override
+  String get couldNotTranscribeAudio => 'تعذر نسخ الصوت';
+
+  @override
+  String get stopRecording => 'إيقاف التسجيل';
+
+  @override
+  String get voiceInput => 'إدخال صوتي';
+
+  @override
+  String get copyTooltip => 'نسخ';
+
+  @override
+  String get commandsTooltip => 'الأوامر';
+
+  @override
+  String get providersAndModels => 'المزودون والنماذج';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نموذج مُعد',
+      many: '$count نموذجاً مُعداً',
+      few: '$count نماذج مُعدة',
+      two: 'نموذجان مُعدان',
+      one: 'نموذج واحد مُعد',
+      zero: 'لا نماذج',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'البدء التلقائي مُفعَّل';
+
+  @override
+  String get autoStartOffLabel => 'البدء التلقائي معطل';
+
+  @override
+  String get allToolsEnabled => 'جميع الأدوات مُفعَّلة';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count أداة معطلة',
+      many: '$count أداة معطلة',
+      few: '$count أدوات معطلة',
+      two: 'أداتان معطلتان',
+      one: 'أداة واحدة معطلة',
+      zero: 'لا أدوات معطلة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests => 'لا توجد طلبات اقتران معلقة';
+
+  @override
+  String get pairingRequestsTitle => 'طلبات الاقتران';
+
+  @override
+  String get gatewayStartingStatus => 'جارٍ بدء البوابة...';
+
+  @override
+  String get gatewayRetryingStatus => 'جارٍ إعادة محاولة بدء البوابة...';
+
+  @override
+  String get errorStartingGateway => 'خطأ في بدء البوابة';
+
+  @override
+  String get runningStatus => 'قيد التشغيل';
+
+  @override
+  String get stoppedStatus => 'متوقف';
+
+  @override
+  String get notSetUpStatus => 'غير معد';
+
+  @override
+  String get configuredStatus => 'مُعد';
+
+  @override
+  String get whatsAppConfigSaved => 'تم حفظ إعداد WhatsApp';
+
+  @override
+  String get whatsAppDisconnected => 'تم قطع اتصال WhatsApp';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'جارٍ التطبيق...';
+
+  @override
+  String get reconnectWhatsApp => 'إعادة الاتصال بـ WhatsApp';
+
+  @override
+  String get saveSettingsLabel => 'حفظ الإعدادات';
+
+  @override
+  String get applySettingsRestart => 'تطبيق الإعدادات وإعادة التشغيل';
+
+  @override
+  String get whatsAppMode => 'وضع WhatsApp';
+
+  @override
+  String get myPersonalNumber => 'رقمي الشخصي';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'الرسائل التي ترسلها إلى محادثة WhatsApp الخاصة بك توقظ الوكيل.';
+
+  @override
+  String get dedicatedBotAccount => 'حساب بوت مخصص';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'الرسائل المرسلة من الحساب المرتبط نفسه يتم تجاهلها كصادرة.';
+
+  @override
+  String get allowedNumbers => 'الأرقام المسموح بها';
+
+  @override
+  String get addNumberTitle => 'إضافة رقم';
+
+  @override
+  String get phoneNumberJid => 'رقم الهاتف / JID';
+
+  @override
+  String get noAllowedNumbersConfigured => 'لا توجد أرقام مسموح بها مُعدة';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'تظهر الأجهزة هنا بعد الموافقة على طلبات الاقتران';
+
+  @override
+  String get addPhoneNumbersHint =>
+      'أضف أرقام الهواتف للسماح لهم باستخدام البوت';
+
+  @override
+  String get allowedNumber => 'رقم مسموح به';
+
+  @override
+  String get howToConnect => 'كيفية الاتصال';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. انقر على \"الاتصال بـ WhatsApp\" أعلاه\n2. سيظهر رمز QR — امسحه ضوئياً باستخدام WhatsApp\n   (الإعدادات ← الأجهزة المرتبطة ← ربط جهاز)\n3. بمجرد الاتصال، يتم توجيه الرسائل الواردة\n   إلى وكيل الذكاء الاصطناعي النشط تلقائياً';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'يحصل المرسلون الجدد على رمز اقتران. تقوم بالموافقة عليهم.';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'فقط أرقام الهواتف المحددة يمكنها إرسال رسائل إلى البوت.';
+
+  @override
+  String get whatsAppOpenDesc => 'أي شخص يراسلك يمكنه استخدام البوت.';
+
+  @override
+  String get whatsAppDisabledDesc => 'لن يرد البوت على أي رسائل واردة.';
+
+  @override
+  String get sessionExpiredRelink =>
+      'انتهت صلاحية الجلسة. انقر على \"إعادة الاتصال\" أدناه لمسح رمز QR جديد.';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'انقر على \"الاتصال بـ WhatsApp\" أدناه لربط حسابك.';
+
+  @override
+  String get whatsAppAcceptedQr => 'قبل WhatsApp رمز QR. جارٍ إنهاء الربط...';
+
+  @override
+  String get waitingForWhatsApp => 'في انتظار إكمال WhatsApp للربط...';
+
+  @override
+  String get focusedLabel => 'مركز';
+
+  @override
+  String get balancedLabel => 'متوازن';
+
+  @override
+  String get creativeLabel => 'إبداعي';
+
+  @override
+  String get preciseLabel => 'دقيق';
+
+  @override
+  String get expressiveLabel => 'تعبيري';
+
+  @override
+  String get browseLabel => 'تصفح';
+
+  @override
+  String get apiTokenLabel => 'رمز API';
+
+  @override
+  String get connectToClawHub => 'الاتصال بـ ClawHub';
+
+  @override
+  String get clawHubLoginHint =>
+      'سجل الدخول إلى ClawHub للوصول إلى المهارات المميزة وتثبيت الحزم';
+
+  @override
+  String get howToGetApiToken => 'كيفية الحصول على رمز API الخاص بك:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. قم بزيارة clawhub.ai وسجل الدخول باستخدام GitHub\n2. قم بتشغيل \"clawhub login\" في الطرفية\n3. انسخ رمزك والصقه هنا';
+
+  @override
+  String connectionFailed(String error) {
+    return 'فشل الاتصال: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count تشغيل',
+      many: '$count تشغيلاً',
+      few: '$count تشغيلات',
+      two: 'تشغيلان',
+      one: 'تشغيل واحد',
+      zero: 'لا تشغيلات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'التشغيل التالي: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'آخر خطأ: $error';
+  }
+
+  @override
+  String get cronJobHintText => 'تعليمات للوكيل عند تشغيل هذه المهمة…';
+
+  @override
+  String get androidPermissions => 'أذونات Android';
+
+  @override
+  String get androidPermissionsDesc =>
+      'يمكن لـ FlutterClaw التحكم في شاشتك نيابةً عنك — الضغط على الأزرار، ملء النماذج، التمرير، وأتمتة المهام المتكررة عبر أي تطبيق.';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'يلزم إذنان للحصول على التجربة الكاملة. يمكنك تخطي هذا وتفعيلهما لاحقاً في الإعدادات.';
+
+  @override
+  String get accessibilityService => 'خدمة إمكانية الوصول';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'تسمح بالنقر والتمرير والكتابة وقراءة محتوى الشاشة';
+
+  @override
+  String get displayOverOtherApps => 'العرض فوق التطبيقات الأخرى';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'تعرض رقاقة حالة عائمة حتى تتمكن من رؤية ما يفعله الوكيل';
+
+  @override
+  String get changeDefaultModel => 'تغيير النموذج الافتراضي';
+
+  @override
+  String setModelAsDefault(String name) {
+    return 'تعيين $name كنموذج افتراضي.';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count وكيل',
+      many: '$count وكيلاً',
+      few: '$count وكلاء',
+      two: 'وكيلين',
+      one: 'وكيل واحد',
+      zero: 'لا وكلاء',
+    );
+    return 'تحديث $_temp0 أيضاً';
+  }
+
+  @override
+  String get startNewSessions => 'بدء جلسات جديدة';
+
+  @override
+  String get currentConversationsArchived => 'سيتم أرشفة المحادثات الحالية';
+
+  @override
+  String get applyAction => 'تطبيق';
+
+  @override
+  String applyModelQuestion(String name) {
+    return 'تطبيق $name؟';
+  }
+
+  @override
+  String get setAsDefaultModel => 'تعيين كنموذج افتراضي';
+
+  @override
+  String get usedByAgentsWithout => 'يُستخدم بواسطة الوكلاء دون نموذج محدد';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count وكيل',
+      many: '$count وكيلاً',
+      few: '$count وكلاء',
+      two: 'وكيلين',
+      one: 'وكيل واحد',
+      zero: 'لا وكلاء',
+    );
+    return 'التطبيق على $_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'المزود مصادق عليه بالفعل — لا حاجة لمفتاح API.';
+
+  @override
+  String get selectFromList => 'الاختيار من القائمة';
+
+  @override
+  String get enterCustomModelId => 'إدخال معرف نموذج مخصص';
+
+  @override
+  String get removeSkillTitle => 'إزالة المهارة؟';
+
+  @override
+  String get browseClawHubToDiscover => 'تصفح ClawHub لاكتشاف وتثبيت المهارات';
+
+  @override
+  String get addDeviceTooltip => 'إضافة جهاز';
+
+  @override
+  String get addNumberTooltip => 'إضافة رقم';
+
+  @override
+  String get searchSkillsHint => 'البحث عن مهارات...';
+
+  @override
+  String get loginToClawHub => 'تسجيل الدخول إلى ClawHub';
+
+  @override
+  String get accountTooltip => 'الحساب';
+
+  @override
+  String get editAction => 'تعديل';
+
+  @override
+  String get setAsDefaultAction => 'تعيين كافتراضي';
+
+  @override
+  String get chooseProviderTitle => 'اختيار المزود';
+
+  @override
+  String get apiKeyTitle => 'مفتاح API';
+
+  @override
+  String get slackConfigSaved => 'تم حفظ Slack — أعد تشغيل البوابة للاتصال';
+
+  @override
+  String get signalConfigSaved => 'تم حفظ Signal — أعد تشغيل البوابة للاتصال';
+
+  @override
+  String idPrefix(String id) {
+    return 'المعرف: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'إضافة جهاز';
+
+  @override
+  String get skipAction => 'تخطي';
 }

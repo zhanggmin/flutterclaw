@@ -1089,5 +1089,596 @@ class AppLocalizationsPt extends AppLocalizations {
   String get messagesAbbrev => 'msgs';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'Este modelo já está na sua lista';
+
+  @override
+  String get bothTokensRequired => 'Ambos os tokens são necessários';
+
+  @override
+  String get slackSavedRestart =>
+      'Slack salvo — reinicie o gateway para conectar';
+
+  @override
+  String get slackConfiguration => 'Configuração do Slack';
+
+  @override
+  String get setupTitle => 'Configuração';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. Crie um App Slack em api.slack.com/apps\n2. Ative o Modo Socket → gere um Token de Nível de App (xapp-…)\n   com escopo: connections:write\n3. Adicione Escopos de Token Bot: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Instale o app no espaço de trabalho → copie o Token Bot (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Token Bot (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'Token de Nível de App (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired =>
+      'URL da API e número de telefone são necessários';
+
+  @override
+  String get signalSavedRestart =>
+      'Signal salvo — reinicie o gateway para conectar';
+
+  @override
+  String get signalConfiguration => 'Configuração do Signal';
+
+  @override
+  String get requirementsTitle => 'Requisitos';
+
+  @override
+  String get signalRequirements =>
+      'Requer signal-cli-rest-api em execução em um servidor:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nRegistre/vincule seu número Signal via a API REST, depois insira a URL e seu número de telefone abaixo.';
+
+  @override
+  String get signalApiUrl => 'URL signal-cli-rest-api';
+
+  @override
+  String get signalPhoneNumber => 'Seu número de telefone Signal';
+
+  @override
+  String get userIdLabel => 'ID de Usuário';
+
+  @override
+  String get enterDiscordUserId => 'Digite o ID de usuário do Discord';
+
+  @override
+  String get enterTelegramUserId => 'Digite o ID de usuário do Telegram';
+
+  @override
+  String get fromDiscordDevPortal => 'Do Portal do Desenvolvedor Discord';
+
+  @override
+  String get allowedUserIdsTitle => 'IDs de Usuário Permitidos';
+
+  @override
+  String get approvedDevice => 'Dispositivo aprovado';
+
+  @override
+  String get allowedUser => 'Usuário permitido';
+
+  @override
+  String get howToGetBotToken => 'Como obter seu token do bot';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. Vá ao Portal do Desenvolvedor Discord\n2. Crie uma nova aplicação e bot\n3. Copie o token e cole acima\n4. Ative o Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. Abra o Telegram e procure por @BotFather\n2. Envie /newbot e siga as instruções\n3. Copie o token e cole acima';
+
+  @override
+  String get fromBotFatherHint => 'Obter de @BotFather';
+
+  @override
+  String get accessTokenLabel => 'Token de acesso';
+
+  @override
+  String get notSetOpenAccess =>
+      'Não configurado — acesso aberto (apenas loopback)';
+
+  @override
+  String get gatewayAccessToken => 'Token de acesso do gateway';
+
+  @override
+  String get tokenFieldLabel => 'Token';
+
+  @override
+  String get leaveEmptyDisableAuth => 'Deixe vazio para desativar autenticação';
+
+  @override
+  String get toolPolicies => 'Políticas de Ferramentas';
+
+  @override
+  String get toolPoliciesDesc =>
+      'Controle o que o agente pode acessar. Ferramentas desativadas ficam ocultas da IA e bloqueadas em tempo de execução.';
+
+  @override
+  String get privacySensors => 'Privacidade e Sensores';
+
+  @override
+  String get networkCategory => 'Rede';
+
+  @override
+  String get systemCategory => 'Sistema';
+
+  @override
+  String get toolTakePhotos => 'Tirar Fotos';
+
+  @override
+  String get toolTakePhotosDesc =>
+      'Permitir que o agente tire fotos usando a câmera';
+
+  @override
+  String get toolRecordVideo => 'Gravar Vídeo';
+
+  @override
+  String get toolRecordVideoDesc => 'Permitir que o agente grave vídeos';
+
+  @override
+  String get toolLocation => 'Localização';
+
+  @override
+  String get toolLocationDesc =>
+      'Permitir que o agente leia sua localização GPS atual';
+
+  @override
+  String get toolHealthData => 'Dados de Saúde';
+
+  @override
+  String get toolHealthDataDesc =>
+      'Permitir que o agente leia dados de saúde/fitness';
+
+  @override
+  String get toolContacts => 'Contatos';
+
+  @override
+  String get toolContactsDesc => 'Permitir que o agente pesquise seus contatos';
+
+  @override
+  String get toolScreenshots => 'Capturas de Tela';
+
+  @override
+  String get toolScreenshotsDesc =>
+      'Permitir que o agente tire capturas de tela';
+
+  @override
+  String get toolWebFetch => 'Busca Web';
+
+  @override
+  String get toolWebFetchDesc =>
+      'Permitir que o agente busque conteúdo de URLs';
+
+  @override
+  String get toolWebSearch => 'Pesquisa Web';
+
+  @override
+  String get toolWebSearchDesc => 'Permitir que o agente pesquise na web';
+
+  @override
+  String get toolHttpRequests => 'Requisições HTTP';
+
+  @override
+  String get toolHttpRequestsDesc =>
+      'Permitir que o agente faça requisições HTTP arbitrárias';
+
+  @override
+  String get toolSandboxShell => 'Shell Sandbox';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'Permitir que o agente execute comandos shell no sandbox';
+
+  @override
+  String get toolImageGeneration => 'Geração de Imagens';
+
+  @override
+  String get toolImageGenerationDesc =>
+      'Permitir que o agente gere imagens via IA';
+
+  @override
+  String get toolLaunchApps => 'Lançar Apps';
+
+  @override
+  String get toolLaunchAppsDesc =>
+      'Permitir que o agente abra aplicativos instalados';
+
+  @override
+  String get toolLaunchIntents => 'Lançar Intents';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'Permitir que o agente lance intents Android (links profundos, telas do sistema)';
+
+  @override
+  String get renameSession => 'Renomear sessão';
+
+  @override
+  String get myConversationName => 'Meu nome de conversa';
+
+  @override
+  String get renameAction => 'Renomear';
+
+  @override
+  String get couldNotTranscribeAudio => 'Não foi possível transcrever o áudio';
+
+  @override
+  String get stopRecording => 'Parar gravação';
+
+  @override
+  String get voiceInput => 'Entrada de voz';
+
+  @override
+  String get copyTooltip => 'Copiar';
+
+  @override
+  String get commandsTooltip => 'Comandos';
+
+  @override
+  String get providersAndModels => 'Provedores e Modelos';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modelos configurados',
+      one: '1 modelo configurado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'Início automático ativado';
+
+  @override
+  String get autoStartOffLabel => 'Início automático desativado';
+
+  @override
+  String get allToolsEnabled => 'Todas as ferramentas ativadas';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ferramentas desativadas',
+      one: '1 ferramenta desativada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests =>
+      'Nenhuma solicitação de emparelhamento pendente';
+
+  @override
+  String get pairingRequestsTitle => 'Solicitações de Emparelhamento';
+
+  @override
+  String get gatewayStartingStatus => 'Iniciando gateway...';
+
+  @override
+  String get gatewayRetryingStatus => 'Tentando reiniciar gateway...';
+
+  @override
+  String get errorStartingGateway => 'Erro ao iniciar gateway';
+
+  @override
+  String get runningStatus => 'Em execução';
+
+  @override
+  String get stoppedStatus => 'Parado';
+
+  @override
+  String get notSetUpStatus => 'Não configurado';
+
+  @override
+  String get configuredStatus => 'Configurado';
+
+  @override
+  String get whatsAppConfigSaved => 'Configuração do WhatsApp salva';
+
+  @override
+  String get whatsAppDisconnected => 'WhatsApp desconectado';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'Aplicando...';
+
+  @override
+  String get reconnectWhatsApp => 'Reconectar WhatsApp';
+
+  @override
+  String get saveSettingsLabel => 'Salvar Configurações';
+
+  @override
+  String get applySettingsRestart => 'Aplicar Configurações e Reiniciar';
+
+  @override
+  String get whatsAppMode => 'Modo WhatsApp';
+
+  @override
+  String get myPersonalNumber => 'Meu número pessoal';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'Mensagens que você envia para seu próprio chat do WhatsApp despertam o agente.';
+
+  @override
+  String get dedicatedBotAccount => 'Conta de bot dedicada';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'Mensagens enviadas da própria conta vinculada são ignoradas como saída.';
+
+  @override
+  String get allowedNumbers => 'Números Permitidos';
+
+  @override
+  String get addNumberTitle => 'Adicionar Número';
+
+  @override
+  String get phoneNumberJid => 'Número de telefone / JID';
+
+  @override
+  String get noAllowedNumbersConfigured =>
+      'Nenhum número permitido configurado';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'Dispositivos aparecem aqui após aprovar solicitações de emparelhamento';
+
+  @override
+  String get addPhoneNumbersHint =>
+      'Adicione números de telefone para permitir que usem o bot';
+
+  @override
+  String get allowedNumber => 'Número permitido';
+
+  @override
+  String get howToConnect => 'Como conectar';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. Toque em \"Conectar WhatsApp\" acima\n2. Um código QR aparecerá — escaneie com WhatsApp\n   (Configurações → Dispositivos Conectados → Conectar Dispositivo)\n3. Uma vez conectado, mensagens recebidas são automaticamente\n   encaminhadas para seu agente IA ativo';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'Novos remetentes recebem um código de emparelhamento. Você os aprova.';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'Apenas números de telefone específicos podem enviar mensagens ao bot.';
+
+  @override
+  String get whatsAppOpenDesc =>
+      'Qualquer pessoa que envie mensagem pode usar o bot.';
+
+  @override
+  String get whatsAppDisabledDesc =>
+      'O bot não responderá a nenhuma mensagem recebida.';
+
+  @override
+  String get sessionExpiredRelink =>
+      'Sessão expirada. Toque em \"Reconectar\" abaixo para escanear um novo código QR.';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'Toque em \"Conectar WhatsApp\" abaixo para vincular sua conta.';
+
+  @override
+  String get whatsAppAcceptedQr =>
+      'WhatsApp aceitou o QR. Finalizando a vinculação...';
+
+  @override
+  String get waitingForWhatsApp =>
+      'Aguardando WhatsApp completar a vinculação...';
+
+  @override
+  String get focusedLabel => 'Focado';
+
+  @override
+  String get balancedLabel => 'Equilibrado';
+
+  @override
+  String get creativeLabel => 'Criativo';
+
+  @override
+  String get preciseLabel => 'Preciso';
+
+  @override
+  String get expressiveLabel => 'Expressivo';
+
+  @override
+  String get browseLabel => 'Explorar';
+
+  @override
+  String get apiTokenLabel => 'Token API';
+
+  @override
+  String get connectToClawHub => 'Conectar ao ClawHub';
+
+  @override
+  String get clawHubLoginHint =>
+      'Faça login no ClawHub para acessar habilidades premium e instalar pacotes';
+
+  @override
+  String get howToGetApiToken => 'Como obter seu token API:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. Visite clawhub.ai e faça login com GitHub\n2. Execute \"clawhub login\" no terminal\n3. Copie seu token e cole aqui';
+
+  @override
+  String connectionFailed(String error) {
+    return 'Conexão falhou: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    return '$count execuções';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'Próxima execução: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'Último erro: $error';
+  }
+
+  @override
+  String get cronJobHintText =>
+      'Instruções para o agente quando esta tarefa disparar…';
+
+  @override
+  String get androidPermissions => 'Permissões Android';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw pode controlar sua tela em seu nome — tocando botões, preenchendo formulários, rolando e automatizando tarefas repetitivas em qualquer aplicativo.';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'Duas permissões são necessárias para a experiência completa. Você pode pular isso e ativá-las depois nas Configurações.';
+
+  @override
+  String get accessibilityService => 'Serviço de Acessibilidade';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'Permite tocar, deslizar, digitar e ler conteúdo da tela';
+
+  @override
+  String get displayOverOtherApps => 'Exibir Sobre Outros Apps';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'Mostra um chip de status flutuante para você ver o que o agente está fazendo';
+
+  @override
+  String get changeDefaultModel => 'Alterar modelo padrão';
+
+  @override
+  String setModelAsDefault(String name) {
+    return 'Definir $name como o modelo padrão.';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 's',
+      one: '',
+    );
+    return 'Também atualizar $count agente$_temp0';
+  }
+
+  @override
+  String get startNewSessions => 'Iniciar novas sessões';
+
+  @override
+  String get currentConversationsArchived =>
+      'Conversas atuais serão arquivadas';
+
+  @override
+  String get applyAction => 'Aplicar';
+
+  @override
+  String applyModelQuestion(String name) {
+    return 'Aplicar $name?';
+  }
+
+  @override
+  String get setAsDefaultModel => 'Definir como modelo padrão';
+
+  @override
+  String get usedByAgentsWithout =>
+      'Usado por agentes sem um modelo específico';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 's',
+      one: '',
+    );
+    return 'Aplicar a $count agente$_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'Provedor já autenticado — nenhuma chave API necessária.';
+
+  @override
+  String get selectFromList => 'Selecionar da lista';
+
+  @override
+  String get enterCustomModelId => 'Digite um ID de modelo personalizado';
+
+  @override
+  String get removeSkillTitle => 'Remover habilidade?';
+
+  @override
+  String get browseClawHubToDiscover =>
+      'Explore o ClawHub para descobrir e instalar habilidades';
+
+  @override
+  String get addDeviceTooltip => 'Adicionar dispositivo';
+
+  @override
+  String get addNumberTooltip => 'Adicionar número';
+
+  @override
+  String get searchSkillsHint => 'Pesquisar habilidades...';
+
+  @override
+  String get loginToClawHub => 'Entrar no ClawHub';
+
+  @override
+  String get accountTooltip => 'Conta';
+
+  @override
+  String get editAction => 'Editar';
+
+  @override
+  String get setAsDefaultAction => 'Definir como padrão';
+
+  @override
+  String get chooseProviderTitle => 'Escolher provedor';
+
+  @override
+  String get apiKeyTitle => 'Chave API';
+
+  @override
+  String get slackConfigSaved =>
+      'Slack salvo — reinicie o gateway para conectar';
+
+  @override
+  String get signalConfigSaved =>
+      'Signal salvo — reinicie o gateway para conectar';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'Adicionar dispositivo';
+
+  @override
+  String get skipAction => 'Pular';
 }

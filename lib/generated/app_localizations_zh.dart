@@ -1054,5 +1054,544 @@ class AppLocalizationsZh extends AppLocalizations {
   String get messagesAbbrev => '条消息';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => '此模型已在您的列表中';
+
+  @override
+  String get bothTokensRequired => '两个令牌都是必需的';
+
+  @override
+  String get slackSavedRestart => 'Slack已保存 — 重启网关以连接';
+
+  @override
+  String get slackConfiguration => 'Slack配置';
+
+  @override
+  String get setupTitle => '设置';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. 在api.slack.com/apps创建Slack应用\n2. 启用Socket Mode → 生成App-Level Token (xapp-…)\n   作用域: connections:write\n3. 添加Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 将应用安装到工作区 → 复制Bot Token (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'App-Level Token (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired => '需要API URL和电话号码';
+
+  @override
+  String get signalSavedRestart => 'Signal已保存 — 重启网关以连接';
+
+  @override
+  String get signalConfiguration => 'Signal配置';
+
+  @override
+  String get requirementsTitle => '要求';
+
+  @override
+  String get signalRequirements =>
+      '需要在服务器上运行signal-cli-rest-api：\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\n通过REST API注册/链接您的Signal号码，然后在下方输入URL和电话号码。';
+
+  @override
+  String get signalApiUrl => 'signal-cli-rest-api URL';
+
+  @override
+  String get signalPhoneNumber => '您的Signal电话号码';
+
+  @override
+  String get userIdLabel => '用户ID';
+
+  @override
+  String get enterDiscordUserId => '输入Discord用户ID';
+
+  @override
+  String get enterTelegramUserId => '输入Telegram用户ID';
+
+  @override
+  String get fromDiscordDevPortal => '来自Discord开发者门户';
+
+  @override
+  String get allowedUserIdsTitle => '允许的用户ID';
+
+  @override
+  String get approvedDevice => '已批准的设备';
+
+  @override
+  String get allowedUser => '允许的用户';
+
+  @override
+  String get howToGetBotToken => '如何获取机器人令牌';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. 前往Discord开发者门户\n2. 创建新的应用程序和机器人\n3. 复制令牌并粘贴到上方\n4. 启用Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. 打开Telegram并搜索@BotFather\n2. 发送/newbot并按照说明操作\n3. 复制令牌并粘贴到上方';
+
+  @override
+  String get fromBotFatherHint => '从@BotFather获取';
+
+  @override
+  String get accessTokenLabel => '访问令牌';
+
+  @override
+  String get notSetOpenAccess => '未设置 — 开放访问（仅环回）';
+
+  @override
+  String get gatewayAccessToken => '网关访问令牌';
+
+  @override
+  String get tokenFieldLabel => '令牌';
+
+  @override
+  String get leaveEmptyDisableAuth => '留空以禁用身份验证';
+
+  @override
+  String get toolPolicies => '工具策略';
+
+  @override
+  String get toolPoliciesDesc => '控制代理可以访问的内容。禁用的工具会从AI中隐藏并在运行时被阻止。';
+
+  @override
+  String get privacySensors => '隐私和传感器';
+
+  @override
+  String get networkCategory => '网络';
+
+  @override
+  String get systemCategory => '系统';
+
+  @override
+  String get toolTakePhotos => '拍照';
+
+  @override
+  String get toolTakePhotosDesc => '允许代理使用相机拍照';
+
+  @override
+  String get toolRecordVideo => '录制视频';
+
+  @override
+  String get toolRecordVideoDesc => '允许代理录制视频';
+
+  @override
+  String get toolLocation => '位置';
+
+  @override
+  String get toolLocationDesc => '允许代理读取您当前的GPS位置';
+
+  @override
+  String get toolHealthData => '健康数据';
+
+  @override
+  String get toolHealthDataDesc => '允许代理读取健康/健身数据';
+
+  @override
+  String get toolContacts => '通讯录';
+
+  @override
+  String get toolContactsDesc => '允许代理搜索您的通讯录';
+
+  @override
+  String get toolScreenshots => '截图';
+
+  @override
+  String get toolScreenshotsDesc => '允许代理截取屏幕截图';
+
+  @override
+  String get toolWebFetch => 'Web获取';
+
+  @override
+  String get toolWebFetchDesc => '允许代理从URL获取内容';
+
+  @override
+  String get toolWebSearch => 'Web搜索';
+
+  @override
+  String get toolWebSearchDesc => '允许代理搜索Web';
+
+  @override
+  String get toolHttpRequests => 'HTTP请求';
+
+  @override
+  String get toolHttpRequestsDesc => '允许代理执行任意HTTP请求';
+
+  @override
+  String get toolSandboxShell => '沙盒Shell';
+
+  @override
+  String get toolSandboxShellDesc => '允许代理在沙盒中运行Shell命令';
+
+  @override
+  String get toolImageGeneration => '图像生成';
+
+  @override
+  String get toolImageGenerationDesc => '允许代理通过AI生成图像';
+
+  @override
+  String get toolLaunchApps => '启动应用';
+
+  @override
+  String get toolLaunchAppsDesc => '允许代理打开已安装的应用';
+
+  @override
+  String get toolLaunchIntents => '启动Intent';
+
+  @override
+  String get toolLaunchIntentsDesc => '允许代理触发Android Intent（深层链接、系统屏幕）';
+
+  @override
+  String get renameSession => '重命名会话';
+
+  @override
+  String get myConversationName => '我的对话名称';
+
+  @override
+  String get renameAction => '重命名';
+
+  @override
+  String get couldNotTranscribeAudio => '无法转录音频';
+
+  @override
+  String get stopRecording => '停止录制';
+
+  @override
+  String get voiceInput => '语音输入';
+
+  @override
+  String get copyTooltip => '复制';
+
+  @override
+  String get commandsTooltip => '命令';
+
+  @override
+  String get providersAndModels => '提供商和模型';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count个模型已配置',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => '自动启动已启用';
+
+  @override
+  String get autoStartOffLabel => '自动启动已关闭';
+
+  @override
+  String get allToolsEnabled => '所有工具已启用';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count个工具已禁用',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests => '无待处理的配对请求';
+
+  @override
+  String get pairingRequestsTitle => '配对请求';
+
+  @override
+  String get gatewayStartingStatus => '正在启动网关...';
+
+  @override
+  String get gatewayRetryingStatus => '正在重试启动网关...';
+
+  @override
+  String get errorStartingGateway => '启动网关时出错';
+
+  @override
+  String get runningStatus => '运行中';
+
+  @override
+  String get stoppedStatus => '已停止';
+
+  @override
+  String get notSetUpStatus => '未设置';
+
+  @override
+  String get configuredStatus => '已配置';
+
+  @override
+  String get whatsAppConfigSaved => 'WhatsApp配置已保存';
+
+  @override
+  String get whatsAppDisconnected => 'WhatsApp已断开连接';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => '应用中...';
+
+  @override
+  String get reconnectWhatsApp => '重新连接WhatsApp';
+
+  @override
+  String get saveSettingsLabel => '保存设置';
+
+  @override
+  String get applySettingsRestart => '应用设置并重启';
+
+  @override
+  String get whatsAppMode => 'WhatsApp模式';
+
+  @override
+  String get myPersonalNumber => '我的个人号码';
+
+  @override
+  String get myPersonalNumberDesc => '您发送到自己的WhatsApp聊天的消息会唤醒代理。';
+
+  @override
+  String get dedicatedBotAccount => '专用机器人账户';
+
+  @override
+  String get dedicatedBotAccountDesc => '从链接账户本身发送的消息将作为出站消息被忽略。';
+
+  @override
+  String get allowedNumbers => '允许的号码';
+
+  @override
+  String get addNumberTitle => '添加号码';
+
+  @override
+  String get phoneNumberJid => '电话号码 / JID';
+
+  @override
+  String get noAllowedNumbersConfigured => '未配置允许的号码';
+
+  @override
+  String get devicesAppearAfterPairing => '设备将在您批准其配对请求后显示在此处';
+
+  @override
+  String get addPhoneNumbersHint => '添加电话号码以允许他们使用机器人';
+
+  @override
+  String get allowedNumber => '允许的号码';
+
+  @override
+  String get howToConnect => '如何连接';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. 点击上方的\"连接WhatsApp\"\n2. 将出现二维码 — 用WhatsApp扫描\n   （设置 → 已链接的设备 → 链接设备）\n3. 连接后，传入消息会自动路由\n   到您的活动AI代理';
+
+  @override
+  String get whatsAppPairingDesc => '新发送者获得配对码。您可以批准他们。';
+
+  @override
+  String get whatsAppAllowlistDesc => '只有特定电话号码可以向机器人发送消息。';
+
+  @override
+  String get whatsAppOpenDesc => '向您发送消息的任何人都可以使用机器人。';
+
+  @override
+  String get whatsAppDisabledDesc => '机器人不会响应任何传入消息。';
+
+  @override
+  String get sessionExpiredRelink => '会话已过期。点击下方的\"重新连接\"扫描新的二维码。';
+
+  @override
+  String get connectWhatsAppBelow => '点击下方的\"连接WhatsApp\"链接您的账户。';
+
+  @override
+  String get whatsAppAcceptedQr => 'WhatsApp已接受二维码。正在完成链接...';
+
+  @override
+  String get waitingForWhatsApp => '等待WhatsApp完成链接...';
+
+  @override
+  String get focusedLabel => '专注';
+
+  @override
+  String get balancedLabel => '平衡';
+
+  @override
+  String get creativeLabel => '创造性';
+
+  @override
+  String get preciseLabel => '精确';
+
+  @override
+  String get expressiveLabel => '表现力';
+
+  @override
+  String get browseLabel => '浏览';
+
+  @override
+  String get apiTokenLabel => 'API令牌';
+
+  @override
+  String get connectToClawHub => '连接到ClawHub';
+
+  @override
+  String get clawHubLoginHint => '登录ClawHub以访问高级技能并安装包';
+
+  @override
+  String get howToGetApiToken => '如何获取API令牌：';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. 访问clawhub.ai并使用GitHub登录\n2. 在终端中运行\"clawhub login\"\n3. 复制您的令牌并粘贴到这里';
+
+  @override
+  String connectionFailed(String error) {
+    return '连接失败：$error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    return '$count次运行';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return '下次运行：$time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return '最后一个错误：$error';
+  }
+
+  @override
+  String get cronJobHintText => '此作业触发时对代理的指令...';
+
+  @override
+  String get androidPermissions => 'Android权限';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw可以代替您控制屏幕——点击按钮、填写表单、滚动页面，以及自动化任何应用中的重复性任务。';
+
+  @override
+  String get twoPermissionsNeeded => '完整体验需要两个权限。您可以跳过此步骤，稍后在设置中启用。';
+
+  @override
+  String get accessibilityService => '无障碍服务';
+
+  @override
+  String get accessibilityServiceDesc => '允许点击、滑动、输入和读取屏幕内容';
+
+  @override
+  String get displayOverOtherApps => '在其他应用上层显示';
+
+  @override
+  String get displayOverOtherAppsDesc => '显示浮动状态芯片，以便您可以看到代理正在做什么';
+
+  @override
+  String get changeDefaultModel => '更改默认模型';
+
+  @override
+  String setModelAsDefault(String name) {
+    return '将$name设为默认模型。';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '');
+    return '同时更新$count个代理$_temp0';
+  }
+
+  @override
+  String get startNewSessions => '开始新会话';
+
+  @override
+  String get currentConversationsArchived => '当前对话将被存档';
+
+  @override
+  String get applyAction => '应用';
+
+  @override
+  String applyModelQuestion(String name) {
+    return '应用$name？';
+  }
+
+  @override
+  String get setAsDefaultModel => '设为默认模型';
+
+  @override
+  String get usedByAgentsWithout => '由没有特定模型的代理使用';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '');
+    return '应用于$count个代理$_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth => '提供商已经过身份验证 — 无需API密钥。';
+
+  @override
+  String get selectFromList => '从列表中选择';
+
+  @override
+  String get enterCustomModelId => '输入自定义模型ID';
+
+  @override
+  String get removeSkillTitle => '删除技能？';
+
+  @override
+  String get browseClawHubToDiscover => '浏览ClawHub以发现和安装技能';
+
+  @override
+  String get addDeviceTooltip => '添加设备';
+
+  @override
+  String get addNumberTooltip => '添加号码';
+
+  @override
+  String get searchSkillsHint => '搜索技能...';
+
+  @override
+  String get loginToClawHub => '登录ClawHub';
+
+  @override
+  String get accountTooltip => '账户';
+
+  @override
+  String get editAction => '编辑';
+
+  @override
+  String get setAsDefaultAction => '设为默认';
+
+  @override
+  String get chooseProviderTitle => '选择提供商';
+
+  @override
+  String get apiKeyTitle => 'API密钥';
+
+  @override
+  String get slackConfigSaved => 'Slack已保存 — 重启网关以连接';
+
+  @override
+  String get signalConfigSaved => 'Signal已保存 — 重启网关以连接';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID：$id';
+  }
+
+  @override
+  String get addDeviceHint => '添加设备';
+
+  @override
+  String get skipAction => '跳过';
 }

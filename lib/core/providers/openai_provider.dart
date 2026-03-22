@@ -241,12 +241,22 @@ class OpenAiProvider implements LlmProvider {
         apiBase: request.apiBase,
         stripImages: !request.supportsVision,
       );
-      if (messages.isNotEmpty && messages.last['role'] == converted['role']) {
+      // Insert placeholder between consecutive same-role messages to satisfy
+      // alternation requirements — but NEVER between consecutive tool messages,
+      // which must stay grouped after their parent assistant tool_calls message.
+      if (messages.isNotEmpty &&
+          messages.last['role'] == converted['role'] &&
+          converted['role'] != 'tool') {
         final placeholderRole = converted['role'] == 'user' ? 'assistant' : 'user';
         messages.add({'role': placeholderRole, 'content': '...'});
       }
       messages.add(converted);
     }
+
+    // Sanitize: ensure every assistant message with tool_calls has all
+    // corresponding tool result messages. If a crash or compaction left
+    // orphaned tool_calls, strip them to prevent OpenAI 400 errors.
+    _sanitizeToolCallPairs(messages);
 
     final modelForApi = _openRouterUpstreamModelId(request.apiBase, request.model);
     final reasoning = _isReasoningModel(modelForApi);
@@ -270,6 +280,44 @@ class OpenAiProvider implements LlmProvider {
     }
 
     return body;
+  }
+
+  /// Ensures every assistant message with `tool_calls` is followed by tool
+  /// messages for ALL referenced tool_call_ids. If any are missing (e.g. due
+  /// to a mid-execution crash or session compaction), the dangling tool_calls
+  /// are stripped from the assistant message to prevent OpenAI 400 errors.
+  static void _sanitizeToolCallPairs(List<Map<String, dynamic>> messages) {
+    for (var i = 0; i < messages.length; i++) {
+      final msg = messages[i];
+      if (msg['role'] != 'assistant') continue;
+      final toolCalls = msg['tool_calls'] as List<dynamic>?;
+      if (toolCalls == null || toolCalls.isEmpty) continue;
+
+      // Collect expected tool_call_ids
+      final expectedIds = <String>{};
+      for (final tc in toolCalls) {
+        final id = (tc as Map<String, dynamic>)['id'] as String?;
+        if (id != null) expectedIds.add(id);
+      }
+
+      // Scan subsequent messages for matching tool results (stop at next
+      // non-tool message or end of list).
+      final foundIds = <String>{};
+      for (var j = i + 1; j < messages.length; j++) {
+        if (messages[j]['role'] != 'tool') break;
+        final tcId = messages[j]['tool_call_id'] as String?;
+        if (tcId != null) foundIds.add(tcId);
+      }
+
+      if (!expectedIds.every(foundIds.contains)) {
+        // Strip dangling tool_calls so OpenAI doesn't reject the request.
+        msg.remove('tool_calls');
+        _log.warning(
+          'Stripped orphaned tool_calls from assistant message at index $i '
+          '(expected: $expectedIds, found: $foundIds)',
+        );
+      }
+    }
   }
 
   Map<String, dynamic> _messageToJson(

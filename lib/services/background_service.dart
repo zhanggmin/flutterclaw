@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutterclaw/core/agent/agent_loop.dart';
+import 'package:flutterclaw/services/overlay_service.dart';
 import 'package:flutterclaw/core/agent/provider_router.dart';
 import 'package:flutterclaw/core/agent/session_manager.dart';
 import 'package:flutterclaw/core/gateway/gateway_server.dart';
@@ -20,6 +21,7 @@ import 'package:flutterclaw/services/cron_service.dart';
 import 'package:flutterclaw/services/ios_background_audio_service.dart';
 import 'package:flutterclaw/services/live_activity_service.dart';
 import 'package:flutterclaw/tools/registry.dart';
+import 'package:flutterclaw/tools/tool_status_formatter.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('flutterclaw.background_service');
@@ -45,6 +47,7 @@ class _GatewayResult {
       : gateway = null,
         success = false;
 }
+
 
 /// Formats uptime seconds into a short human-readable string.
 String _formatUptime(int seconds) {
@@ -173,11 +176,26 @@ class FlutterClawTaskHandler extends TaskHandler {
         final toolRegistry = ToolRegistry();
         final provider = OpenAiProvider();
         final providerRouter = SimpleProviderRouter(provider);
+        final overlayService = OverlayService();
+
+        // Set agent identity on overlay for personalized status pill.
+        final activeAgent = configManager.config.activeAgent;
+        if (activeAgent != null) {
+          overlayService
+              .setAgent(activeAgent.name, activeAgent.emoji)
+              .catchError((_) {});
+        }
         final agentLoop = AgentLoop(
           configManager: configManager,
           providerRouter: providerRouter,
           toolRegistry: toolRegistry,
           sessionManager: sessionManager,
+          onToolStatus: (toolName, args, {bool isDone = false}) {
+            if (isDone) {
+              return;
+            }
+            overlayService.show(formatFriendlyToolStatus(toolName, args)).catchError((_) {});
+          },
         );
 
         final cronSvc = CronService(configManager: configManager);

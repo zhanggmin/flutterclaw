@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/ui/theme/semantic_colors.dart';
+import 'copyable_code_block.dart';
 import 'typing_indicator.dart';
 
 /// A single chat message bubble (user, assistant, tool status, image, or document).
@@ -144,23 +145,52 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
       }
     }
 
-    // Only use markdown for complete messages (not streaming)
-    // flutter_markdown crashes during streaming updates (assertion error in MarkdownBuilder.build)
-    if (widget.message.isStreaming) {
-      return SelectableText(
-        text,
-        style: TextStyle(
-          color: colors.onSurface,
-          fontSize: 15,
-          height: 1.4,
-        ),
-      );
-    }
-
-    // Use markdown for complete messages
+    // Use markdown for all messages. ValueKey forces full rebuild during
+    // streaming to avoid flutter_markdown assertion error in MarkdownBuilder.build.
     return MarkdownBody(
+      key: ValueKey(text.length),
       data: text,
       selectable: true,
+      builders: {
+        'pre': CopyableCodeBlockBuilder(context),
+      },
+      sizedImageBuilder: (config) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              config.uri.toString(),
+              width: config.width,
+              height: config.height,
+              fit: BoxFit.contain,
+              errorBuilder: (_, _, _) => Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.broken_image, size: 18, color: colors.onSurfaceVariant),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        config.alt ?? 'Image failed to load',
+                        style: TextStyle(
+                          color: colors.onSurfaceVariant,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
       onTapLink: (text, href, title) {
         if (href != null) {
           launchUrl(Uri.parse(href));

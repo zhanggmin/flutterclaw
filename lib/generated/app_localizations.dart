@@ -2059,6 +2059,1002 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This model is already in your list'**
   String get modelAlreadyAdded;
+
+  /// Slack validation error
+  ///
+  /// In en, this message translates to:
+  /// **'Both tokens are required'**
+  String get bothTokensRequired;
+
+  /// Slack config saved snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Slack saved — restart the gateway to connect'**
+  String get slackSavedRestart;
+
+  /// Slack config screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Slack Configuration'**
+  String get slackConfiguration;
+
+  /// Setup section title
+  ///
+  /// In en, this message translates to:
+  /// **'Setup'**
+  String get setupTitle;
+
+  /// Slack setup instructions
+  ///
+  /// In en, this message translates to:
+  /// **'1. Create a Slack App at api.slack.com/apps\n2. Enable Socket Mode → generate App-Level Token (xapp-…)\n   with scope: connections:write\n3. Add Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Install app to workspace → copy Bot Token (xoxb-…)'**
+  String get slackSetupInstructions;
+
+  /// Slack bot token label
+  ///
+  /// In en, this message translates to:
+  /// **'Bot Token (xoxb-…)'**
+  String get botTokenXoxb;
+
+  /// Slack app-level token label
+  ///
+  /// In en, this message translates to:
+  /// **'App-Level Token (xapp-…)'**
+  String get appLevelToken;
+
+  /// Signal validation error
+  ///
+  /// In en, this message translates to:
+  /// **'API URL and phone number are required'**
+  String get apiUrlPhoneRequired;
+
+  /// Signal config saved snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Signal saved — restart gateway to connect'**
+  String get signalSavedRestart;
+
+  /// Signal config screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Signal Configuration'**
+  String get signalConfiguration;
+
+  /// Requirements section title
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements'**
+  String get requirementsTitle;
+
+  /// Signal setup requirements
+  ///
+  /// In en, this message translates to:
+  /// **'Requires signal-cli-rest-api running on a server:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nRegister/link your Signal number via the REST API, then enter the URL and your phone number below.'**
+  String get signalRequirements;
+
+  /// Signal API URL label
+  ///
+  /// In en, this message translates to:
+  /// **'signal-cli-rest-api URL'**
+  String get signalApiUrl;
+
+  /// Signal phone number label
+  ///
+  /// In en, this message translates to:
+  /// **'Your Signal phone number'**
+  String get signalPhoneNumber;
+
+  /// User ID field label
+  ///
+  /// In en, this message translates to:
+  /// **'User ID'**
+  String get userIdLabel;
+
+  /// Discord user ID hint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Discord user ID'**
+  String get enterDiscordUserId;
+
+  /// Telegram user ID hint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Telegram user ID'**
+  String get enterTelegramUserId;
+
+  /// Discord bot token hint
+  ///
+  /// In en, this message translates to:
+  /// **'From Discord Developer Portal'**
+  String get fromDiscordDevPortal;
+
+  /// Allowed user IDs section title
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed User IDs'**
+  String get allowedUserIdsTitle;
+
+  /// Approved device subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Approved device'**
+  String get approvedDevice;
+
+  /// Allowed user subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed user'**
+  String get allowedUser;
+
+  /// Help section title
+  ///
+  /// In en, this message translates to:
+  /// **'How to get your bot token'**
+  String get howToGetBotToken;
+
+  /// Discord token help instructions
+  ///
+  /// In en, this message translates to:
+  /// **'1. Go to Discord Developer Portal\n2. Create a new application and bot\n3. Copy the token and paste it above\n4. Enable Message Content Intent'**
+  String get discordTokenInstructions;
+
+  /// Telegram token help instructions
+  ///
+  /// In en, this message translates to:
+  /// **'1. Open Telegram and search for @BotFather\n2. Send /newbot and follow the instructions\n3. Copy the token and paste it above'**
+  String get telegramTokenInstructions;
+
+  /// Telegram token hint
+  ///
+  /// In en, this message translates to:
+  /// **'Get from @BotFather'**
+  String get fromBotFatherHint;
+
+  /// Gateway access token title
+  ///
+  /// In en, this message translates to:
+  /// **'Access token'**
+  String get accessTokenLabel;
+
+  /// No token set message
+  ///
+  /// In en, this message translates to:
+  /// **'Not set — open access (loopback only)'**
+  String get notSetOpenAccess;
+
+  /// Gateway access token dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway access token'**
+  String get gatewayAccessToken;
+
+  /// Token field label
+  ///
+  /// In en, this message translates to:
+  /// **'Token'**
+  String get tokenFieldLabel;
+
+  /// Token field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty to disable auth'**
+  String get leaveEmptyDisableAuth;
+
+  /// Tool policies screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Tool Policies'**
+  String get toolPolicies;
+
+  /// Tool policies description
+  ///
+  /// In en, this message translates to:
+  /// **'Control what the agent can access. Disabled tools are hidden from the AI and blocked at runtime.'**
+  String get toolPoliciesDesc;
+
+  /// Tool category
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy & Sensors'**
+  String get privacySensors;
+
+  /// Tool category
+  ///
+  /// In en, this message translates to:
+  /// **'Network'**
+  String get networkCategory;
+
+  /// Tool category
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get systemCategory;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photos'**
+  String get toolTakePhotos;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to take photos using the camera'**
+  String get toolTakePhotosDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Record Video'**
+  String get toolRecordVideo;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to record video'**
+  String get toolRecordVideoDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get toolLocation;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to read your current GPS location'**
+  String get toolLocationDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Health Data'**
+  String get toolHealthData;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to read health/fitness data'**
+  String get toolHealthDataDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get toolContacts;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to search your contacts'**
+  String get toolContactsDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots'**
+  String get toolScreenshots;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to take screenshots of the screen'**
+  String get toolScreenshotsDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Web Fetch'**
+  String get toolWebFetch;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to fetch content from URLs'**
+  String get toolWebFetchDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Web Search'**
+  String get toolWebSearch;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to search the web'**
+  String get toolWebSearchDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'HTTP Requests'**
+  String get toolHttpRequests;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to make arbitrary HTTP requests'**
+  String get toolHttpRequestsDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Sandbox Shell'**
+  String get toolSandboxShell;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to run shell commands in the sandbox'**
+  String get toolSandboxShellDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Image Generation'**
+  String get toolImageGeneration;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to generate images via AI'**
+  String get toolImageGenerationDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Launch Apps'**
+  String get toolLaunchApps;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to open installed apps'**
+  String get toolLaunchAppsDesc;
+
+  /// Tool label
+  ///
+  /// In en, this message translates to:
+  /// **'Launch Intents'**
+  String get toolLaunchIntents;
+
+  /// Tool description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the agent to fire Android intents (deep links, system screens)'**
+  String get toolLaunchIntentsDesc;
+
+  /// Rename session dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Rename session'**
+  String get renameSession;
+
+  /// Session rename hint
+  ///
+  /// In en, this message translates to:
+  /// **'My conversation name'**
+  String get myConversationName;
+
+  /// Rename menu action
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get renameAction;
+
+  /// Transcription error
+  ///
+  /// In en, this message translates to:
+  /// **'Could not transcribe audio'**
+  String get couldNotTranscribeAudio;
+
+  /// Stop recording tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Stop recording'**
+  String get stopRecording;
+
+  /// Voice input tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Voice input'**
+  String get voiceInput;
+
+  /// Copy button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyTooltip;
+
+  /// Commands button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Commands'**
+  String get commandsTooltip;
+
+  /// Settings tile title
+  ///
+  /// In en, this message translates to:
+  /// **'Providers & Models'**
+  String get providersAndModels;
+
+  /// Models configured count
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 model configured} other{{count} models configured}}'**
+  String modelsConfiguredCount(int count);
+
+  /// Gateway auto-start status
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-start enabled'**
+  String get autoStartEnabledLabel;
+
+  /// Gateway auto-start off status
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-start off'**
+  String get autoStartOffLabel;
+
+  /// Tool policies all enabled
+  ///
+  /// In en, this message translates to:
+  /// **'All tools enabled'**
+  String get allToolsEnabled;
+
+  /// Tools disabled count
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 tool disabled} other{{count} tools disabled}}'**
+  String toolsDisabledCount(int count);
+
+  /// About subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'FlutterClaw v0.1.0'**
+  String get flutterClawVersion;
+
+  /// Empty pairing requests
+  ///
+  /// In en, this message translates to:
+  /// **'No pending pairing requests'**
+  String get noPendingPairingRequests;
+
+  /// Pairing requests section title
+  ///
+  /// In en, this message translates to:
+  /// **'Pairing Requests'**
+  String get pairingRequestsTitle;
+
+  /// Gateway starting status
+  ///
+  /// In en, this message translates to:
+  /// **'Starting gateway...'**
+  String get gatewayStartingStatus;
+
+  /// Gateway retrying status
+  ///
+  /// In en, this message translates to:
+  /// **'Retrying gateway start...'**
+  String get gatewayRetryingStatus;
+
+  /// Gateway error fallback
+  ///
+  /// In en, this message translates to:
+  /// **'Error starting gateway'**
+  String get errorStartingGateway;
+
+  /// Gateway running status
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get runningStatus;
+
+  /// Gateway stopped status
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get stoppedStatus;
+
+  /// Channel not set up status
+  ///
+  /// In en, this message translates to:
+  /// **'Not set up'**
+  String get notSetUpStatus;
+
+  /// Channel configured status
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get configuredStatus;
+
+  /// WhatsApp config saved snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp configuration saved'**
+  String get whatsAppConfigSaved;
+
+  /// WhatsApp disconnected snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp disconnected'**
+  String get whatsAppDisconnected;
+
+  /// WhatsApp screen title
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsAppTitle;
+
+  /// Applying settings button state
+  ///
+  /// In en, this message translates to:
+  /// **'Applying...'**
+  String get applyingSettings;
+
+  /// Reconnect button label
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect WhatsApp'**
+  String get reconnectWhatsApp;
+
+  /// Save settings button label
+  ///
+  /// In en, this message translates to:
+  /// **'Save Settings'**
+  String get saveSettingsLabel;
+
+  /// Apply and restart button label
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Settings & Restart'**
+  String get applySettingsRestart;
+
+  /// WhatsApp mode section title
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Mode'**
+  String get whatsAppMode;
+
+  /// WhatsApp mode option
+  ///
+  /// In en, this message translates to:
+  /// **'My personal number'**
+  String get myPersonalNumber;
+
+  /// Personal number description
+  ///
+  /// In en, this message translates to:
+  /// **'Messages you send to your own WhatsApp chat wake the agent.'**
+  String get myPersonalNumberDesc;
+
+  /// WhatsApp mode option
+  ///
+  /// In en, this message translates to:
+  /// **'Dedicated bot account'**
+  String get dedicatedBotAccount;
+
+  /// Dedicated bot description
+  ///
+  /// In en, this message translates to:
+  /// **'Messages sent from the linked account itself are ignored as outbound.'**
+  String get dedicatedBotAccountDesc;
+
+  /// Allowed numbers section title
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed Numbers'**
+  String get allowedNumbers;
+
+  /// Add number dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add Number'**
+  String get addNumberTitle;
+
+  /// Phone number field label
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number / JID'**
+  String get phoneNumberJid;
+
+  /// Empty allowed numbers
+  ///
+  /// In en, this message translates to:
+  /// **'No allowed numbers configured'**
+  String get noAllowedNumbersConfigured;
+
+  /// Empty approved devices hint
+  ///
+  /// In en, this message translates to:
+  /// **'Devices appear here after you approve pairing requests'**
+  String get devicesAppearAfterPairing;
+
+  /// Empty allowed numbers hint
+  ///
+  /// In en, this message translates to:
+  /// **'Add phone numbers to allow them to use the bot'**
+  String get addPhoneNumbersHint;
+
+  /// Allowed number subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed number'**
+  String get allowedNumber;
+
+  /// WhatsApp help section title
+  ///
+  /// In en, this message translates to:
+  /// **'How to connect'**
+  String get howToConnect;
+
+  /// WhatsApp connect instructions
+  ///
+  /// In en, this message translates to:
+  /// **'1. Tap \"Connect WhatsApp\" above\n2. A QR code will appear — scan it with WhatsApp\n   (Settings → Linked Devices → Link a Device)\n3. Once connected, incoming messages are routed\n   to your active AI agent automatically'**
+  String get whatsAppConnectInstructions;
+
+  /// WhatsApp pairing description
+  ///
+  /// In en, this message translates to:
+  /// **'New senders get a pairing code. You approve them.'**
+  String get whatsAppPairingDesc;
+
+  /// WhatsApp allowlist description
+  ///
+  /// In en, this message translates to:
+  /// **'Only specific phone numbers can message the bot.'**
+  String get whatsAppAllowlistDesc;
+
+  /// WhatsApp open access description
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who messages you can use the bot.'**
+  String get whatsAppOpenDesc;
+
+  /// WhatsApp disabled description
+  ///
+  /// In en, this message translates to:
+  /// **'Bot will not respond to any incoming messages.'**
+  String get whatsAppDisabledDesc;
+
+  /// WhatsApp session expired message
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired. Tap \"Reconnect\" below to scan a fresh QR code.'**
+  String get sessionExpiredRelink;
+
+  /// WhatsApp idle description
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Connect WhatsApp\" below to link your account.'**
+  String get connectWhatsAppBelow;
+
+  /// WhatsApp restart pending message
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp accepted the QR. Finalizing the link...'**
+  String get whatsAppAcceptedQr;
+
+  /// WhatsApp connecting message
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for WhatsApp to complete the link...'**
+  String get waitingForWhatsApp;
+
+  /// Temperature slider label
+  ///
+  /// In en, this message translates to:
+  /// **'Focused'**
+  String get focusedLabel;
+
+  /// Temperature slider label
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get balancedLabel;
+
+  /// Temperature slider label
+  ///
+  /// In en, this message translates to:
+  /// **'Creative'**
+  String get creativeLabel;
+
+  /// Temperature description
+  ///
+  /// In en, this message translates to:
+  /// **'Precise'**
+  String get preciseLabel;
+
+  /// Temperature description
+  ///
+  /// In en, this message translates to:
+  /// **'Expressive'**
+  String get expressiveLabel;
+
+  /// Browse button label
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get browseLabel;
+
+  /// API token field label
+  ///
+  /// In en, this message translates to:
+  /// **'API Token'**
+  String get apiTokenLabel;
+
+  /// ClawHub connection title
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to ClawHub'**
+  String get connectToClawHub;
+
+  /// ClawHub login banner
+  ///
+  /// In en, this message translates to:
+  /// **'Login to ClawHub to access premium skills and install packages'**
+  String get clawHubLoginHint;
+
+  /// API token help title
+  ///
+  /// In en, this message translates to:
+  /// **'How to get your API token:'**
+  String get howToGetApiToken;
+
+  /// ClawHub token help
+  ///
+  /// In en, this message translates to:
+  /// **'1. Visit clawhub.ai and login with GitHub\n2. Run \"clawhub login\" in terminal\n3. Copy your token and paste it here'**
+  String get clawHubApiTokenInstructions;
+
+  /// Connection failure message
+  ///
+  /// In en, this message translates to:
+  /// **'Connection failed: {error}'**
+  String connectionFailed(String error);
+
+  /// Cron job run count
+  ///
+  /// In en, this message translates to:
+  /// **'{count} runs'**
+  String cronJobRuns(int count);
+
+  /// Next run time display
+  ///
+  /// In en, this message translates to:
+  /// **'Next run: {time}'**
+  String nextRunLabel(String time);
+
+  /// Last error display
+  ///
+  /// In en, this message translates to:
+  /// **'Last error: {error}'**
+  String lastErrorLabel(String error);
+
+  /// Cron job task hint
+  ///
+  /// In en, this message translates to:
+  /// **'Instructions for the agent when this job fires…'**
+  String get cronJobHintText;
+
+  /// Accessibility page title
+  ///
+  /// In en, this message translates to:
+  /// **'Android Permissions'**
+  String get androidPermissions;
+
+  /// Android permissions description
+  ///
+  /// In en, this message translates to:
+  /// **'FlutterClaw can control your screen on your behalf — tapping buttons, filling forms, scrolling, and automating repetitive tasks across any app.'**
+  String get androidPermissionsDesc;
+
+  /// Permissions skip note
+  ///
+  /// In en, this message translates to:
+  /// **'Two permissions are needed for the full experience. You can skip this and enable them later in Settings.'**
+  String get twoPermissionsNeeded;
+
+  /// Accessibility service title
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility Service'**
+  String get accessibilityService;
+
+  /// Accessibility service description
+  ///
+  /// In en, this message translates to:
+  /// **'Allows tapping, swiping, typing, and reading screen content'**
+  String get accessibilityServiceDesc;
+
+  /// Overlay permission title
+  ///
+  /// In en, this message translates to:
+  /// **'Display Over Other Apps'**
+  String get displayOverOtherApps;
+
+  /// Overlay permission description
+  ///
+  /// In en, this message translates to:
+  /// **'Shows a floating status chip so you can see what the agent is doing'**
+  String get displayOverOtherAppsDesc;
+
+  /// Change default model dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Change default model'**
+  String get changeDefaultModel;
+
+  /// Set model as default description
+  ///
+  /// In en, this message translates to:
+  /// **'Set {name} as the default model.'**
+  String setModelAsDefault(String name);
+
+  /// Update agents checkbox
+  ///
+  /// In en, this message translates to:
+  /// **'Also update {count} agent{count, plural, =1{} other{s}}'**
+  String alsoUpdateAgents(int count);
+
+  /// Start new sessions checkbox
+  ///
+  /// In en, this message translates to:
+  /// **'Start new sessions'**
+  String get startNewSessions;
+
+  /// Archive conversations note
+  ///
+  /// In en, this message translates to:
+  /// **'Current conversations will be archived'**
+  String get currentConversationsArchived;
+
+  /// Apply button
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyAction;
+
+  /// Apply model dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Apply {name}?'**
+  String applyModelQuestion(String name);
+
+  /// Set as default model checkbox
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default model'**
+  String get setAsDefaultModel;
+
+  /// Default model subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Used by agents without a specific model'**
+  String get usedByAgentsWithout;
+
+  /// Apply to agents checkbox
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to {count} agent{count, plural, =1{} other{s}}'**
+  String applyToAgents(int count);
+
+  /// Provider authenticated message
+  ///
+  /// In en, this message translates to:
+  /// **'Provider already authenticated — no API key needed.'**
+  String get providerAlreadyAuth;
+
+  /// Select from model list button
+  ///
+  /// In en, this message translates to:
+  /// **'Select from list'**
+  String get selectFromList;
+
+  /// Custom model ID button
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a custom model ID'**
+  String get enterCustomModelId;
+
+  /// Remove skill dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Remove skill?'**
+  String get removeSkillTitle;
+
+  /// Skills empty state hint
+  ///
+  /// In en, this message translates to:
+  /// **'Browse ClawHub to discover and install skills'**
+  String get browseClawHubToDiscover;
+
+  /// Add device tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Add device'**
+  String get addDeviceTooltip;
+
+  /// Add number tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Add number'**
+  String get addNumberTooltip;
+
+  /// Search skills hint
+  ///
+  /// In en, this message translates to:
+  /// **'Search skills...'**
+  String get searchSkillsHint;
+
+  /// Login to ClawHub tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Login to ClawHub'**
+  String get loginToClawHub;
+
+  /// Account tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountTooltip;
+
+  /// Edit menu action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editAction;
+
+  /// Set as default menu action
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get setAsDefaultAction;
+
+  /// Choose provider section title
+  ///
+  /// In en, this message translates to:
+  /// **'Choose provider'**
+  String get chooseProviderTitle;
+
+  /// API Key section title
+  ///
+  /// In en, this message translates to:
+  /// **'API Key'**
+  String get apiKeyTitle;
+
+  /// Slack config saved snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Slack saved — restart the gateway to connect'**
+  String get slackConfigSaved;
+
+  /// Signal config saved snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Signal saved — restart gateway to connect'**
+  String get signalConfigSaved;
+
+  /// ID display prefix
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {id}'**
+  String idPrefix(String id);
+
+  /// Add device tooltip for allowlist
+  ///
+  /// In en, this message translates to:
+  /// **'Add device'**
+  String get addDeviceHint;
+
+  /// Skip button in dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipAction;
 }
 
 class _AppLocalizationsDelegate

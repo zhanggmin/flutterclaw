@@ -223,24 +223,24 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
       builder: (ctx) {
         final ctl = TextEditingController();
         return AlertDialog(
-          title: const Text('Add Number'),
+          title: Text(context.l10n.addNumberTitle),
           content: TextField(
             controller: ctl,
-            decoration: const InputDecoration(
-              labelText: 'Phone number / JID',
+            decoration: InputDecoration(
+              labelText: context.l10n.phoneNumberJid,
               hintText: 'e.g. 5511999123456',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.phone,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, ctl.text.trim()),
-              child: const Text('Add'),
+              child: Text(context.l10n.add),
             ),
           ],
         );
@@ -261,7 +261,7 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
       await _startAdapter(clearAuth: _requiresRelink);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('WhatsApp configuration saved')),
+          SnackBar(content: Text(context.l10n.whatsAppConfigSaved)),
         );
       }
     } finally {
@@ -299,7 +299,7 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
     if (mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('WhatsApp disconnected')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.whatsAppDisconnected)));
       Navigator.pop(context);
     }
   }
@@ -311,13 +311,13 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
     final isConnected = _connStatus == WAConnectionStatus.connected;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('WhatsApp'),
+        title: Text(context.l10n.whatsAppTitle),
         actions: [
           if (_adapter != null && isConnected)
             TextButton.icon(
               onPressed: _disconnect,
               icon: const Icon(Icons.logout),
-              label: const Text('Disconnect'),
+              label: Text(context.l10n.disconnect),
             ),
         ],
       ),
@@ -330,11 +330,11 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
             qrCode: _qrCode,
             isRestartPending: _restartPending,
             idleDescription: _requiresRelink
-                ? 'Session expired. Tap "Reconnect" below to scan a fresh QR code.'
-                : 'Tap "Connect WhatsApp" below to link your account.',
+                ? context.l10n.sessionExpiredRelink
+                : context.l10n.connectWhatsAppBelow,
             connectingDescription: _restartPending
-                ? 'WhatsApp accepted the QR. Finalizing the link...'
-                : 'Waiting for WhatsApp to complete the link...',
+                ? context.l10n.whatsAppAcceptedQr
+                : context.l10n.waitingForWhatsApp,
           ),
           const SizedBox(height: 12),
 
@@ -355,32 +355,30 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
                   : Icon(isConnected ? Icons.save_outlined : Icons.refresh),
               label: Text(
                 _isLoading
-                    ? 'Applying...'
+                    ? context.l10n.applyingSettings
                     : _requiresRelink
-                    ? 'Reconnect WhatsApp'
+                    ? context.l10n.reconnectWhatsApp
                     : isConnected
-                    ? 'Save Settings'
-                    : 'Apply Settings & Restart',
+                    ? context.l10n.saveSettingsLabel
+                    : context.l10n.applySettingsRestart,
               ),
             ),
           ),
 
           const SizedBox(height: 24),
-          Text('WhatsApp Mode', style: theme.textTheme.titleMedium),
+          Text(context.l10n.whatsAppMode, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           SecurityMethodCard(
-            title: 'My personal number',
-            description:
-                'Messages you send to your own WhatsApp chat wake the agent.',
+            title: context.l10n.myPersonalNumber,
+            description: context.l10n.myPersonalNumberDesc,
             icon: Icons.person,
             isSelected: _selfChatMode,
             onTap: () => setState(() => _selfChatMode = true),
             color: Colors.teal,
           ),
           SecurityMethodCard(
-            title: 'Dedicated bot account',
-            description:
-                'Messages sent from the linked account itself are ignored as outbound.',
+            title: context.l10n.dedicatedBotAccount,
+            description: context.l10n.dedicatedBotAccountDesc,
             icon: Icons.smart_toy,
             isSelected: !_selfChatMode,
             onTap: () => setState(() => _selfChatMode = false),
@@ -388,35 +386,35 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
           ),
           const SizedBox(height: 24),
 
-          Text('Security Method', style: theme.textTheme.titleMedium),
+          Text(context.l10n.securityMethod, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           SecurityMethodCard(
-            title: 'Pairing (Recommended)',
-            description: 'New senders get a pairing code. You approve them.',
+            title: context.l10n.pairingRecommended,
+            description: context.l10n.whatsAppPairingDesc,
             icon: Icons.link,
             isSelected: _dmPolicy == 'pairing',
             onTap: () => setState(() => _dmPolicy = 'pairing'),
             color: Colors.blue,
           ),
           SecurityMethodCard(
-            title: 'Allowlist',
-            description: 'Only specific phone numbers can message the bot.',
+            title: context.l10n.allowlistTitle,
+            description: context.l10n.whatsAppAllowlistDesc,
             icon: Icons.list_alt,
             isSelected: _dmPolicy == 'allowlist',
             onTap: () => setState(() => _dmPolicy = 'allowlist'),
             color: Colors.green,
           ),
           SecurityMethodCard(
-            title: 'Open',
-            description: 'Anyone who messages you can use the bot.',
+            title: context.l10n.openAccess,
+            description: context.l10n.whatsAppOpenDesc,
             icon: Icons.public,
             isSelected: _dmPolicy == 'open',
             onTap: () => setState(() => _dmPolicy = 'open'),
             color: Colors.orange,
           ),
           SecurityMethodCard(
-            title: 'Disabled',
-            description: 'Bot will not respond to any incoming messages.',
+            title: context.l10n.disabledAccess,
+            description: context.l10n.whatsAppDisabledDesc,
             icon: Icons.block,
             isSelected: _dmPolicy == 'disabled',
             onTap: () => setState(() => _dmPolicy = 'disabled'),
@@ -430,15 +428,15 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
                 Expanded(
                   child: Text(
                     _dmPolicy == 'pairing'
-                        ? 'Approved Devices'
-                        : 'Allowed Numbers',
+                        ? context.l10n.approvedDevices
+                        : context.l10n.allowedNumbers,
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
                 if (_dmPolicy == 'allowlist')
                   IconButton.filledTonal(
                     icon: const Icon(Icons.add),
-                    tooltip: 'Add number',
+                    tooltip: context.l10n.addNumberTooltip,
                     onPressed: _addDevice,
                   ),
               ],
@@ -460,15 +458,15 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
                       const SizedBox(height: 8),
                       Text(
                         _dmPolicy == 'pairing'
-                            ? 'No approved devices yet'
-                            : 'No allowed numbers configured',
+                            ? context.l10n.noApprovedDevicesYet
+                            : context.l10n.noAllowedNumbersConfigured,
                         style: theme.textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _dmPolicy == 'pairing'
-                            ? 'Devices appear here after you approve pairing requests'
-                            : 'Add phone numbers to allow them to use the bot',
+                            ? context.l10n.devicesAppearAfterPairing
+                            : context.l10n.addPhoneNumbersHint,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
@@ -493,28 +491,28 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
                       entry.value.isNotEmpty
                           ? entry.key
                           : (_dmPolicy == 'pairing'
-                                ? 'Approved device'
-                                : 'Allowed number'),
+                                ? context.l10n.approvedDevice
+                                : context.l10n.allowedNumber),
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      tooltip: 'Remove',
+                      tooltip: context.l10n.remove,
                       onPressed: () async {
                         final ok = await showDialog<bool>(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: const Text('Remove device?'),
+                            title: Text(context.l10n.removeDevice),
                             content: Text(
-                              'Remove access for ${entry.value.isNotEmpty ? entry.value : entry.key}?',
+                              context.l10n.removeAccessFor(entry.value.isNotEmpty ? entry.value : entry.key),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx, false),
-                                child: const Text('Cancel'),
+                                child: Text(context.l10n.cancel),
                               ),
                               FilledButton(
                                 onPressed: () => Navigator.pop(ctx, true),
-                                child: const Text('Remove'),
+                                child: Text(context.l10n.remove),
                               ),
                             ],
                           ),
@@ -540,7 +538,7 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
                       Icon(Icons.help_outline, size: 20, color: colors.primary),
                       const SizedBox(width: 8),
                       Text(
-                        'How to connect',
+                        context.l10n.howToConnect,
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: colors.primary,
                           fontWeight: FontWeight.bold,
@@ -550,11 +548,7 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '1. Tap "Connect WhatsApp" above\n'
-                    '2. A QR code will appear — scan it with WhatsApp\n'
-                    '   (Settings → Linked Devices → Link a Device)\n'
-                    '3. Once connected, incoming messages are routed\n'
-                    '   to your active AI agent automatically',
+                    context.l10n.whatsAppConnectInstructions,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),

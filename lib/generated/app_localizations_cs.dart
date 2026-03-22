@@ -1081,5 +1081,594 @@ class AppLocalizationsCs extends AppLocalizations {
   String get messagesAbbrev => 'zpr';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'Tento model je již ve vašem seznamu';
+
+  @override
+  String get bothTokensRequired => 'Oba tokeny jsou povinné';
+
+  @override
+  String get slackSavedRestart =>
+      'Slack uložen — restartujte bránu pro připojení';
+
+  @override
+  String get slackConfiguration => 'Konfigurace Slack';
+
+  @override
+  String get setupTitle => 'Nastavení';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. Vytvořte aplikaci Slack na api.slack.com/apps\n2. Povolte Socket Mode → vygenerujte App-Level Token (xapp-…)\n   s rozsahem: connections:write\n3. Přidejte Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Nainstalujte aplikaci do workspace → zkopírujte Bot Token (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'App-Level Token (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired => 'URL API a telefonní číslo jsou povinné';
+
+  @override
+  String get signalSavedRestart =>
+      'Signal uložen — restartujte bránu pro připojení';
+
+  @override
+  String get signalConfiguration => 'Konfigurace Signal';
+
+  @override
+  String get requirementsTitle => 'Požadavky';
+
+  @override
+  String get signalRequirements =>
+      'Vyžaduje signal-cli-rest-api běžící na serveru:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nZaregistrujte/propojte své číslo Signal přes REST API, poté zadejte URL a telefonní číslo níže.';
+
+  @override
+  String get signalApiUrl => 'URL signal-cli-rest-api';
+
+  @override
+  String get signalPhoneNumber => 'Vaše telefonní číslo Signal';
+
+  @override
+  String get userIdLabel => 'ID Uživatele';
+
+  @override
+  String get enterDiscordUserId => 'Zadejte ID uživatele Discord';
+
+  @override
+  String get enterTelegramUserId => 'Zadejte ID uživatele Telegram';
+
+  @override
+  String get fromDiscordDevPortal => 'Z Discord Developer Portal';
+
+  @override
+  String get allowedUserIdsTitle => 'Povolená ID Uživatelů';
+
+  @override
+  String get approvedDevice => 'Schválené zařízení';
+
+  @override
+  String get allowedUser => 'Povolený uživatel';
+
+  @override
+  String get howToGetBotToken => 'Jak získat token bota';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. Přejděte do Discord Developer Portal\n2. Vytvořte novou aplikaci a bota\n3. Zkopírujte token a vložte jej výše\n4. Povolte Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. Otevřete Telegram a vyhledejte @BotFather\n2. Pošlete /newbot a postupujte podle pokynů\n3. Zkopírujte token a vložte jej výše';
+
+  @override
+  String get fromBotFatherHint => 'Získejte od @BotFather';
+
+  @override
+  String get accessTokenLabel => 'Přístupový token';
+
+  @override
+  String get notSetOpenAccess =>
+      'Není nastaven — otevřený přístup (pouze loopback)';
+
+  @override
+  String get gatewayAccessToken => 'Přístupový token brány';
+
+  @override
+  String get tokenFieldLabel => 'Token';
+
+  @override
+  String get leaveEmptyDisableAuth =>
+      'Ponechte prázdné pro zakázání autentizace';
+
+  @override
+  String get toolPolicies => 'Zásady Nástrojů';
+
+  @override
+  String get toolPoliciesDesc =>
+      'Kontrolujte, k čemu má agent přístup. Zakázané nástroje jsou skryty před AI a zablokovány za běhu.';
+
+  @override
+  String get privacySensors => 'Soukromí a Senzory';
+
+  @override
+  String get networkCategory => 'Síť';
+
+  @override
+  String get systemCategory => 'Systém';
+
+  @override
+  String get toolTakePhotos => 'Pořizovat Fotografie';
+
+  @override
+  String get toolTakePhotosDesc =>
+      'Povolit agentovi pořizovat fotografie pomocí kamery';
+
+  @override
+  String get toolRecordVideo => 'Nahrávat Video';
+
+  @override
+  String get toolRecordVideoDesc => 'Povolit agentovi nahrávat video';
+
+  @override
+  String get toolLocation => 'Poloha';
+
+  @override
+  String get toolLocationDesc =>
+      'Povolit agentovi číst vaši aktuální GPS polohu';
+
+  @override
+  String get toolHealthData => 'Zdravotní Data';
+
+  @override
+  String get toolHealthDataDesc =>
+      'Povolit agentovi číst zdravotní/fitness data';
+
+  @override
+  String get toolContacts => 'Kontakty';
+
+  @override
+  String get toolContactsDesc => 'Povolit agentovi prohledávat vaše kontakty';
+
+  @override
+  String get toolScreenshots => 'Snímky Obrazovky';
+
+  @override
+  String get toolScreenshotsDesc =>
+      'Povolit agentovi pořizovat snímky obrazovky';
+
+  @override
+  String get toolWebFetch => 'Stahování z Webu';
+
+  @override
+  String get toolWebFetchDesc => 'Povolit agentovi stahovat obsah z URL';
+
+  @override
+  String get toolWebSearch => 'Vyhledávání na Webu';
+
+  @override
+  String get toolWebSearchDesc => 'Povolit agentovi vyhledávat na internetu';
+
+  @override
+  String get toolHttpRequests => 'HTTP Požadavky';
+
+  @override
+  String get toolHttpRequestsDesc =>
+      'Povolit agentovi provádět libovolné HTTP požadavky';
+
+  @override
+  String get toolSandboxShell => 'Shell v Sandboxu';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'Povolit agentovi spouštět shell příkazy v sandboxu';
+
+  @override
+  String get toolImageGeneration => 'Generování Obrázků';
+
+  @override
+  String get toolImageGenerationDesc =>
+      'Povolit agentovi generovat obrázky pomocí AI';
+
+  @override
+  String get toolLaunchApps => 'Spouštění Aplikací';
+
+  @override
+  String get toolLaunchAppsDesc =>
+      'Povolit agentovi otevírat nainstalované aplikace';
+
+  @override
+  String get toolLaunchIntents => 'Spouštění Intentů';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'Povolit agentovi spouštět Android intenty (hluboké odkazy, systémové obrazovky)';
+
+  @override
+  String get renameSession => 'Přejmenovat relaci';
+
+  @override
+  String get myConversationName => 'Název mé konverzace';
+
+  @override
+  String get renameAction => 'Přejmenovat';
+
+  @override
+  String get couldNotTranscribeAudio => 'Nelze přepsat zvuk';
+
+  @override
+  String get stopRecording => 'Zastavit nahrávání';
+
+  @override
+  String get voiceInput => 'Hlasový vstup';
+
+  @override
+  String get copyTooltip => 'Kopírovat';
+
+  @override
+  String get commandsTooltip => 'Příkazy';
+
+  @override
+  String get providersAndModels => 'Poskytovatelé a Modely';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modelů nakonfigurováno',
+      few: '$count modely nakonfigurovány',
+      one: '1 model nakonfigurován',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'Automatické spuštění povoleno';
+
+  @override
+  String get autoStartOffLabel => 'Automatické spuštění vypnuto';
+
+  @override
+  String get allToolsEnabled => 'Všechny nástroje povoleny';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nástrojů zakázáno',
+      few: '$count nástroje zakázány',
+      one: '1 nástroj zakázán',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests => 'Žádné čekající žádosti o párování';
+
+  @override
+  String get pairingRequestsTitle => 'Žádosti o Párování';
+
+  @override
+  String get gatewayStartingStatus => 'Spouštění brány...';
+
+  @override
+  String get gatewayRetryingStatus => 'Opakování spuštění brány...';
+
+  @override
+  String get errorStartingGateway => 'Chyba při spuštění brány';
+
+  @override
+  String get runningStatus => 'Běží';
+
+  @override
+  String get stoppedStatus => 'Zastaveno';
+
+  @override
+  String get notSetUpStatus => 'Není nastaveno';
+
+  @override
+  String get configuredStatus => 'Nakonfigurováno';
+
+  @override
+  String get whatsAppConfigSaved => 'Konfigurace WhatsApp uložena';
+
+  @override
+  String get whatsAppDisconnected => 'WhatsApp odpojeno';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'Aplikování...';
+
+  @override
+  String get reconnectWhatsApp => 'Znovu připojit WhatsApp';
+
+  @override
+  String get saveSettingsLabel => 'Uložit Nastavení';
+
+  @override
+  String get applySettingsRestart => 'Použít Nastavení a Restartovat';
+
+  @override
+  String get whatsAppMode => 'Režim WhatsApp';
+
+  @override
+  String get myPersonalNumber => 'Moje osobní číslo';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'Zprávy, které posíláte do svého vlastního WhatsApp chatu, probudí agenta.';
+
+  @override
+  String get dedicatedBotAccount => 'Vyhrazený bot účet';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'Zprávy odeslané z propojeného účtu samotného jsou ignorovány jako odchozí.';
+
+  @override
+  String get allowedNumbers => 'Povolená Čísla';
+
+  @override
+  String get addNumberTitle => 'Přidat Číslo';
+
+  @override
+  String get phoneNumberJid => 'Telefonní číslo / JID';
+
+  @override
+  String get noAllowedNumbersConfigured =>
+      'Žádná povolená čísla nejsou nakonfigurována';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'Zařízení se zobrazí zde po schválení žádostí o párování';
+
+  @override
+  String get addPhoneNumbersHint =>
+      'Přidejte telefonní čísla pro povolení používat bota';
+
+  @override
+  String get allowedNumber => 'Povolené číslo';
+
+  @override
+  String get howToConnect => 'Jak se připojit';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. Klepněte na \"Připojit WhatsApp\" výše\n2. Zobrazí se QR kód — naskenujte jej pomocí WhatsApp\n   (Nastavení → Propojená Zařízení → Propojit Zařízení)\n3. Po připojení jsou příchozí zprávy automaticky\n   směrovány k vašemu aktivnímu AI agentovi';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'Noví odesílatelé dostanou párovací kód. Vy je schvalujete.';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'Pouze konkrétní telefonní čísla mohou psát botovi.';
+
+  @override
+  String get whatsAppOpenDesc => 'Kdokoli, kdo vám napíše, může používat bota.';
+
+  @override
+  String get whatsAppDisabledDesc =>
+      'Bot nebude odpovídat na žádné příchozí zprávy.';
+
+  @override
+  String get sessionExpiredRelink =>
+      'Relace vypršela. Klepněte na \"Znovu připojit\" níže pro naskenování nového QR kódu.';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'Klepněte na \"Připojit WhatsApp\" níže pro propojení účtu.';
+
+  @override
+  String get whatsAppAcceptedQr =>
+      'WhatsApp přijal QR kód. Dokončování propojení...';
+
+  @override
+  String get waitingForWhatsApp => 'Čekání na dokončení propojení WhatsApp...';
+
+  @override
+  String get focusedLabel => 'Zaměřená';
+
+  @override
+  String get balancedLabel => 'Vyvážená';
+
+  @override
+  String get creativeLabel => 'Kreativní';
+
+  @override
+  String get preciseLabel => 'Přesná';
+
+  @override
+  String get expressiveLabel => 'Výrazná';
+
+  @override
+  String get browseLabel => 'Procházet';
+
+  @override
+  String get apiTokenLabel => 'API Token';
+
+  @override
+  String get connectToClawHub => 'Připojit ke ClawHub';
+
+  @override
+  String get clawHubLoginHint =>
+      'Přihlaste se do ClawHub pro přístup k prémiové dovednosti a instalaci balíčků';
+
+  @override
+  String get howToGetApiToken => 'Jak získat váš API token:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. Navštivte clawhub.ai a přihlaste se pomocí GitHub\n2. Spusťte \"clawhub login\" v terminálu\n3. Zkopírujte token a vložte jej sem';
+
+  @override
+  String connectionFailed(String error) {
+    return 'Připojení selhalo: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    return '$count spuštění';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'Další spuštění: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'Poslední chyba: $error';
+  }
+
+  @override
+  String get cronJobHintText => 'Instrukce pro agenta při spuštění této úlohy…';
+
+  @override
+  String get androidPermissions => 'Oprávnění Android';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw může ovládat vaši obrazovku — klepat na tlačítka, vyplňovat formuláře, posouvat a automatizovat opakující se úlohy v jakékoli aplikaci.';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'Pro plný zážitek jsou potřeba dvě oprávnění. Můžete to přeskočit a povolit je později v Nastavení.';
+
+  @override
+  String get accessibilityService => 'Služba Přístupnosti';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'Umožňuje klepání, přejetí prstem, psaní a čtení obsahu obrazovky';
+
+  @override
+  String get displayOverOtherApps => 'Zobrazení Nad Jinými Aplikacemi';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'Zobrazuje plovoucí stavový čip, abyste viděli, co agent dělá';
+
+  @override
+  String get changeDefaultModel => 'Změnit výchozí model';
+
+  @override
+  String setModelAsDefault(String name) {
+    return 'Nastavit $name jako výchozí model.';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'agentů',
+      few: 'agenty',
+      one: 'agenta',
+    );
+    return 'Také aktualizovat $count $_temp0';
+  }
+
+  @override
+  String get startNewSessions => 'Zahájit nové relace';
+
+  @override
+  String get currentConversationsArchived =>
+      'Aktuální konverzace budou archivovány';
+
+  @override
+  String get applyAction => 'Použít';
+
+  @override
+  String applyModelQuestion(String name) {
+    return 'Použít $name?';
+  }
+
+  @override
+  String get setAsDefaultModel => 'Nastavit jako výchozí model';
+
+  @override
+  String get usedByAgentsWithout => 'Používáno agenty bez konkrétního modelu';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'agentů',
+      few: 'agenty',
+      one: 'agenta',
+    );
+    return 'Použít na $count $_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'Poskytovatel je již autentizován — API klíč není potřeba.';
+
+  @override
+  String get selectFromList => 'Vybrat ze seznamu';
+
+  @override
+  String get enterCustomModelId => 'Zadat vlastní ID modelu';
+
+  @override
+  String get removeSkillTitle => 'Odstranit dovednost?';
+
+  @override
+  String get browseClawHubToDiscover =>
+      'Procházejte ClawHub pro objevování a instalaci dovedností';
+
+  @override
+  String get addDeviceTooltip => 'Přidat zařízení';
+
+  @override
+  String get addNumberTooltip => 'Přidat číslo';
+
+  @override
+  String get searchSkillsHint => 'Hledat dovednosti...';
+
+  @override
+  String get loginToClawHub => 'Přihlásit se do ClawHub';
+
+  @override
+  String get accountTooltip => 'Účet';
+
+  @override
+  String get editAction => 'Upravit';
+
+  @override
+  String get setAsDefaultAction => 'Nastavit jako výchozí';
+
+  @override
+  String get chooseProviderTitle => 'Vyberte poskytovatele';
+
+  @override
+  String get apiKeyTitle => 'API Klíč';
+
+  @override
+  String get slackConfigSaved =>
+      'Slack uložen — restartujte bránu pro připojení';
+
+  @override
+  String get signalConfigSaved =>
+      'Signal uložen — restartujte bránu pro připojení';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'Přidat zařízení';
+
+  @override
+  String get skipAction => 'Přeskočit';
 }

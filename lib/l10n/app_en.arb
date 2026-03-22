@@ -1809,5 +1809,523 @@
   "modelAlreadyAdded": "This model is already in your list",
   "@modelAlreadyAdded": {
     "description": "Error shown when the user tries to add a duplicate model"
-  }
+  },
+
+  "bothTokensRequired": "Both tokens are required",
+  "@bothTokensRequired": { "description": "Slack validation error" },
+
+  "slackSavedRestart": "Slack saved — restart the gateway to connect",
+  "@slackSavedRestart": { "description": "Slack config saved snackbar" },
+
+  "slackConfiguration": "Slack Configuration",
+  "@slackConfiguration": { "description": "Slack config screen title" },
+
+  "setupTitle": "Setup",
+  "@setupTitle": { "description": "Setup section title" },
+
+  "slackSetupInstructions": "1. Create a Slack App at api.slack.com/apps\n2. Enable Socket Mode → generate App-Level Token (xapp-…)\n   with scope: connections:write\n3. Add Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Install app to workspace → copy Bot Token (xoxb-…)",
+  "@slackSetupInstructions": { "description": "Slack setup instructions" },
+
+  "botTokenXoxb": "Bot Token (xoxb-…)",
+  "@botTokenXoxb": { "description": "Slack bot token label" },
+
+  "appLevelToken": "App-Level Token (xapp-…)",
+  "@appLevelToken": { "description": "Slack app-level token label" },
+
+  "apiUrlPhoneRequired": "API URL and phone number are required",
+  "@apiUrlPhoneRequired": { "description": "Signal validation error" },
+
+  "signalSavedRestart": "Signal saved — restart gateway to connect",
+  "@signalSavedRestart": { "description": "Signal config saved snackbar" },
+
+  "signalConfiguration": "Signal Configuration",
+  "@signalConfiguration": { "description": "Signal config screen title" },
+
+  "requirementsTitle": "Requirements",
+  "@requirementsTitle": { "description": "Requirements section title" },
+
+  "signalRequirements": "Requires signal-cli-rest-api running on a server:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nRegister/link your Signal number via the REST API, then enter the URL and your phone number below.",
+  "@signalRequirements": { "description": "Signal setup requirements" },
+
+  "signalApiUrl": "signal-cli-rest-api URL",
+  "@signalApiUrl": { "description": "Signal API URL label" },
+
+  "signalPhoneNumber": "Your Signal phone number",
+  "@signalPhoneNumber": { "description": "Signal phone number label" },
+
+  "userIdLabel": "User ID",
+  "@userIdLabel": { "description": "User ID field label" },
+
+  "enterDiscordUserId": "Enter Discord user ID",
+  "@enterDiscordUserId": { "description": "Discord user ID hint" },
+
+  "enterTelegramUserId": "Enter Telegram user ID",
+  "@enterTelegramUserId": { "description": "Telegram user ID hint" },
+
+  "fromDiscordDevPortal": "From Discord Developer Portal",
+  "@fromDiscordDevPortal": { "description": "Discord bot token hint" },
+
+  "allowedUserIdsTitle": "Allowed User IDs",
+  "@allowedUserIdsTitle": { "description": "Allowed user IDs section title" },
+
+  "approvedDevice": "Approved device",
+  "@approvedDevice": { "description": "Approved device subtitle" },
+
+  "allowedUser": "Allowed user",
+  "@allowedUser": { "description": "Allowed user subtitle" },
+
+  "howToGetBotToken": "How to get your bot token",
+  "@howToGetBotToken": { "description": "Help section title" },
+
+  "discordTokenInstructions": "1. Go to Discord Developer Portal\n2. Create a new application and bot\n3. Copy the token and paste it above\n4. Enable Message Content Intent",
+  "@discordTokenInstructions": { "description": "Discord token help instructions" },
+
+  "telegramTokenInstructions": "1. Open Telegram and search for @BotFather\n2. Send /newbot and follow the instructions\n3. Copy the token and paste it above",
+  "@telegramTokenInstructions": { "description": "Telegram token help instructions" },
+
+  "fromBotFatherHint": "Get from @BotFather",
+  "@fromBotFatherHint": { "description": "Telegram token hint" },
+
+  "accessTokenLabel": "Access token",
+  "@accessTokenLabel": { "description": "Gateway access token title" },
+
+  "notSetOpenAccess": "Not set — open access (loopback only)",
+  "@notSetOpenAccess": { "description": "No token set message" },
+
+  "gatewayAccessToken": "Gateway access token",
+  "@gatewayAccessToken": { "description": "Gateway access token dialog title" },
+
+  "tokenFieldLabel": "Token",
+  "@tokenFieldLabel": { "description": "Token field label" },
+
+  "leaveEmptyDisableAuth": "Leave empty to disable auth",
+  "@leaveEmptyDisableAuth": { "description": "Token field hint" },
+
+  "toolPolicies": "Tool Policies",
+  "@toolPolicies": { "description": "Tool policies screen title" },
+
+  "toolPoliciesDesc": "Control what the agent can access. Disabled tools are hidden from the AI and blocked at runtime.",
+  "@toolPoliciesDesc": { "description": "Tool policies description" },
+
+  "privacySensors": "Privacy & Sensors",
+  "@privacySensors": { "description": "Tool category" },
+
+  "networkCategory": "Network",
+  "@networkCategory": { "description": "Tool category" },
+
+  "systemCategory": "System",
+  "@systemCategory": { "description": "Tool category" },
+
+  "toolTakePhotos": "Take Photos",
+  "@toolTakePhotos": { "description": "Tool label" },
+  "toolTakePhotosDesc": "Allow the agent to take photos using the camera",
+  "@toolTakePhotosDesc": { "description": "Tool description" },
+
+  "toolRecordVideo": "Record Video",
+  "@toolRecordVideo": { "description": "Tool label" },
+  "toolRecordVideoDesc": "Allow the agent to record video",
+  "@toolRecordVideoDesc": { "description": "Tool description" },
+
+  "toolLocation": "Location",
+  "@toolLocation": { "description": "Tool label" },
+  "toolLocationDesc": "Allow the agent to read your current GPS location",
+  "@toolLocationDesc": { "description": "Tool description" },
+
+  "toolHealthData": "Health Data",
+  "@toolHealthData": { "description": "Tool label" },
+  "toolHealthDataDesc": "Allow the agent to read health/fitness data",
+  "@toolHealthDataDesc": { "description": "Tool description" },
+
+  "toolContacts": "Contacts",
+  "@toolContacts": { "description": "Tool label" },
+  "toolContactsDesc": "Allow the agent to search your contacts",
+  "@toolContactsDesc": { "description": "Tool description" },
+
+  "toolScreenshots": "Screenshots",
+  "@toolScreenshots": { "description": "Tool label" },
+  "toolScreenshotsDesc": "Allow the agent to take screenshots of the screen",
+  "@toolScreenshotsDesc": { "description": "Tool description" },
+
+  "toolWebFetch": "Web Fetch",
+  "@toolWebFetch": { "description": "Tool label" },
+  "toolWebFetchDesc": "Allow the agent to fetch content from URLs",
+  "@toolWebFetchDesc": { "description": "Tool description" },
+
+  "toolWebSearch": "Web Search",
+  "@toolWebSearch": { "description": "Tool label" },
+  "toolWebSearchDesc": "Allow the agent to search the web",
+  "@toolWebSearchDesc": { "description": "Tool description" },
+
+  "toolHttpRequests": "HTTP Requests",
+  "@toolHttpRequests": { "description": "Tool label" },
+  "toolHttpRequestsDesc": "Allow the agent to make arbitrary HTTP requests",
+  "@toolHttpRequestsDesc": { "description": "Tool description" },
+
+  "toolSandboxShell": "Sandbox Shell",
+  "@toolSandboxShell": { "description": "Tool label" },
+  "toolSandboxShellDesc": "Allow the agent to run shell commands in the sandbox",
+  "@toolSandboxShellDesc": { "description": "Tool description" },
+
+  "toolImageGeneration": "Image Generation",
+  "@toolImageGeneration": { "description": "Tool label" },
+  "toolImageGenerationDesc": "Allow the agent to generate images via AI",
+  "@toolImageGenerationDesc": { "description": "Tool description" },
+
+  "toolLaunchApps": "Launch Apps",
+  "@toolLaunchApps": { "description": "Tool label" },
+  "toolLaunchAppsDesc": "Allow the agent to open installed apps",
+  "@toolLaunchAppsDesc": { "description": "Tool description" },
+
+  "toolLaunchIntents": "Launch Intents",
+  "@toolLaunchIntents": { "description": "Tool label" },
+  "toolLaunchIntentsDesc": "Allow the agent to fire Android intents (deep links, system screens)",
+  "@toolLaunchIntentsDesc": { "description": "Tool description" },
+
+  "renameSession": "Rename session",
+  "@renameSession": { "description": "Rename session dialog title" },
+
+  "myConversationName": "My conversation name",
+  "@myConversationName": { "description": "Session rename hint" },
+
+  "renameAction": "Rename",
+  "@renameAction": { "description": "Rename menu action" },
+
+  "couldNotTranscribeAudio": "Could not transcribe audio",
+  "@couldNotTranscribeAudio": { "description": "Transcription error" },
+
+  "stopRecording": "Stop recording",
+  "@stopRecording": { "description": "Stop recording tooltip" },
+
+  "voiceInput": "Voice input",
+  "@voiceInput": { "description": "Voice input tooltip" },
+
+  "copyTooltip": "Copy",
+  "@copyTooltip": { "description": "Copy button tooltip" },
+
+  "commandsTooltip": "Commands",
+  "@commandsTooltip": { "description": "Commands button tooltip" },
+
+  "providersAndModels": "Providers & Models",
+  "@providersAndModels": { "description": "Settings tile title" },
+
+  "modelsConfiguredCount": "{count, plural, =1{1 model configured} other{{count} models configured}}",
+  "@modelsConfiguredCount": {
+    "description": "Models configured count",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "autoStartEnabledLabel": "Auto-start enabled",
+  "@autoStartEnabledLabel": { "description": "Gateway auto-start status" },
+
+  "autoStartOffLabel": "Auto-start off",
+  "@autoStartOffLabel": { "description": "Gateway auto-start off status" },
+
+  "allToolsEnabled": "All tools enabled",
+  "@allToolsEnabled": { "description": "Tool policies all enabled" },
+
+  "toolsDisabledCount": "{count, plural, =1{1 tool disabled} other{{count} tools disabled}}",
+  "@toolsDisabledCount": {
+    "description": "Tools disabled count",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "flutterClawVersion": "FlutterClaw v0.1.0",
+  "@flutterClawVersion": { "description": "About subtitle" },
+
+  "noPendingPairingRequests": "No pending pairing requests",
+  "@noPendingPairingRequests": { "description": "Empty pairing requests" },
+
+  "pairingRequestsTitle": "Pairing Requests",
+  "@pairingRequestsTitle": { "description": "Pairing requests section title" },
+
+  "gatewayStartingStatus": "Starting gateway...",
+  "@gatewayStartingStatus": { "description": "Gateway starting status" },
+
+  "gatewayRetryingStatus": "Retrying gateway start...",
+  "@gatewayRetryingStatus": { "description": "Gateway retrying status" },
+
+  "errorStartingGateway": "Error starting gateway",
+  "@errorStartingGateway": { "description": "Gateway error fallback" },
+
+  "runningStatus": "Running",
+  "@runningStatus": { "description": "Gateway running status" },
+
+  "stoppedStatus": "Stopped",
+  "@stoppedStatus": { "description": "Gateway stopped status" },
+
+  "notSetUpStatus": "Not set up",
+  "@notSetUpStatus": { "description": "Channel not set up status" },
+
+  "configuredStatus": "Configured",
+  "@configuredStatus": { "description": "Channel configured status" },
+
+  "whatsAppConfigSaved": "WhatsApp configuration saved",
+  "@whatsAppConfigSaved": { "description": "WhatsApp config saved snackbar" },
+
+  "whatsAppDisconnected": "WhatsApp disconnected",
+  "@whatsAppDisconnected": { "description": "WhatsApp disconnected snackbar" },
+
+  "whatsAppTitle": "WhatsApp",
+  "@whatsAppTitle": { "description": "WhatsApp screen title" },
+
+  "applyingSettings": "Applying...",
+  "@applyingSettings": { "description": "Applying settings button state" },
+
+  "reconnectWhatsApp": "Reconnect WhatsApp",
+  "@reconnectWhatsApp": { "description": "Reconnect button label" },
+
+  "saveSettingsLabel": "Save Settings",
+  "@saveSettingsLabel": { "description": "Save settings button label" },
+
+  "applySettingsRestart": "Apply Settings & Restart",
+  "@applySettingsRestart": { "description": "Apply and restart button label" },
+
+  "whatsAppMode": "WhatsApp Mode",
+  "@whatsAppMode": { "description": "WhatsApp mode section title" },
+
+  "myPersonalNumber": "My personal number",
+  "@myPersonalNumber": { "description": "WhatsApp mode option" },
+
+  "myPersonalNumberDesc": "Messages you send to your own WhatsApp chat wake the agent.",
+  "@myPersonalNumberDesc": { "description": "Personal number description" },
+
+  "dedicatedBotAccount": "Dedicated bot account",
+  "@dedicatedBotAccount": { "description": "WhatsApp mode option" },
+
+  "dedicatedBotAccountDesc": "Messages sent from the linked account itself are ignored as outbound.",
+  "@dedicatedBotAccountDesc": { "description": "Dedicated bot description" },
+
+  "allowedNumbers": "Allowed Numbers",
+  "@allowedNumbers": { "description": "Allowed numbers section title" },
+
+  "addNumberTitle": "Add Number",
+  "@addNumberTitle": { "description": "Add number dialog title" },
+
+  "phoneNumberJid": "Phone number / JID",
+  "@phoneNumberJid": { "description": "Phone number field label" },
+
+  "noAllowedNumbersConfigured": "No allowed numbers configured",
+  "@noAllowedNumbersConfigured": { "description": "Empty allowed numbers" },
+
+  "devicesAppearAfterPairing": "Devices appear here after you approve pairing requests",
+  "@devicesAppearAfterPairing": { "description": "Empty approved devices hint" },
+
+  "addPhoneNumbersHint": "Add phone numbers to allow them to use the bot",
+  "@addPhoneNumbersHint": { "description": "Empty allowed numbers hint" },
+
+  "allowedNumber": "Allowed number",
+  "@allowedNumber": { "description": "Allowed number subtitle" },
+
+  "howToConnect": "How to connect",
+  "@howToConnect": { "description": "WhatsApp help section title" },
+
+  "whatsAppConnectInstructions": "1. Tap \"Connect WhatsApp\" above\n2. A QR code will appear — scan it with WhatsApp\n   (Settings → Linked Devices → Link a Device)\n3. Once connected, incoming messages are routed\n   to your active AI agent automatically",
+  "@whatsAppConnectInstructions": { "description": "WhatsApp connect instructions" },
+
+  "whatsAppPairingDesc": "New senders get a pairing code. You approve them.",
+  "@whatsAppPairingDesc": { "description": "WhatsApp pairing description" },
+
+  "whatsAppAllowlistDesc": "Only specific phone numbers can message the bot.",
+  "@whatsAppAllowlistDesc": { "description": "WhatsApp allowlist description" },
+
+  "whatsAppOpenDesc": "Anyone who messages you can use the bot.",
+  "@whatsAppOpenDesc": { "description": "WhatsApp open access description" },
+
+  "whatsAppDisabledDesc": "Bot will not respond to any incoming messages.",
+  "@whatsAppDisabledDesc": { "description": "WhatsApp disabled description" },
+
+  "sessionExpiredRelink": "Session expired. Tap \"Reconnect\" below to scan a fresh QR code.",
+  "@sessionExpiredRelink": { "description": "WhatsApp session expired message" },
+
+  "connectWhatsAppBelow": "Tap \"Connect WhatsApp\" below to link your account.",
+  "@connectWhatsAppBelow": { "description": "WhatsApp idle description" },
+
+  "whatsAppAcceptedQr": "WhatsApp accepted the QR. Finalizing the link...",
+  "@whatsAppAcceptedQr": { "description": "WhatsApp restart pending message" },
+
+  "waitingForWhatsApp": "Waiting for WhatsApp to complete the link...",
+  "@waitingForWhatsApp": { "description": "WhatsApp connecting message" },
+
+  "focusedLabel": "Focused",
+  "@focusedLabel": { "description": "Temperature slider label" },
+
+  "balancedLabel": "Balanced",
+  "@balancedLabel": { "description": "Temperature slider label" },
+
+  "creativeLabel": "Creative",
+  "@creativeLabel": { "description": "Temperature slider label" },
+
+  "preciseLabel": "Precise",
+  "@preciseLabel": { "description": "Temperature description" },
+
+  "expressiveLabel": "Expressive",
+  "@expressiveLabel": { "description": "Temperature description" },
+
+  "browseLabel": "Browse",
+  "@browseLabel": { "description": "Browse button label" },
+
+  "apiTokenLabel": "API Token",
+  "@apiTokenLabel": { "description": "API token field label" },
+
+  "connectToClawHub": "Connect to ClawHub",
+  "@connectToClawHub": { "description": "ClawHub connection title" },
+
+  "clawHubLoginHint": "Login to ClawHub to access premium skills and install packages",
+  "@clawHubLoginHint": { "description": "ClawHub login banner" },
+
+  "howToGetApiToken": "How to get your API token:",
+  "@howToGetApiToken": { "description": "API token help title" },
+
+  "clawHubApiTokenInstructions": "1. Visit clawhub.ai and login with GitHub\n2. Run \"clawhub login\" in terminal\n3. Copy your token and paste it here",
+  "@clawHubApiTokenInstructions": { "description": "ClawHub token help" },
+
+  "connectionFailed": "Connection failed: {error}",
+  "@connectionFailed": {
+    "description": "Connection failure message",
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "cronJobRuns": "{count} runs",
+  "@cronJobRuns": {
+    "description": "Cron job run count",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "nextRunLabel": "Next run: {time}",
+  "@nextRunLabel": {
+    "description": "Next run time display",
+    "placeholders": { "time": { "type": "String" } }
+  },
+
+  "lastErrorLabel": "Last error: {error}",
+  "@lastErrorLabel": {
+    "description": "Last error display",
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "cronJobHintText": "Instructions for the agent when this job fires…",
+  "@cronJobHintText": { "description": "Cron job task hint" },
+
+  "androidPermissions": "Android Permissions",
+  "@androidPermissions": { "description": "Accessibility page title" },
+
+  "androidPermissionsDesc": "FlutterClaw can control your screen on your behalf — tapping buttons, filling forms, scrolling, and automating repetitive tasks across any app.",
+  "@androidPermissionsDesc": { "description": "Android permissions description" },
+
+  "twoPermissionsNeeded": "Two permissions are needed for the full experience. You can skip this and enable them later in Settings.",
+  "@twoPermissionsNeeded": { "description": "Permissions skip note" },
+
+  "accessibilityService": "Accessibility Service",
+  "@accessibilityService": { "description": "Accessibility service title" },
+
+  "accessibilityServiceDesc": "Allows tapping, swiping, typing, and reading screen content",
+  "@accessibilityServiceDesc": { "description": "Accessibility service description" },
+
+  "displayOverOtherApps": "Display Over Other Apps",
+  "@displayOverOtherApps": { "description": "Overlay permission title" },
+
+  "displayOverOtherAppsDesc": "Shows a floating status chip so you can see what the agent is doing",
+  "@displayOverOtherAppsDesc": { "description": "Overlay permission description" },
+
+  "changeDefaultModel": "Change default model",
+  "@changeDefaultModel": { "description": "Change default model dialog title" },
+
+  "setModelAsDefault": "Set {name} as the default model.",
+  "@setModelAsDefault": {
+    "description": "Set model as default description",
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "alsoUpdateAgents": "Also update {count} agent{count, plural, =1{} other{s}}",
+  "@alsoUpdateAgents": {
+    "description": "Update agents checkbox",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "startNewSessions": "Start new sessions",
+  "@startNewSessions": { "description": "Start new sessions checkbox" },
+
+  "currentConversationsArchived": "Current conversations will be archived",
+  "@currentConversationsArchived": { "description": "Archive conversations note" },
+
+  "applyAction": "Apply",
+  "@applyAction": { "description": "Apply button" },
+
+  "applyModelQuestion": "Apply {name}?",
+  "@applyModelQuestion": {
+    "description": "Apply model dialog title",
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "setAsDefaultModel": "Set as default model",
+  "@setAsDefaultModel": { "description": "Set as default model checkbox" },
+
+  "usedByAgentsWithout": "Used by agents without a specific model",
+  "@usedByAgentsWithout": { "description": "Default model subtitle" },
+
+  "applyToAgents": "Apply to {count} agent{count, plural, =1{} other{s}}",
+  "@applyToAgents": {
+    "description": "Apply to agents checkbox",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "providerAlreadyAuth": "Provider already authenticated — no API key needed.",
+  "@providerAlreadyAuth": { "description": "Provider authenticated message" },
+
+  "selectFromList": "Select from list",
+  "@selectFromList": { "description": "Select from model list button" },
+
+  "enterCustomModelId": "Enter a custom model ID",
+  "@enterCustomModelId": { "description": "Custom model ID button" },
+
+  "removeSkillTitle": "Remove skill?",
+  "@removeSkillTitle": { "description": "Remove skill dialog title" },
+
+  "browseClawHubToDiscover": "Browse ClawHub to discover and install skills",
+  "@browseClawHubToDiscover": { "description": "Skills empty state hint" },
+
+  "addDeviceTooltip": "Add device",
+  "@addDeviceTooltip": { "description": "Add device tooltip" },
+
+  "addNumberTooltip": "Add number",
+  "@addNumberTooltip": { "description": "Add number tooltip" },
+
+  "searchSkillsHint": "Search skills...",
+  "@searchSkillsHint": { "description": "Search skills hint" },
+
+  "loginToClawHub": "Login to ClawHub",
+  "@loginToClawHub": { "description": "Login to ClawHub tooltip" },
+
+  "accountTooltip": "Account",
+  "@accountTooltip": { "description": "Account tooltip" },
+
+  "editAction": "Edit",
+  "@editAction": { "description": "Edit menu action" },
+
+  "setAsDefaultAction": "Set as default",
+  "@setAsDefaultAction": { "description": "Set as default menu action" },
+
+  "chooseProviderTitle": "Choose provider",
+  "@chooseProviderTitle": { "description": "Choose provider section title" },
+
+  "apiKeyTitle": "API Key",
+  "@apiKeyTitle": { "description": "API Key section title" },
+
+  "slackConfigSaved": "Slack saved — restart the gateway to connect",
+  "@slackConfigSaved": { "description": "Slack config saved snackbar" },
+
+  "signalConfigSaved": "Signal saved — restart gateway to connect",
+  "@signalConfigSaved": { "description": "Signal config saved snackbar" },
+
+  "idPrefix": "ID: {id}",
+  "@idPrefix": {
+    "description": "ID display prefix",
+    "placeholders": { "id": { "type": "String" } }
+  },
+
+  "addDeviceHint": "Add device",
+  "@addDeviceHint": { "description": "Add device tooltip for allowlist" },
+
+  "skipAction": "Skip",
+  "@skipAction": { "description": "Skip button in dialog" }
 }

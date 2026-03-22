@@ -27,18 +27,18 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
     final colors = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Providers & Models')),
+      appBar: AppBar(title: Text(context.l10n.providersAndModels)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // -- Providers section --
-          _SectionLabel(title: 'Providers'),
+          _SectionLabel(title: context.l10n.providers),
           if (config.providerCredentials.isEmpty)
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'No providers configured.',
+                  context.l10n.noProvidersConfigured,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
@@ -86,7 +86,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                       const SizedBox(width: 4),
                       IconButton(
                         icon: const Icon(Icons.edit_outlined, size: 20),
-                        tooltip: 'Edit credentials',
+                        tooltip: context.l10n.editCredentials,
                         onPressed: () =>
                             _showEditProviderCredential(context, provId, cred),
                       ),
@@ -101,7 +101,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
             child: OutlinedButton.icon(
               onPressed: () => _showAddProviderFlow(context),
               icon: const Icon(Icons.add),
-              label: const Text('Add provider'),
+              label: Text(context.l10n.addProvider),
             ),
           ),
 
@@ -112,7 +112,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(
-              'The default model is used by agents that don\'t specify their own.',
+              context.l10n.defaultModelHint,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -239,20 +239,20 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                         },
                         itemBuilder: (_) => [
                           if (!isDefault)
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'default',
                               child: ListTile(
-                                leading: Icon(Icons.star_outline),
-                                title: Text('Set as default'),
+                                leading: const Icon(Icons.star_outline),
+                                title: Text(context.l10n.setAsDefaultAction),
                                 contentPadding: EdgeInsets.zero,
                                 dense: true,
                               ),
                             ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'edit',
                             child: ListTile(
-                              leading: Icon(Icons.edit_outlined),
-                              title: Text('Edit'),
+                              leading: const Icon(Icons.edit_outlined),
+                              title: Text(context.l10n.editAction),
                               contentPadding: EdgeInsets.zero,
                               dense: true,
                             ),
@@ -327,11 +327,12 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
               controller: keyCtl,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'API Key',
+                labelText: context.l10n.apiKey,
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.key),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.paste),
+                  tooltip: context.l10n.paste,
                   onPressed: () async {
                     final data = await Clipboard.getData(Clipboard.kTextPlain);
                     if (data?.text != null) keyCtl.text = data!.text!;
@@ -342,10 +343,10 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: baseCtl,
-              decoration: const InputDecoration(
-                labelText: 'API Base URL',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.link),
+              decoration: InputDecoration(
+                labelText: context.l10n.apiBaseUrl,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.link),
               ),
             ),
             const SizedBox(height: 20),
@@ -355,9 +356,9 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                   final confirmed = await showDialog<bool>(
                     context: ctx,
                     builder: (d) => AlertDialog(
-                      title: const Text('Remove provider'),
+                      title: Text(context.l10n.removeProvider),
                       content: Text(
-                          'Remove credentials for ${catalogProv?.displayName ?? providerId}?'),
+                          context.l10n.removeProviderConfirm(catalogProv?.displayName ?? providerId)),
                       actions: [
                         TextButton(
                             onPressed: () => Navigator.pop(d, false),
@@ -574,18 +575,18 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
           bool sessions = true;
           return StatefulBuilder(
             builder: (ctx, setDialogState) => AlertDialog(
-              title: const Text('Change default model'),
+              title: Text(context.l10n.changeDefaultModel),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Set $modelName as the default model.'),
+                  Text(context.l10n.setModelAsDefault(modelName)),
                   const SizedBox(height: 16),
                   CheckboxListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                        'Also update ${agentsToUpdate.length} agent${agentsToUpdate.length > 1 ? 's' : ''}'),
+                        context.l10n.alsoUpdateAgents(agentsToUpdate.length)),
                     subtitle: Text(
                       agentsToUpdate
                           .map((a) => '${a.emoji} ${a.name}')
@@ -600,9 +601,9 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                   CheckboxListTile(
                     dense: true,
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Start new sessions'),
+                    title: Text(context.l10n.startNewSessions),
                     subtitle:
-                        const Text('Current conversations will be archived'),
+                        Text(context.l10n.currentConversationsArchived),
                     value: sessions,
                     onChanged: (v) =>
                         setDialogState(() => sessions = v ?? false),
@@ -612,7 +613,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Cancel')),
+                    child: Text(context.l10n.cancel)),
                 FilledButton(
                   onPressed: () => Navigator.pop(
                     ctx,
@@ -620,7 +621,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                         updateAgents: agents,
                         startNewSessions: sessions),
                   ),
-                  child: const Text('Apply'),
+                  child: Text(context.l10n.applyAction),
                 ),
               ],
             ),
@@ -654,7 +655,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$modelName set as default model'),
+          content: Text(context.l10n.modelSetAsDefault(modelName)),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -665,8 +666,12 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
 class _DefaultModelAction {
   final bool updateAgents;
   final bool startNewSessions;
-  const _DefaultModelAction(
-      {required this.updateAgents, required this.startNewSessions});
+  final bool setAsDefault;
+  const _DefaultModelAction({
+    required this.updateAgents,
+    required this.startNewSessions,
+    this.setAsDefault = true,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -725,11 +730,11 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
         _selectedProviderId == 'ollama' || _selectedProviderId == 'custom';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Add provider')),
+      appBar: AppBar(title: Text(context.l10n.addProvider)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text('Choose provider',
+          Text(context.l10n.chooseProviderTitle,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
@@ -743,7 +748,7 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
               )),
           if (_selectedProviderId != null) ...[
             const SizedBox(height: 24),
-            Text('API Key',
+            Text(context.l10n.apiKeyTitle,
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -819,7 +824,7 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
                       ? null
                       : () => _save(ref),
                   icon: const Icon(Icons.check),
-                  label: const Text('Save'),
+                  label: Text(context.l10n.save),
                 );
               }),
             ),
@@ -927,8 +932,8 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                 size: 16,
               ),
               label: Text(_useCustomModel
-                  ? 'Select from list'
-                  : 'Enter a custom model ID'),
+                  ? context.l10n.selectFromList
+                  : context.l10n.enterCustomModelId),
               onPressed: () => setState(() {
                 _useCustomModel = !_useCustomModel;
                 if (!_useCustomModel) _customModelCtl.clear();
@@ -938,10 +943,10 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
               const SizedBox(height: 8),
               TextField(
                 controller: _customModelCtl,
-                decoration: const InputDecoration(
-                  labelText: 'Model ID',
-                  border: OutlineInputBorder(),
-                  hintText: 'e.g. google/gemini-2.5-flash (OpenRouter upstream id)',
+                decoration: InputDecoration(
+                  labelText: context.l10n.modelId,
+                  border: const OutlineInputBorder(),
+                  hintText: 'e.g. google/gemini-2.5-flash',
                 ),
                 onChanged: (val) => setState(() =>
                     _selectedModelId =
@@ -963,7 +968,7 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Provider already authenticated — no API key needed.',
+                      context.l10n.providerAlreadyAuth,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.green.shade800,
                       ),
@@ -1014,6 +1019,7 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
               TextField(
                 controller: _apiKeyCtl,
                 obscureText: true,
+                onChanged: (_) => setState(() {}),
                 decoration: InputDecoration(
                   labelText: context.l10n.apiKey,
                   border: const OutlineInputBorder(),
@@ -1026,7 +1032,8 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                           await Clipboard.getData(Clipboard.kTextPlain);
                       if (data?.text != null) {
                         _apiKeyCtl.text = data!.text!;
-                    }
+                        setState(() {});
+                      }
                     },
                   ),
                 ),
@@ -1107,11 +1114,125 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
       input: catalogModel?.input,
     );
 
+    final wasFirstModel = updatedConfig.modelList.isEmpty;
+
     updatedConfig = updatedConfig.copyWith(
       modelList: [...updatedConfig.modelList, modelEntry],
     );
     configManager.update(updatedConfig);
     await configManager.save();
+
+    if (!mounted) return;
+
+    if (wasFirstModel) {
+      // First model ever — auto-set as default and apply to all agents silently.
+      final profiles = configManager.config.agentProfiles
+          .map((a) => a.copyWith(modelName: modelEntry.modelName))
+          .toList();
+      configManager.update(configManager.config.copyWith(
+        agents: AgentsConfig(defaults: AgentsDefaults(modelName: modelEntry.modelName)),
+        agentProfiles: profiles,
+      ));
+      await configManager.save();
+      widget.onModelAdded();
+      if (mounted) Navigator.pop(context);
+      return;
+    }
+
+    // Ask user whether to apply the new model to agents / restart sessions.
+    final agentProfiles = configManager.config.agentProfiles;
+    final result = await showDialog<_DefaultModelAction>(
+      context: context,
+      builder: (ctx) {
+        bool setDefault = true;
+        bool updateAgents = agentProfiles.isNotEmpty;
+        bool newSessions = false;
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) => AlertDialog(
+            title: Text(context.l10n.applyModelQuestion(modelEntry.modelName)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CheckboxListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(context.l10n.setAsDefaultModel),
+                  subtitle: Text(context.l10n.usedByAgentsWithout),
+                  value: setDefault,
+                  onChanged: (v) => setDialogState(() {
+                    setDefault = v ?? false;
+                    if (!setDefault) updateAgents = false;
+                  }),
+                ),
+                if (agentProfiles.isNotEmpty)
+                  CheckboxListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                        context.l10n.applyToAgents(agentProfiles.length)),
+                    subtitle: Text(
+                      agentProfiles.map((a) => '${a.emoji} ${a.name}').join(', '),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    value: updateAgents,
+                    onChanged: setDefault
+                        ? (v) => setDialogState(() => updateAgents = v ?? false)
+                        : null,
+                  ),
+                CheckboxListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(context.l10n.startNewSessions),
+                  subtitle: Text(context.l10n.currentConversationsArchived),
+                  value: newSessions,
+                  onChanged: (v) => setDialogState(() => newSessions = v ?? false),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(context.l10n.skip)),
+              FilledButton(
+                onPressed: () => Navigator.pop(
+                  ctx,
+                  _DefaultModelAction(
+                      updateAgents: setDefault && updateAgents,
+                      startNewSessions: newSessions,
+                      setAsDefault: setDefault),
+                ),
+                child: Text(context.l10n.applyAction),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (result != null) {
+      var cfg = configManager.config;
+      if (result.setAsDefault) {
+        cfg = cfg.copyWith(
+          agents: AgentsConfig(defaults: AgentsDefaults(modelName: modelEntry.modelName)),
+        );
+      }
+      if (result.updateAgents) {
+        cfg = cfg.copyWith(
+          agentProfiles: cfg.agentProfiles
+              .map((a) => a.copyWith(modelName: modelEntry.modelName))
+              .toList(),
+        );
+      }
+      if (result.setAsDefault || result.updateAgents) {
+        configManager.update(cfg);
+        await configManager.save();
+      }
+      if (result.startNewSessions && mounted) {
+        ref.read(chatProvider.notifier).clear();
+      }
+    }
 
     widget.onModelAdded();
     if (mounted) Navigator.pop(context);

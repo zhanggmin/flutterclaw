@@ -1085,5 +1085,580 @@ class AppLocalizationsId extends AppLocalizations {
   String get messagesAbbrev => 'psn';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'Model ini sudah ada dalam daftar Anda';
+
+  @override
+  String get bothTokensRequired => 'Kedua token diperlukan';
+
+  @override
+  String get slackSavedRestart =>
+      'Slack disimpan — restart gateway untuk menghubungkan';
+
+  @override
+  String get slackConfiguration => 'Konfigurasi Slack';
+
+  @override
+  String get setupTitle => 'Pengaturan';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. Buat Aplikasi Slack di api.slack.com/apps\n2. Aktifkan Socket Mode → buat App-Level Token (xapp-…)\n   dengan cakupan: connections:write\n3. Tambahkan Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Instal aplikasi ke workspace → salin Bot Token (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'App-Level Token (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired => 'URL API dan nomor telepon diperlukan';
+
+  @override
+  String get signalSavedRestart =>
+      'Signal disimpan — restart gateway untuk menghubungkan';
+
+  @override
+  String get signalConfiguration => 'Konfigurasi Signal';
+
+  @override
+  String get requirementsTitle => 'Persyaratan';
+
+  @override
+  String get signalRequirements =>
+      'Memerlukan signal-cli-rest-api berjalan di server:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nDaftarkan/hubungkan nomor Signal Anda melalui REST API, lalu masukkan URL dan nomor telepon Anda di bawah.';
+
+  @override
+  String get signalApiUrl => 'URL signal-cli-rest-api';
+
+  @override
+  String get signalPhoneNumber => 'Nomor telepon Signal Anda';
+
+  @override
+  String get userIdLabel => 'ID Pengguna';
+
+  @override
+  String get enterDiscordUserId => 'Masukkan ID pengguna Discord';
+
+  @override
+  String get enterTelegramUserId => 'Masukkan ID pengguna Telegram';
+
+  @override
+  String get fromDiscordDevPortal => 'Dari Discord Developer Portal';
+
+  @override
+  String get allowedUserIdsTitle => 'ID Pengguna yang Diizinkan';
+
+  @override
+  String get approvedDevice => 'Perangkat yang disetujui';
+
+  @override
+  String get allowedUser => 'Pengguna yang diizinkan';
+
+  @override
+  String get howToGetBotToken => 'Cara mendapatkan token bot Anda';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. Kunjungi Discord Developer Portal\n2. Buat aplikasi dan bot baru\n3. Salin token dan tempel di atas\n4. Aktifkan Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. Buka Telegram dan cari @BotFather\n2. Kirim /newbot dan ikuti instruksinya\n3. Salin token dan tempel di atas';
+
+  @override
+  String get fromBotFatherHint => 'Dapatkan dari @BotFather';
+
+  @override
+  String get accessTokenLabel => 'Token akses';
+
+  @override
+  String get notSetOpenAccess =>
+      'Tidak diatur — akses terbuka (hanya loopback)';
+
+  @override
+  String get gatewayAccessToken => 'Token akses gateway';
+
+  @override
+  String get tokenFieldLabel => 'Token';
+
+  @override
+  String get leaveEmptyDisableAuth =>
+      'Biarkan kosong untuk menonaktifkan autentikasi';
+
+  @override
+  String get toolPolicies => 'Kebijakan Alat';
+
+  @override
+  String get toolPoliciesDesc =>
+      'Kontrol apa yang dapat diakses agen. Alat yang dinonaktifkan disembunyikan dari AI dan diblokir saat runtime.';
+
+  @override
+  String get privacySensors => 'Privasi & Sensor';
+
+  @override
+  String get networkCategory => 'Jaringan';
+
+  @override
+  String get systemCategory => 'Sistem';
+
+  @override
+  String get toolTakePhotos => 'Ambil Foto';
+
+  @override
+  String get toolTakePhotosDesc =>
+      'Izinkan agen mengambil foto menggunakan kamera';
+
+  @override
+  String get toolRecordVideo => 'Rekam Video';
+
+  @override
+  String get toolRecordVideoDesc => 'Izinkan agen merekam video';
+
+  @override
+  String get toolLocation => 'Lokasi';
+
+  @override
+  String get toolLocationDesc =>
+      'Izinkan agen membaca lokasi GPS Anda saat ini';
+
+  @override
+  String get toolHealthData => 'Data Kesehatan';
+
+  @override
+  String get toolHealthDataDesc =>
+      'Izinkan agen membaca data kesehatan/kebugaran';
+
+  @override
+  String get toolContacts => 'Kontak';
+
+  @override
+  String get toolContactsDesc => 'Izinkan agen mencari kontak Anda';
+
+  @override
+  String get toolScreenshots => 'Tangkapan Layar';
+
+  @override
+  String get toolScreenshotsDesc => 'Izinkan agen mengambil tangkapan layar';
+
+  @override
+  String get toolWebFetch => 'Ambil Web';
+
+  @override
+  String get toolWebFetchDesc => 'Izinkan agen mengambil konten dari URL';
+
+  @override
+  String get toolWebSearch => 'Pencarian Web';
+
+  @override
+  String get toolWebSearchDesc => 'Izinkan agen mencari di web';
+
+  @override
+  String get toolHttpRequests => 'Permintaan HTTP';
+
+  @override
+  String get toolHttpRequestsDesc =>
+      'Izinkan agen membuat permintaan HTTP sewenang-wenang';
+
+  @override
+  String get toolSandboxShell => 'Shell Sandbox';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'Izinkan agen menjalankan perintah shell di sandbox';
+
+  @override
+  String get toolImageGeneration => 'Pembuatan Gambar';
+
+  @override
+  String get toolImageGenerationDesc =>
+      'Izinkan agen membuat gambar melalui AI';
+
+  @override
+  String get toolLaunchApps => 'Luncurkan Aplikasi';
+
+  @override
+  String get toolLaunchAppsDesc =>
+      'Izinkan agen membuka aplikasi yang terinstal';
+
+  @override
+  String get toolLaunchIntents => 'Luncurkan Intent';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'Izinkan agen memicu Android intent (tautan dalam, layar sistem)';
+
+  @override
+  String get renameSession => 'Ganti nama sesi';
+
+  @override
+  String get myConversationName => 'Nama percakapan saya';
+
+  @override
+  String get renameAction => 'Ganti nama';
+
+  @override
+  String get couldNotTranscribeAudio => 'Tidak dapat mentranskripsikan audio';
+
+  @override
+  String get stopRecording => 'Hentikan perekaman';
+
+  @override
+  String get voiceInput => 'Input suara';
+
+  @override
+  String get copyTooltip => 'Salin';
+
+  @override
+  String get commandsTooltip => 'Perintah';
+
+  @override
+  String get providersAndModels => 'Penyedia & Model';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count model dikonfigurasi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'Mulai otomatis diaktifkan';
+
+  @override
+  String get autoStartOffLabel => 'Mulai otomatis dinonaktifkan';
+
+  @override
+  String get allToolsEnabled => 'Semua alat diaktifkan';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count alat dinonaktifkan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests =>
+      'Tidak ada permintaan pemasangan yang tertunda';
+
+  @override
+  String get pairingRequestsTitle => 'Permintaan Pemasangan';
+
+  @override
+  String get gatewayStartingStatus => 'Memulai gateway...';
+
+  @override
+  String get gatewayRetryingStatus => 'Mencoba ulang memulai gateway...';
+
+  @override
+  String get errorStartingGateway => 'Kesalahan memulai gateway';
+
+  @override
+  String get runningStatus => 'Berjalan';
+
+  @override
+  String get stoppedStatus => 'Dihentikan';
+
+  @override
+  String get notSetUpStatus => 'Belum diatur';
+
+  @override
+  String get configuredStatus => 'Dikonfigurasi';
+
+  @override
+  String get whatsAppConfigSaved => 'Konfigurasi WhatsApp disimpan';
+
+  @override
+  String get whatsAppDisconnected => 'WhatsApp terputus';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'Menerapkan...';
+
+  @override
+  String get reconnectWhatsApp => 'Hubungkan Ulang WhatsApp';
+
+  @override
+  String get saveSettingsLabel => 'Simpan Pengaturan';
+
+  @override
+  String get applySettingsRestart => 'Terapkan Pengaturan & Restart';
+
+  @override
+  String get whatsAppMode => 'Mode WhatsApp';
+
+  @override
+  String get myPersonalNumber => 'Nomor pribadi saya';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'Pesan yang Anda kirim ke obrolan WhatsApp Anda sendiri akan membangunkan agen.';
+
+  @override
+  String get dedicatedBotAccount => 'Akun bot khusus';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'Pesan yang dikirim dari akun yang ditautkan sendiri diabaikan sebagai pesan keluar.';
+
+  @override
+  String get allowedNumbers => 'Nomor yang Diizinkan';
+
+  @override
+  String get addNumberTitle => 'Tambah Nomor';
+
+  @override
+  String get phoneNumberJid => 'Nomor telepon / JID';
+
+  @override
+  String get noAllowedNumbersConfigured =>
+      'Tidak ada nomor yang diizinkan dikonfigurasi';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'Perangkat muncul di sini setelah Anda menyetujui permintaan pemasangan';
+
+  @override
+  String get addPhoneNumbersHint =>
+      'Tambahkan nomor telepon untuk mengizinkan mereka menggunakan bot';
+
+  @override
+  String get allowedNumber => 'Nomor yang diizinkan';
+
+  @override
+  String get howToConnect => 'Cara menghubungkan';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. Ketuk \"Hubungkan WhatsApp\" di atas\n2. Kode QR akan muncul — pindai dengan WhatsApp\n   (Pengaturan → Perangkat Tertaut → Tautkan Perangkat)\n3. Setelah terhubung, pesan masuk akan diarahkan\n   ke agen AI aktif Anda secara otomatis';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'Pengirim baru mendapat kode pemasangan. Anda menyetujui mereka.';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'Hanya nomor telepon tertentu yang dapat mengirim pesan ke bot.';
+
+  @override
+  String get whatsAppOpenDesc =>
+      'Siapa saja yang mengirim pesan kepada Anda dapat menggunakan bot.';
+
+  @override
+  String get whatsAppDisabledDesc =>
+      'Bot tidak akan merespons pesan masuk apa pun.';
+
+  @override
+  String get sessionExpiredRelink =>
+      'Sesi kedaluwarsa. Ketuk \"Hubungkan Ulang\" di bawah untuk memindai kode QR baru.';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'Ketuk \"Hubungkan WhatsApp\" di bawah untuk menautkan akun Anda.';
+
+  @override
+  String get whatsAppAcceptedQr =>
+      'WhatsApp menerima QR. Menyelesaikan tautan...';
+
+  @override
+  String get waitingForWhatsApp => 'Menunggu WhatsApp menyelesaikan tautan...';
+
+  @override
+  String get focusedLabel => 'Fokus';
+
+  @override
+  String get balancedLabel => 'Seimbang';
+
+  @override
+  String get creativeLabel => 'Kreatif';
+
+  @override
+  String get preciseLabel => 'Tepat';
+
+  @override
+  String get expressiveLabel => 'Ekspresif';
+
+  @override
+  String get browseLabel => 'Jelajahi';
+
+  @override
+  String get apiTokenLabel => 'Token API';
+
+  @override
+  String get connectToClawHub => 'Hubungkan ke ClawHub';
+
+  @override
+  String get clawHubLoginHint =>
+      'Login ke ClawHub untuk mengakses keterampilan premium dan menginstal paket';
+
+  @override
+  String get howToGetApiToken => 'Cara mendapatkan token API Anda:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. Kunjungi clawhub.ai dan login dengan GitHub\n2. Jalankan \"clawhub login\" di terminal\n3. Salin token Anda dan tempel di sini';
+
+  @override
+  String connectionFailed(String error) {
+    return 'Koneksi gagal: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    return '$count kali dijalankan';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'Dijalankan selanjutnya: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'Kesalahan terakhir: $error';
+  }
+
+  @override
+  String get cronJobHintText =>
+      'Instruksi untuk agen ketika pekerjaan ini dijalankan…';
+
+  @override
+  String get androidPermissions => 'Izin Android';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw dapat mengontrol layar Anda — mengetuk tombol, mengisi formulir, menggulir, dan mengotomatisasi tugas berulang di aplikasi apa pun.';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'Dua izin diperlukan untuk pengalaman lengkap. Anda dapat melewati ini dan mengaktifkannya nanti di Pengaturan.';
+
+  @override
+  String get accessibilityService => 'Layanan Aksesibilitas';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'Mengizinkan mengetuk, menggeser, mengetik, dan membaca konten layar';
+
+  @override
+  String get displayOverOtherApps => 'Tampilkan di Atas Aplikasi Lain';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'Menampilkan chip status mengambang agar Anda dapat melihat apa yang dilakukan agen';
+
+  @override
+  String get changeDefaultModel => 'Ubah model default';
+
+  @override
+  String setModelAsDefault(String name) {
+    return 'Atur $name sebagai model default.';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '');
+    return 'Juga perbarui $count agen$_temp0';
+  }
+
+  @override
+  String get startNewSessions => 'Mulai sesi baru';
+
+  @override
+  String get currentConversationsArchived =>
+      'Percakapan saat ini akan diarsipkan';
+
+  @override
+  String get applyAction => 'Terapkan';
+
+  @override
+  String applyModelQuestion(String name) {
+    return 'Terapkan $name?';
+  }
+
+  @override
+  String get setAsDefaultModel => 'Atur sebagai model default';
+
+  @override
+  String get usedByAgentsWithout => 'Digunakan oleh agen tanpa model tertentu';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '');
+    return 'Terapkan ke $count agen$_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'Penyedia sudah diautentikasi — tidak perlu kunci API.';
+
+  @override
+  String get selectFromList => 'Pilih dari daftar';
+
+  @override
+  String get enterCustomModelId => 'Masukkan ID model kustom';
+
+  @override
+  String get removeSkillTitle => 'Hapus keterampilan?';
+
+  @override
+  String get browseClawHubToDiscover =>
+      'Jelajahi ClawHub untuk menemukan dan menginstal keterampilan';
+
+  @override
+  String get addDeviceTooltip => 'Tambah perangkat';
+
+  @override
+  String get addNumberTooltip => 'Tambah nomor';
+
+  @override
+  String get searchSkillsHint => 'Cari keterampilan...';
+
+  @override
+  String get loginToClawHub => 'Login ke ClawHub';
+
+  @override
+  String get accountTooltip => 'Akun';
+
+  @override
+  String get editAction => 'Edit';
+
+  @override
+  String get setAsDefaultAction => 'Atur sebagai default';
+
+  @override
+  String get chooseProviderTitle => 'Pilih penyedia';
+
+  @override
+  String get apiKeyTitle => 'Kunci API';
+
+  @override
+  String get slackConfigSaved =>
+      'Slack disimpan — restart gateway untuk menghubungkan';
+
+  @override
+  String get signalConfigSaved =>
+      'Signal disimpan — restart gateway untuk menghubungkan';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'Tambah perangkat';
+
+  @override
+  String get skipAction => 'Lewati';
 }

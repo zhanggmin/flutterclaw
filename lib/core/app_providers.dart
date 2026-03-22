@@ -65,6 +65,7 @@ import 'package:flutterclaw/services/voice_recording_service.dart';
 import 'package:flutterclaw/services/audio_transcription_service.dart';
 import 'package:flutterclaw/services/overlay_service.dart';
 import 'package:flutterclaw/services/text_to_speech_service.dart';
+import 'package:flutterclaw/tools/tool_status_formatter.dart';
 
 final configManagerProvider = Provider<ConfigManager>((ref) {
   return ConfigManager();
@@ -431,15 +432,23 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
   // UI Automation tools (Android: full device automation via AccessibilityService;
   // iOS: screenshot only)
   final uiSvc = ref.read(uiAutomationServiceProvider);
+  final uiOverlay = ref.read(overlayServiceProvider);
   registry.register(UiCheckPermissionTool(uiSvc));
   registry.register(UiRequestPermissionTool(uiSvc));
-  registry.register(UiTapTool(uiSvc));
-  registry.register(UiSwipeTool(uiSvc));
-  registry.register(UiTypeTextTool(uiSvc));
+  registry.register(UiTapTool(uiSvc, uiOverlay));
+  registry.register(UiSwipeTool(uiSvc, uiOverlay));
+  registry.register(UiTypeTextTool(uiSvc, uiOverlay));
   registry.register(UiFindElementsTool(uiSvc));
-  registry.register(UiClickElementTool(uiSvc));
+  registry.register(UiClickElementTool(uiSvc, uiOverlay));
   registry.register(UiScreenshotTool(uiSvc));
   registry.register(UiGlobalActionTool(uiSvc));
+  registry.register(UiLaunchAppTool(uiSvc));
+  registry.register(UiLaunchIntentTool(uiSvc));
+  registry.register(UiListAppsTool(uiSvc));
+  registry.register(UiAppIntentsTool(uiSvc));
+  registry.register(UiBatchActionsTool(uiSvc, uiOverlay));
+  registry.register(UiAskUserTool(uiOverlay));
+  registry.register(UiStatusTool(uiOverlay));
 
   // Sandbox shell tool (Android: PRoot + Alpine rootfs; iOS: unavailable stub)
   final sandboxSvc = ref.read(sandboxServiceProvider);
@@ -456,27 +465,19 @@ final providerRouterProvider = Provider<ProviderRouter>((ref) {
   );
 });
 
-String _formatToolLabel(String name, Map<String, dynamic>? args) {
-  if (args == null || args.isEmpty) return name;
-  final raw =
-      args['path'] ?? args['query'] ?? args['url'] ?? args['key'] ??
-      args.values.whereType<String>().firstOrNull;
-  if (raw == null) return name;
-  final label = raw.toString();
-  final display = label.contains('/')
-      ? label.split('/').where((s) => s.isNotEmpty).last
-      : label;
-  final truncated = display.length > 40
-      ? '${display.substring(0, 40)}...'
-      : display;
-  return '$name: $truncated';
-}
-
 final agentLoopProvider = Provider<AgentLoop>((ref) {
   final skillsService = ref.read(skillsServiceProvider);
   final notifService = ref.read(notificationServiceProvider);
   final overlayService = ref.read(overlayServiceProvider);
   final configManager = ref.watch(configManagerProvider);
+
+  // Set agent identity on the overlay so the pill shows emoji + name.
+  final activeAgent = configManager.config.activeAgent;
+  if (activeAgent != null) {
+    overlayService
+        .setAgent(activeAgent.name, activeAgent.emoji)
+        .catchError((_) {});
+  }
 
   final loop = AgentLoop(
     configManager: configManager,
@@ -489,10 +490,12 @@ final agentLoopProvider = Provider<AgentLoop>((ref) {
       try {
         if (isDone) {
           log.info('Tool done: $toolName');
-          overlayService.hide();
+          // Don't revert to generic "working…" — let the next thinking
+          // status or tool status update the overlay naturally. This avoids
+          // flashing "Nova is working..." over the step narration text.
           return;
         }
-        final label = _formatToolLabel(toolName, args);
+        final label = formatFriendlyToolStatus(toolName, args);
         final agentName = configManager.config.activeAgent?.name ?? 'Agent';
         log.info('Tool start: $toolName → overlay.show("$label")');
         overlayService.show(label).catchError((e) {
@@ -1101,7 +1104,10 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
 
     final history = sessionManager.getContextMessages(sessionKey);
 
-    if (history.isEmpty) return;
+    if (history.isEmpty) {
+      state = [];
+      return;
+    }
 
     // First pass: build a map of tool_call_id → tool result content
     final toolResults = <String, String>{};
@@ -1211,6 +1217,11 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
 
     final agentLoop = ref.read(agentLoopProvider);
 
+    final overlayService = ref.read(overlayServiceProvider);
+    final agentName =
+        ref.read(configManagerProvider).config.activeAgent?.name ?? 'Agent';
+    overlayService.show('$agentName is working...').catchError((_) {});
+
     bool startedAudio = false;
     if (Platform.isIOS && !IosBackgroundAudioService.isPlaying) {
       startedAudio = await IosBackgroundAudioService.start();
@@ -1287,6 +1298,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
       }
       state = updated;
     } finally {
+      overlayService.showDone().catchError((_) {});
       _cancelled = false;
       _processing = false;
       if (startedAudio && !IosGatewayService.isRunning) {
@@ -1333,6 +1345,10 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     ];
 
     final agentLoop = ref.read(agentLoopProvider);
+    final overlayService = ref.read(overlayServiceProvider);
+    final agentName =
+        ref.read(configManagerProvider).config.activeAgent?.name ?? 'Agent';
+    overlayService.show('$agentName is working...').catchError((_) {});
 
     bool startedAudio = false;
     if (Platform.isIOS && !IosBackgroundAudioService.isPlaying) {
@@ -1410,6 +1426,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
           }
         });
       }
+      overlayService.showDone().catchError((_) {});
       unawaited(_syncActiveAgentIdentity());
     }
   }
@@ -1450,6 +1467,10 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     ];
 
     final agentLoop = ref.read(agentLoopProvider);
+    final overlayService = ref.read(overlayServiceProvider);
+    final agentName =
+        ref.read(configManagerProvider).config.activeAgent?.name ?? 'Agent';
+    overlayService.show('$agentName is working...').catchError((_) {});
 
     bool startedAudio = false;
     if (Platform.isIOS && !IosBackgroundAudioService.isPlaying) {
@@ -1530,6 +1551,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
           }
         });
       }
+      overlayService.showDone().catchError((_) {});
       unawaited(_syncActiveAgentIdentity());
     }
   }
@@ -1542,6 +1564,12 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
       final handler = ref.read(chatCommandHandlerProvider);
       final result = await handler.handle(_getSessionKey(), text);
       if (result.handled && result.response != null) {
+        if (result.clearChatUi) {
+          state = [];
+          _historyLoadedForAgent = _getSessionKey();
+          _hatchTriggered = false;
+          return;
+        }
         final isShellCmd = text.trim().startsWith('/sh ');
         state = [
           ...state,
@@ -1594,6 +1622,11 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     if (Platform.isIOS && !IosBackgroundAudioService.isPlaying) {
       startedAudio = await IosBackgroundAudioService.start();
     }
+
+    final overlayService = ref.read(overlayServiceProvider);
+    final agentName =
+        ref.read(configManagerProvider).config.activeAgent?.name ?? 'Agent';
+    overlayService.show('$agentName is working...').catchError((_) {});
 
     try {
       final buffer = StringBuffer();
@@ -1728,6 +1761,8 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
       }
       state = updated;
     } finally {
+      // Signal agent run completed — show brief "Done" then auto-hide.
+      overlayService.showDone().catchError((_) {});
       _cancelled = false;
       _processing = false;
       // Stop background audio if we started it just for this request and the

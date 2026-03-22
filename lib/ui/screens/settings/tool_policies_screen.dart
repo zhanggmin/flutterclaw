@@ -2,21 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/data/models/config.dart';
+import 'package:flutterclaw/l10n/l10n_extension.dart';
 
-// Tool name → (user-friendly label, description)
-const _kToolInfo = {
-  'camera_take_photo': ('Take Photos', 'Allow the agent to take photos using the camera'),
-  'camera_record_video': ('Record Video', 'Allow the agent to record video'),
-  'get_location': ('Location', 'Allow the agent to read your current GPS location'),
-  'get_health_data': ('Health Data', 'Allow the agent to read health/fitness data'),
-  'contacts_search': ('Contacts', 'Allow the agent to search your contacts'),
-  'ui_screenshot': ('Screenshots', 'Allow the agent to take screenshots of the screen'),
-  'web_fetch': ('Web Fetch', 'Allow the agent to fetch content from URLs'),
-  'web_search': ('Web Search', 'Allow the agent to search the web'),
-  'http_request': ('HTTP Requests', 'Allow the agent to make arbitrary HTTP requests'),
-  'sandbox_exec': ('Sandbox Shell', 'Allow the agent to run shell commands in the sandbox'),
-  'image_generate': ('Image Generation', 'Allow the agent to generate images via AI'),
-};
+// Helper to get tool info from l10n
+(String, String) _getToolInfo(BuildContext context, String toolName) {
+  final l10n = context.l10n;
+  switch (toolName) {
+    case 'camera_take_photo':
+      return (l10n.toolTakePhotos, l10n.toolTakePhotosDesc);
+    case 'camera_record_video':
+      return (l10n.toolRecordVideo, l10n.toolRecordVideoDesc);
+    case 'get_location':
+      return (l10n.toolLocation, l10n.toolLocationDesc);
+    case 'get_health_data':
+      return (l10n.toolHealthData, l10n.toolHealthDataDesc);
+    case 'contacts_search':
+      return (l10n.toolContacts, l10n.toolContactsDesc);
+    case 'ui_screenshot':
+      return (l10n.toolScreenshots, l10n.toolScreenshotsDesc);
+    case 'web_fetch':
+      return (l10n.toolWebFetch, l10n.toolWebFetchDesc);
+    case 'web_search':
+      return (l10n.toolWebSearch, l10n.toolWebSearchDesc);
+    case 'http_request':
+      return (l10n.toolHttpRequests, l10n.toolHttpRequestsDesc);
+    case 'sandbox_exec':
+      return (l10n.toolSandboxShell, l10n.toolSandboxShellDesc);
+    case 'image_generate':
+      return (l10n.toolImageGeneration, l10n.toolImageGenerationDesc);
+    case 'ui_launch_app':
+      return (l10n.toolLaunchApps, l10n.toolLaunchAppsDesc);
+    case 'ui_launch_intent':
+      return (l10n.toolLaunchIntents, l10n.toolLaunchIntentsDesc);
+    default:
+      return (toolName, toolName);
+  }
+}
 
 const _kPrivacyTools = [
   'camera_take_photo',
@@ -36,6 +57,8 @@ const _kNetworkTools = [
 const _kSystemTools = [
   'sandbox_exec',
   'image_generate',
+  'ui_launch_app',
+  'ui_launch_intent',
 ];
 
 /// Tool policies settings sub-screen — grouped by category with friendly descriptions.
@@ -54,26 +77,26 @@ class _ToolPoliciesScreenState extends ConsumerState<ToolPoliciesScreen> {
     final config = configManager.config;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tool Policies')),
+      appBar: AppBar(title: Text(context.l10n.toolPolicies)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: Text(
-              'Control what the agent can access. Disabled tools are hidden from the AI and blocked at runtime.',
+              context.l10n.toolPoliciesDesc,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ),
-          _buildCategory(context, 'Privacy & Sensors', Icons.privacy_tip_outlined,
+          _buildCategory(context, context.l10n.privacySensors, Icons.privacy_tip_outlined,
               _kPrivacyTools, config, configManager),
           const SizedBox(height: 16),
-          _buildCategory(context, 'Network', Icons.wifi_outlined,
+          _buildCategory(context, context.l10n.networkCategory, Icons.wifi_outlined,
               _kNetworkTools, config, configManager),
           const SizedBox(height: 16),
-          _buildCategory(context, 'System', Icons.terminal,
+          _buildCategory(context, context.l10n.systemCategory, Icons.terminal,
               _kSystemTools, config, configManager),
           const SizedBox(height: 32),
         ],
@@ -111,9 +134,9 @@ class _ToolPoliciesScreenState extends ConsumerState<ToolPoliciesScreen> {
         Card(
           child: Column(
             children: tools.map((toolName) {
-              final info = _kToolInfo[toolName];
-              final friendlyName = info?.$1 ?? toolName;
-              final description = info?.$2 ?? toolName;
+              final info = _getToolInfo(context, toolName);
+              final friendlyName = info.$1;
+              final description = info.$2;
               final disabled = config.tools.disabled.contains(toolName);
               return SwitchListTile(
                 title: Text(friendlyName),

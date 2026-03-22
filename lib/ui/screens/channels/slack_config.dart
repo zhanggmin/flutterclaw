@@ -39,7 +39,7 @@ class _SlackConfigScreenState extends ConsumerState<SlackConfigScreen> {
     final appToken = _appTokenCtrl.text.trim();
     if (botToken.isEmpty || appToken.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Both tokens are required')),
+        SnackBar(content: Text(context.l10n.bothTokensRequired)),
       );
       return;
     }
@@ -63,8 +63,8 @@ class _SlackConfigScreenState extends ConsumerState<SlackConfigScreen> {
       await configManager.save();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Slack saved — restart the gateway to connect'),
+        SnackBar(
+          content: Text(context.l10n.slackSavedRestart),
         ),
       );
       Navigator.pop(context);
@@ -81,7 +81,7 @@ class _SlackConfigScreenState extends ConsumerState<SlackConfigScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Slack Configuration')),
+      appBar: AppBar(title: Text(context.l10n.slackConfiguration)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -91,15 +91,10 @@ class _SlackConfigScreenState extends ConsumerState<SlackConfigScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Setup', style: theme.textTheme.titleMedium),
+                  Text(context.l10n.setupTitle, style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
                   Text(
-                    '1. Create a Slack App at api.slack.com/apps\n'
-                    '2. Enable Socket Mode → generate App-Level Token (xapp-…)\n'
-                    '   with scope: connections:write\n'
-                    '3. Add Bot Token Scopes: chat:write, channels:history,\n'
-                    '   groups:history, im:history, mpim:history\n'
-                    '4. Install app to workspace → copy Bot Token (xoxb-…)',
+                    context.l10n.slackSetupInstructions,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -112,20 +107,20 @@ class _SlackConfigScreenState extends ConsumerState<SlackConfigScreen> {
           TextField(
             controller: _botTokenCtrl,
             obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Bot Token (xoxb-…)',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.key),
+            decoration: InputDecoration(
+              labelText: context.l10n.botTokenXoxb,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.key),
             ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _appTokenCtrl,
             obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'App-Level Token (xapp-…)',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.vpn_key_outlined),
+            decoration: InputDecoration(
+              labelText: context.l10n.appLevelToken,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.vpn_key_outlined),
             ),
           ),
           const SizedBox(height: 24),
@@ -138,7 +133,7 @@ class _SlackConfigScreenState extends ConsumerState<SlackConfigScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.check),
-            label: const Text('Save & Connect'),
+            label: Text(context.l10n.saveAndConnect),
           ),
         ],
       ),

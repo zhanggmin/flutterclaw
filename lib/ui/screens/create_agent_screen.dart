@@ -363,9 +363,9 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Focused', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
-                Text('Balanced', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
-                Text('Creative', style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                Text(context.l10n.focusedLabel, style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                Text(context.l10n.balancedLabel, style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
+                Text(context.l10n.creativeLabel, style: theme.textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant)),
               ],
             ),
             const SizedBox(height: 8),
@@ -464,11 +464,11 @@ class _CreateAgentScreenState extends ConsumerState<CreateAgentScreen> {
   }
 
   String _temperatureDescription(double t) {
-    if (t <= 0.2) return 'Focused';
-    if (t <= 0.5) return 'Precise';
-    if (t <= 0.7) return 'Balanced';
-    if (t <= 0.9) return 'Expressive';
-    return 'Creative';
+    if (t <= 0.2) return context.l10n.focusedLabel;
+    if (t <= 0.5) return context.l10n.preciseLabel;
+    if (t <= 0.7) return context.l10n.balancedLabel;
+    if (t <= 0.9) return context.l10n.expressiveLabel;
+    return context.l10n.creativeLabel;
   }
 
   void _showEmojiPicker() {

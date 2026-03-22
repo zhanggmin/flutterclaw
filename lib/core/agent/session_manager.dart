@@ -437,6 +437,7 @@ class SessionManager {
     _contextCache[key] = [];
     _lastEntryId = null;
     await _saveStore(dir);
+    _sessionsChangedController.add(null);
     _log.info('Reset session $key (new transcript: $newId)');
   }
 

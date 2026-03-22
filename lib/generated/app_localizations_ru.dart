@@ -1085,5 +1085,599 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesAbbrev => 'сообщ.';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'Эта модель уже есть в вашем списке';
+
+  @override
+  String get bothTokensRequired => 'Оба токена обязательны';
+
+  @override
+  String get slackSavedRestart =>
+      'Slack сохранен — перезапустите шлюз для подключения';
+
+  @override
+  String get slackConfiguration => 'Конфигурация Slack';
+
+  @override
+  String get setupTitle => 'Настройка';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. Создайте приложение Slack на api.slack.com/apps\n2. Включите Socket Mode → сгенерируйте App-Level Token (xapp-…)\n   с областью: connections:write\n3. Добавьте Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Установите приложение в workspace → скопируйте Bot Token (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'App-Level Token (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired => 'URL API и номер телефона обязательны';
+
+  @override
+  String get signalSavedRestart =>
+      'Signal сохранен — перезапустите шлюз для подключения';
+
+  @override
+  String get signalConfiguration => 'Конфигурация Signal';
+
+  @override
+  String get requirementsTitle => 'Требования';
+
+  @override
+  String get signalRequirements =>
+      'Требуется signal-cli-rest-api, работающий на сервере:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nЗарегистрируйте/привяжите свой номер Signal через REST API, затем введите URL и номер телефона ниже.';
+
+  @override
+  String get signalApiUrl => 'URL signal-cli-rest-api';
+
+  @override
+  String get signalPhoneNumber => 'Ваш номер телефона Signal';
+
+  @override
+  String get userIdLabel => 'ID Пользователя';
+
+  @override
+  String get enterDiscordUserId => 'Введите ID пользователя Discord';
+
+  @override
+  String get enterTelegramUserId => 'Введите ID пользователя Telegram';
+
+  @override
+  String get fromDiscordDevPortal => 'Из Discord Developer Portal';
+
+  @override
+  String get allowedUserIdsTitle => 'Разрешенные ID Пользователей';
+
+  @override
+  String get approvedDevice => 'Одобренное устройство';
+
+  @override
+  String get allowedUser => 'Разрешенный пользователь';
+
+  @override
+  String get howToGetBotToken => 'Как получить токен бота';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. Перейдите в Discord Developer Portal\n2. Создайте новое приложение и бота\n3. Скопируйте токен и вставьте его выше\n4. Включите Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. Откройте Telegram и найдите @BotFather\n2. Отправьте /newbot и следуйте инструкциям\n3. Скопируйте токен и вставьте его выше';
+
+  @override
+  String get fromBotFatherHint => 'Получите от @BotFather';
+
+  @override
+  String get accessTokenLabel => 'Токен доступа';
+
+  @override
+  String get notSetOpenAccess =>
+      'Не установлен — открытый доступ (только loopback)';
+
+  @override
+  String get gatewayAccessToken => 'Токен доступа к шлюзу';
+
+  @override
+  String get tokenFieldLabel => 'Токен';
+
+  @override
+  String get leaveEmptyDisableAuth =>
+      'Оставьте пустым, чтобы отключить аутентификацию';
+
+  @override
+  String get toolPolicies => 'Политики Инструментов';
+
+  @override
+  String get toolPoliciesDesc =>
+      'Контролируйте, к чему может получить доступ агент. Отключенные инструменты скрыты от ИИ и заблокированы во время выполнения.';
+
+  @override
+  String get privacySensors => 'Конфиденциальность и Датчики';
+
+  @override
+  String get networkCategory => 'Сеть';
+
+  @override
+  String get systemCategory => 'Система';
+
+  @override
+  String get toolTakePhotos => 'Делать Фотографии';
+
+  @override
+  String get toolTakePhotosDesc =>
+      'Разрешить агенту делать фотографии с помощью камеры';
+
+  @override
+  String get toolRecordVideo => 'Записывать Видео';
+
+  @override
+  String get toolRecordVideoDesc => 'Разрешить агенту записывать видео';
+
+  @override
+  String get toolLocation => 'Местоположение';
+
+  @override
+  String get toolLocationDesc =>
+      'Разрешить агенту читать ваше текущее GPS-местоположение';
+
+  @override
+  String get toolHealthData => 'Данные о Здоровье';
+
+  @override
+  String get toolHealthDataDesc =>
+      'Разрешить агенту читать данные о здоровье/фитнесе';
+
+  @override
+  String get toolContacts => 'Контакты';
+
+  @override
+  String get toolContactsDesc => 'Разрешить агенту искать в ваших контактах';
+
+  @override
+  String get toolScreenshots => 'Скриншоты';
+
+  @override
+  String get toolScreenshotsDesc => 'Разрешить агенту делать скриншоты экрана';
+
+  @override
+  String get toolWebFetch => 'Загрузка Веб-страниц';
+
+  @override
+  String get toolWebFetchDesc => 'Разрешить агенту загружать контент с URL';
+
+  @override
+  String get toolWebSearch => 'Поиск в Интернете';
+
+  @override
+  String get toolWebSearchDesc => 'Разрешить агенту искать в интернете';
+
+  @override
+  String get toolHttpRequests => 'HTTP-Запросы';
+
+  @override
+  String get toolHttpRequestsDesc =>
+      'Разрешить агенту выполнять произвольные HTTP-запросы';
+
+  @override
+  String get toolSandboxShell => 'Оболочка Песочницы';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'Разрешить агенту выполнять команды оболочки в песочнице';
+
+  @override
+  String get toolImageGeneration => 'Генерация Изображений';
+
+  @override
+  String get toolImageGenerationDesc =>
+      'Разрешить агенту генерировать изображения с помощью ИИ';
+
+  @override
+  String get toolLaunchApps => 'Запуск Приложений';
+
+  @override
+  String get toolLaunchAppsDesc =>
+      'Разрешить агенту открывать установленные приложения';
+
+  @override
+  String get toolLaunchIntents => 'Запуск Интентов';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'Разрешить агенту запускать интенты Android (глубокие ссылки, системные экраны)';
+
+  @override
+  String get renameSession => 'Переименовать сессию';
+
+  @override
+  String get myConversationName => 'Название моей беседы';
+
+  @override
+  String get renameAction => 'Переименовать';
+
+  @override
+  String get couldNotTranscribeAudio => 'Не удалось транскрибировать аудио';
+
+  @override
+  String get stopRecording => 'Остановить запись';
+
+  @override
+  String get voiceInput => 'Голосовой ввод';
+
+  @override
+  String get copyTooltip => 'Копировать';
+
+  @override
+  String get commandsTooltip => 'Команды';
+
+  @override
+  String get providersAndModels => 'Провайдеры и Модели';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count моделей настроено',
+      many: '$count моделей настроено',
+      few: '$count модели настроены',
+      one: '1 модель настроена',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'Автозапуск включен';
+
+  @override
+  String get autoStartOffLabel => 'Автозапуск выключен';
+
+  @override
+  String get allToolsEnabled => 'Все инструменты включены';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count инструментов отключено',
+      many: '$count инструментов отключено',
+      few: '$count инструмента отключено',
+      one: '1 инструмент отключен',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests => 'Нет ожидающих запросов на сопряжение';
+
+  @override
+  String get pairingRequestsTitle => 'Запросы на Сопряжение';
+
+  @override
+  String get gatewayStartingStatus => 'Запуск шлюза...';
+
+  @override
+  String get gatewayRetryingStatus => 'Повтор запуска шлюза...';
+
+  @override
+  String get errorStartingGateway => 'Ошибка запуска шлюза';
+
+  @override
+  String get runningStatus => 'Работает';
+
+  @override
+  String get stoppedStatus => 'Остановлен';
+
+  @override
+  String get notSetUpStatus => 'Не настроен';
+
+  @override
+  String get configuredStatus => 'Настроен';
+
+  @override
+  String get whatsAppConfigSaved => 'Конфигурация WhatsApp сохранена';
+
+  @override
+  String get whatsAppDisconnected => 'WhatsApp отключен';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'Применение...';
+
+  @override
+  String get reconnectWhatsApp => 'Переподключить WhatsApp';
+
+  @override
+  String get saveSettingsLabel => 'Сохранить Настройки';
+
+  @override
+  String get applySettingsRestart => 'Применить Настройки и Перезапустить';
+
+  @override
+  String get whatsAppMode => 'Режим WhatsApp';
+
+  @override
+  String get myPersonalNumber => 'Мой личный номер';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'Сообщения, которые вы отправляете в свой собственный чат WhatsApp, пробуждают агента.';
+
+  @override
+  String get dedicatedBotAccount => 'Выделенный аккаунт бота';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'Сообщения, отправленные с привязанного аккаунта, игнорируются как исходящие.';
+
+  @override
+  String get allowedNumbers => 'Разрешенные Номера';
+
+  @override
+  String get addNumberTitle => 'Добавить Номер';
+
+  @override
+  String get phoneNumberJid => 'Номер телефона / JID';
+
+  @override
+  String get noAllowedNumbersConfigured => 'Разрешенные номера не настроены';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'Устройства появятся здесь после одобрения запросов на сопряжение';
+
+  @override
+  String get addPhoneNumbersHint =>
+      'Добавьте номера телефонов, чтобы разрешить им использовать бота';
+
+  @override
+  String get allowedNumber => 'Разрешенный номер';
+
+  @override
+  String get howToConnect => 'Как подключиться';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. Нажмите \"Подключить WhatsApp\" выше\n2. Появится QR-код — отсканируйте его с помощью WhatsApp\n   (Настройки → Связанные устройства → Связать устройство)\n3. После подключения входящие сообщения автоматически\n   перенаправляются вашему активному агенту ИИ';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'Новые отправители получают код сопряжения. Вы их одобряете.';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'Только определенные номера телефонов могут писать боту.';
+
+  @override
+  String get whatsAppOpenDesc =>
+      'Любой, кто пишет вам, может использовать бота.';
+
+  @override
+  String get whatsAppDisabledDesc =>
+      'Бот не будет отвечать на входящие сообщения.';
+
+  @override
+  String get sessionExpiredRelink =>
+      'Сессия истекла. Нажмите \"Переподключить\" ниже, чтобы отсканировать новый QR-код.';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'Нажмите \"Подключить WhatsApp\" ниже, чтобы привязать аккаунт.';
+
+  @override
+  String get whatsAppAcceptedQr =>
+      'WhatsApp принял QR-код. Завершение привязки...';
+
+  @override
+  String get waitingForWhatsApp => 'Ожидание завершения привязки WhatsApp...';
+
+  @override
+  String get focusedLabel => 'Фокусированная';
+
+  @override
+  String get balancedLabel => 'Сбалансированная';
+
+  @override
+  String get creativeLabel => 'Креативная';
+
+  @override
+  String get preciseLabel => 'Точная';
+
+  @override
+  String get expressiveLabel => 'Выразительная';
+
+  @override
+  String get browseLabel => 'Просмотр';
+
+  @override
+  String get apiTokenLabel => 'API Токен';
+
+  @override
+  String get connectToClawHub => 'Подключиться к ClawHub';
+
+  @override
+  String get clawHubLoginHint =>
+      'Войдите в ClawHub, чтобы получить доступ к премиум-навыкам и установке пакетов';
+
+  @override
+  String get howToGetApiToken => 'Как получить ваш API-токен:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. Посетите clawhub.ai и войдите через GitHub\n2. Выполните \"clawhub login\" в терминале\n3. Скопируйте токен и вставьте его сюда';
+
+  @override
+  String connectionFailed(String error) {
+    return 'Ошибка подключения: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    return '$count запусков';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'Следующий запуск: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'Последняя ошибка: $error';
+  }
+
+  @override
+  String get cronJobHintText =>
+      'Инструкции для агента при срабатывании этой задачи…';
+
+  @override
+  String get androidPermissions => 'Разрешения Android';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw может управлять экраном от вашего имени — нажимать кнопки, заполнять формы, прокручивать и автоматизировать повторяющиеся задачи в любом приложении.';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'Для полного опыта необходимы два разрешения. Вы можете пропустить это и включить их позже в Настройках.';
+
+  @override
+  String get accessibilityService => 'Служба Доступности';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'Позволяет нажимать, проводить пальцем, печатать и читать содержимое экрана';
+
+  @override
+  String get displayOverOtherApps => 'Отображение Поверх Других Приложений';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'Показывает плавающий чип статуса, чтобы вы могли видеть, что делает агент';
+
+  @override
+  String get changeDefaultModel => 'Изменить модель по умолчанию';
+
+  @override
+  String setModelAsDefault(String name) {
+    return 'Установить $name в качестве модели по умолчанию.';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'агентов',
+      many: 'агентов',
+      few: 'агента',
+      one: 'агента',
+    );
+    return 'Также обновить $count $_temp0';
+  }
+
+  @override
+  String get startNewSessions => 'Начать новые сессии';
+
+  @override
+  String get currentConversationsArchived =>
+      'Текущие беседы будут архивированы';
+
+  @override
+  String get applyAction => 'Применить';
+
+  @override
+  String applyModelQuestion(String name) {
+    return 'Применить $name?';
+  }
+
+  @override
+  String get setAsDefaultModel => 'Установить в качестве модели по умолчанию';
+
+  @override
+  String get usedByAgentsWithout =>
+      'Используется агентами без конкретной модели';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'агентам',
+      many: 'агентам',
+      few: 'агентам',
+      one: 'агенту',
+    );
+    return 'Применить к $count $_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'Провайдер уже аутентифицирован — API-ключ не нужен.';
+
+  @override
+  String get selectFromList => 'Выбрать из списка';
+
+  @override
+  String get enterCustomModelId => 'Ввести пользовательский ID модели';
+
+  @override
+  String get removeSkillTitle => 'Удалить навык?';
+
+  @override
+  String get browseClawHubToDiscover =>
+      'Просматривайте ClawHub, чтобы обнаруживать и устанавливать навыки';
+
+  @override
+  String get addDeviceTooltip => 'Добавить устройство';
+
+  @override
+  String get addNumberTooltip => 'Добавить номер';
+
+  @override
+  String get searchSkillsHint => 'Поиск навыков...';
+
+  @override
+  String get loginToClawHub => 'Войти в ClawHub';
+
+  @override
+  String get accountTooltip => 'Аккаунт';
+
+  @override
+  String get editAction => 'Редактировать';
+
+  @override
+  String get setAsDefaultAction => 'Установить по умолчанию';
+
+  @override
+  String get chooseProviderTitle => 'Выберите провайдера';
+
+  @override
+  String get apiKeyTitle => 'API-ключ';
+
+  @override
+  String get slackConfigSaved =>
+      'Slack сохранен — перезапустите шлюз для подключения';
+
+  @override
+  String get signalConfigSaved =>
+      'Signal сохранен — перезапустите шлюз для подключения';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'Добавить устройство';
+
+  @override
+  String get skipAction => 'Пропустить';
 }

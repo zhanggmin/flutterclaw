@@ -1081,5 +1081,575 @@ class AppLocalizationsVi extends AppLocalizations {
   String get messagesAbbrev => 'tn';
 
   @override
-  String get modelAlreadyAdded => 'This model is already in your list';
+  String get modelAlreadyAdded => 'Mô hình này đã có trong danh sách của bạn';
+
+  @override
+  String get bothTokensRequired => 'Cả hai token đều bắt buộc';
+
+  @override
+  String get slackSavedRestart =>
+      'Slack đã lưu — khởi động lại cổng để kết nối';
+
+  @override
+  String get slackConfiguration => 'Cấu hình Slack';
+
+  @override
+  String get setupTitle => 'Thiết lập';
+
+  @override
+  String get slackSetupInstructions =>
+      '1. Tạo ứng dụng Slack tại api.slack.com/apps\n2. Bật Socket Mode → tạo App-Level Token (xapp-…)\n   với phạm vi: connections:write\n3. Thêm Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Cài đặt ứng dụng vào không gian làm việc → sao chép Bot Token (xoxb-…)';
+
+  @override
+  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+
+  @override
+  String get appLevelToken => 'App-Level Token (xapp-…)';
+
+  @override
+  String get apiUrlPhoneRequired => 'URL API và số điện thoại là bắt buộc';
+
+  @override
+  String get signalSavedRestart =>
+      'Signal đã lưu — khởi động lại cổng để kết nối';
+
+  @override
+  String get signalConfiguration => 'Cấu hình Signal';
+
+  @override
+  String get requirementsTitle => 'Yêu cầu';
+
+  @override
+  String get signalRequirements =>
+      'Yêu cầu signal-cli-rest-api đang chạy trên máy chủ:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nĐăng ký/liên kết số Signal của bạn qua REST API, sau đó nhập URL và số điện thoại bên dưới.';
+
+  @override
+  String get signalApiUrl => 'URL signal-cli-rest-api';
+
+  @override
+  String get signalPhoneNumber => 'Số điện thoại Signal của bạn';
+
+  @override
+  String get userIdLabel => 'ID Người dùng';
+
+  @override
+  String get enterDiscordUserId => 'Nhập ID người dùng Discord';
+
+  @override
+  String get enterTelegramUserId => 'Nhập ID người dùng Telegram';
+
+  @override
+  String get fromDiscordDevPortal => 'Từ Discord Developer Portal';
+
+  @override
+  String get allowedUserIdsTitle => 'ID Người dùng được phép';
+
+  @override
+  String get approvedDevice => 'Thiết bị đã phê duyệt';
+
+  @override
+  String get allowedUser => 'Người dùng được phép';
+
+  @override
+  String get howToGetBotToken => 'Cách lấy token bot của bạn';
+
+  @override
+  String get discordTokenInstructions =>
+      '1. Truy cập Discord Developer Portal\n2. Tạo ứng dụng và bot mới\n3. Sao chép token và dán ở trên\n4. Bật Message Content Intent';
+
+  @override
+  String get telegramTokenInstructions =>
+      '1. Mở Telegram và tìm kiếm @BotFather\n2. Gửi /newbot và làm theo hướng dẫn\n3. Sao chép token và dán ở trên';
+
+  @override
+  String get fromBotFatherHint => 'Lấy từ @BotFather';
+
+  @override
+  String get accessTokenLabel => 'Token truy cập';
+
+  @override
+  String get notSetOpenAccess => 'Chưa đặt — truy cập mở (chỉ loopback)';
+
+  @override
+  String get gatewayAccessToken => 'Token truy cập cổng';
+
+  @override
+  String get tokenFieldLabel => 'Token';
+
+  @override
+  String get leaveEmptyDisableAuth => 'Để trống để tắt xác thực';
+
+  @override
+  String get toolPolicies => 'Chính sách Công cụ';
+
+  @override
+  String get toolPoliciesDesc =>
+      'Kiểm soát những gì tác nhân có thể truy cập. Công cụ bị tắt sẽ bị ẩn khỏi AI và bị chặn khi chạy.';
+
+  @override
+  String get privacySensors => 'Quyền riêng tư và Cảm biến';
+
+  @override
+  String get networkCategory => 'Mạng';
+
+  @override
+  String get systemCategory => 'Hệ thống';
+
+  @override
+  String get toolTakePhotos => 'Chụp Ảnh';
+
+  @override
+  String get toolTakePhotosDesc => 'Cho phép tác nhân chụp ảnh bằng máy ảnh';
+
+  @override
+  String get toolRecordVideo => 'Quay Video';
+
+  @override
+  String get toolRecordVideoDesc => 'Cho phép tác nhân quay video';
+
+  @override
+  String get toolLocation => 'Vị trí';
+
+  @override
+  String get toolLocationDesc =>
+      'Cho phép tác nhân đọc vị trí GPS hiện tại của bạn';
+
+  @override
+  String get toolHealthData => 'Dữ liệu Sức khỏe';
+
+  @override
+  String get toolHealthDataDesc =>
+      'Cho phép tác nhân đọc dữ liệu sức khỏe/thể dục';
+
+  @override
+  String get toolContacts => 'Danh bạ';
+
+  @override
+  String get toolContactsDesc => 'Cho phép tác nhân tìm kiếm danh bạ của bạn';
+
+  @override
+  String get toolScreenshots => 'Ảnh chụp màn hình';
+
+  @override
+  String get toolScreenshotsDesc => 'Cho phép tác nhân chụp ảnh màn hình';
+
+  @override
+  String get toolWebFetch => 'Tải Web';
+
+  @override
+  String get toolWebFetchDesc => 'Cho phép tác nhân tải nội dung từ URL';
+
+  @override
+  String get toolWebSearch => 'Tìm kiếm Web';
+
+  @override
+  String get toolWebSearchDesc => 'Cho phép tác nhân tìm kiếm trên web';
+
+  @override
+  String get toolHttpRequests => 'Yêu cầu HTTP';
+
+  @override
+  String get toolHttpRequestsDesc =>
+      'Cho phép tác nhân thực hiện các yêu cầu HTTP tùy ý';
+
+  @override
+  String get toolSandboxShell => 'Shell Sandbox';
+
+  @override
+  String get toolSandboxShellDesc =>
+      'Cho phép tác nhân chạy lệnh shell trong sandbox';
+
+  @override
+  String get toolImageGeneration => 'Tạo Hình ảnh';
+
+  @override
+  String get toolImageGenerationDesc => 'Cho phép tác nhân tạo hình ảnh qua AI';
+
+  @override
+  String get toolLaunchApps => 'Mở Ứng dụng';
+
+  @override
+  String get toolLaunchAppsDesc =>
+      'Cho phép tác nhân mở các ứng dụng đã cài đặt';
+
+  @override
+  String get toolLaunchIntents => 'Khởi chạy Intent';
+
+  @override
+  String get toolLaunchIntentsDesc =>
+      'Cho phép tác nhân kích hoạt Android intent (liên kết sâu, màn hình hệ thống)';
+
+  @override
+  String get renameSession => 'Đổi tên phiên';
+
+  @override
+  String get myConversationName => 'Tên cuộc trò chuyện của tôi';
+
+  @override
+  String get renameAction => 'Đổi tên';
+
+  @override
+  String get couldNotTranscribeAudio => 'Không thể phiên âm âm thanh';
+
+  @override
+  String get stopRecording => 'Dừng ghi âm';
+
+  @override
+  String get voiceInput => 'Nhập giọng nói';
+
+  @override
+  String get copyTooltip => 'Sao chép';
+
+  @override
+  String get commandsTooltip => 'Lệnh';
+
+  @override
+  String get providersAndModels => 'Nhà cung cấp và Mô hình';
+
+  @override
+  String modelsConfiguredCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mô hình đã cấu hình',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get autoStartEnabledLabel => 'Tự động khởi động đã bật';
+
+  @override
+  String get autoStartOffLabel => 'Tự động khởi động đã tắt';
+
+  @override
+  String get allToolsEnabled => 'Tất cả công cụ đã được bật';
+
+  @override
+  String toolsDisabledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count công cụ đã tắt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flutterClawVersion => 'FlutterClaw v0.1.0';
+
+  @override
+  String get noPendingPairingRequests => 'Không có yêu cầu ghép nối đang chờ';
+
+  @override
+  String get pairingRequestsTitle => 'Yêu cầu Ghép nối';
+
+  @override
+  String get gatewayStartingStatus => 'Đang khởi động cổng...';
+
+  @override
+  String get gatewayRetryingStatus => 'Đang thử lại khởi động cổng...';
+
+  @override
+  String get errorStartingGateway => 'Lỗi khi khởi động cổng';
+
+  @override
+  String get runningStatus => 'Đang chạy';
+
+  @override
+  String get stoppedStatus => 'Đã dừng';
+
+  @override
+  String get notSetUpStatus => 'Chưa thiết lập';
+
+  @override
+  String get configuredStatus => 'Đã cấu hình';
+
+  @override
+  String get whatsAppConfigSaved => 'Cấu hình WhatsApp đã được lưu';
+
+  @override
+  String get whatsAppDisconnected => 'WhatsApp đã ngắt kết nối';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get applyingSettings => 'Đang áp dụng...';
+
+  @override
+  String get reconnectWhatsApp => 'Kết nối lại WhatsApp';
+
+  @override
+  String get saveSettingsLabel => 'Lưu Cài đặt';
+
+  @override
+  String get applySettingsRestart => 'Áp dụng Cài đặt và Khởi động lại';
+
+  @override
+  String get whatsAppMode => 'Chế độ WhatsApp';
+
+  @override
+  String get myPersonalNumber => 'Số cá nhân của tôi';
+
+  @override
+  String get myPersonalNumberDesc =>
+      'Tin nhắn bạn gửi đến cuộc trò chuyện WhatsApp của riêng bạn sẽ đánh thức tác nhân.';
+
+  @override
+  String get dedicatedBotAccount => 'Tài khoản bot chuyên dụng';
+
+  @override
+  String get dedicatedBotAccountDesc =>
+      'Tin nhắn được gửi từ chính tài khoản được liên kết sẽ bị bỏ qua như tin nhắn đi.';
+
+  @override
+  String get allowedNumbers => 'Số được phép';
+
+  @override
+  String get addNumberTitle => 'Thêm Số';
+
+  @override
+  String get phoneNumberJid => 'Số điện thoại / JID';
+
+  @override
+  String get noAllowedNumbersConfigured =>
+      'Chưa có số nào được phép được cấu hình';
+
+  @override
+  String get devicesAppearAfterPairing =>
+      'Thiết bị xuất hiện ở đây sau khi bạn phê duyệt yêu cầu ghép nối';
+
+  @override
+  String get addPhoneNumbersHint =>
+      'Thêm số điện thoại để cho phép họ sử dụng bot';
+
+  @override
+  String get allowedNumber => 'Số được phép';
+
+  @override
+  String get howToConnect => 'Cách kết nối';
+
+  @override
+  String get whatsAppConnectInstructions =>
+      '1. Nhấn \"Kết nối WhatsApp\" ở trên\n2. Một mã QR sẽ xuất hiện — quét nó bằng WhatsApp\n   (Cài đặt → Thiết bị được liên kết → Liên kết Thiết bị)\n3. Sau khi kết nối, tin nhắn đến sẽ được định tuyến\n   đến tác nhân AI đang hoạt động của bạn tự động';
+
+  @override
+  String get whatsAppPairingDesc =>
+      'Người gửi mới nhận được mã ghép nối. Bạn phê duyệt họ.';
+
+  @override
+  String get whatsAppAllowlistDesc =>
+      'Chỉ những số điện thoại cụ thể mới có thể nhắn tin cho bot.';
+
+  @override
+  String get whatsAppOpenDesc =>
+      'Bất kỳ ai nhắn tin cho bạn đều có thể sử dụng bot.';
+
+  @override
+  String get whatsAppDisabledDesc =>
+      'Bot sẽ không phản hồi bất kỳ tin nhắn đến nào.';
+
+  @override
+  String get sessionExpiredRelink =>
+      'Phiên đã hết hạn. Nhấn \"Kết nối lại\" bên dưới để quét mã QR mới.';
+
+  @override
+  String get connectWhatsAppBelow =>
+      'Nhấn \"Kết nối WhatsApp\" bên dưới để liên kết tài khoản của bạn.';
+
+  @override
+  String get whatsAppAcceptedQr =>
+      'WhatsApp đã chấp nhận mã QR. Đang hoàn tất liên kết...';
+
+  @override
+  String get waitingForWhatsApp => 'Đang chờ WhatsApp hoàn tất liên kết...';
+
+  @override
+  String get focusedLabel => 'Tập trung';
+
+  @override
+  String get balancedLabel => 'Cân bằng';
+
+  @override
+  String get creativeLabel => 'Sáng tạo';
+
+  @override
+  String get preciseLabel => 'Chính xác';
+
+  @override
+  String get expressiveLabel => 'Biểu cảm';
+
+  @override
+  String get browseLabel => 'Duyệt';
+
+  @override
+  String get apiTokenLabel => 'Token API';
+
+  @override
+  String get connectToClawHub => 'Kết nối với ClawHub';
+
+  @override
+  String get clawHubLoginHint =>
+      'Đăng nhập vào ClawHub để truy cập các kỹ năng cao cấp và cài đặt gói';
+
+  @override
+  String get howToGetApiToken => 'Cách lấy token API của bạn:';
+
+  @override
+  String get clawHubApiTokenInstructions =>
+      '1. Truy cập clawhub.ai và đăng nhập bằng GitHub\n2. Chạy \"clawhub login\" trong terminal\n3. Sao chép token của bạn và dán ở đây';
+
+  @override
+  String connectionFailed(String error) {
+    return 'Kết nối thất bại: $error';
+  }
+
+  @override
+  String cronJobRuns(int count) {
+    return '$count lần chạy';
+  }
+
+  @override
+  String nextRunLabel(String time) {
+    return 'Lần chạy tiếp theo: $time';
+  }
+
+  @override
+  String lastErrorLabel(String error) {
+    return 'Lỗi gần nhất: $error';
+  }
+
+  @override
+  String get cronJobHintText =>
+      'Hướng dẫn cho tác nhân khi công việc này được kích hoạt…';
+
+  @override
+  String get androidPermissions => 'Quyền Android';
+
+  @override
+  String get androidPermissionsDesc =>
+      'FlutterClaw có thể điều khiển màn hình thay bạn — nhấn nút, điền biểu mẫu, cuộn và tự động hóa các tác vụ lặp đi lặp lại trên bất kỳ ứng dụng nào.';
+
+  @override
+  String get twoPermissionsNeeded =>
+      'Cần hai quyền để có trải nghiệm đầy đủ. Bạn có thể bỏ qua và bật sau trong Cài đặt.';
+
+  @override
+  String get accessibilityService => 'Dịch vụ Hỗ trợ tiếp cận';
+
+  @override
+  String get accessibilityServiceDesc =>
+      'Cho phép nhấn, vuốt, nhập và đọc nội dung màn hình';
+
+  @override
+  String get displayOverOtherApps => 'Hiển thị Trên Ứng dụng Khác';
+
+  @override
+  String get displayOverOtherAppsDesc =>
+      'Hiển thị chip trạng thái nổi để bạn có thể thấy tác nhân đang làm gì';
+
+  @override
+  String get changeDefaultModel => 'Thay đổi mô hình mặc định';
+
+  @override
+  String setModelAsDefault(String name) {
+    return 'Đặt $name làm mô hình mặc định.';
+  }
+
+  @override
+  String alsoUpdateAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '');
+    return 'Cũng cập nhật $count tác nhân$_temp0';
+  }
+
+  @override
+  String get startNewSessions => 'Bắt đầu phiên mới';
+
+  @override
+  String get currentConversationsArchived =>
+      'Các cuộc trò chuyện hiện tại sẽ được lưu trữ';
+
+  @override
+  String get applyAction => 'Áp dụng';
+
+  @override
+  String applyModelQuestion(String name) {
+    return 'Áp dụng $name?';
+  }
+
+  @override
+  String get setAsDefaultModel => 'Đặt làm mô hình mặc định';
+
+  @override
+  String get usedByAgentsWithout =>
+      'Được sử dụng bởi các tác nhân không có mô hình cụ thể';
+
+  @override
+  String applyToAgents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '');
+    return 'Áp dụng cho $count tác nhân$_temp0';
+  }
+
+  @override
+  String get providerAlreadyAuth =>
+      'Nhà cung cấp đã được xác thực — không cần khóa API.';
+
+  @override
+  String get selectFromList => 'Chọn từ danh sách';
+
+  @override
+  String get enterCustomModelId => 'Nhập ID mô hình tùy chỉnh';
+
+  @override
+  String get removeSkillTitle => 'Xóa kỹ năng?';
+
+  @override
+  String get browseClawHubToDiscover =>
+      'Duyệt ClawHub để khám phá và cài đặt kỹ năng';
+
+  @override
+  String get addDeviceTooltip => 'Thêm thiết bị';
+
+  @override
+  String get addNumberTooltip => 'Thêm số';
+
+  @override
+  String get searchSkillsHint => 'Tìm kiếm kỹ năng...';
+
+  @override
+  String get loginToClawHub => 'Đăng nhập vào ClawHub';
+
+  @override
+  String get accountTooltip => 'Tài khoản';
+
+  @override
+  String get editAction => 'Sửa';
+
+  @override
+  String get setAsDefaultAction => 'Đặt làm mặc định';
+
+  @override
+  String get chooseProviderTitle => 'Chọn nhà cung cấp';
+
+  @override
+  String get apiKeyTitle => 'Khóa API';
+
+  @override
+  String get slackConfigSaved => 'Slack đã lưu — khởi động lại cổng để kết nối';
+
+  @override
+  String get signalConfigSaved =>
+      'Signal đã lưu — khởi động lại cổng để kết nối';
+
+  @override
+  String idPrefix(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String get addDeviceHint => 'Thêm thiết bị';
+
+  @override
+  String get skipAction => 'Bỏ qua';
 }

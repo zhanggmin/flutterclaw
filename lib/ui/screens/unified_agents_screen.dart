@@ -174,7 +174,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                   Expanded(
                     child: _AgentQuickButton(
                       icon: Icons.folder_outlined,
-                      label: 'Files',
+                      label: context.l10n.workspaceFiles,
                       onPressed: () => _showWorkspaceSheet(context, colors),
                     ),
                   ),
@@ -182,7 +182,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                   Expanded(
                     child: _AgentQuickButton(
                       icon: Icons.schedule_outlined,
-                      label: 'Tasks',
+                      label: context.l10n.scheduledTasks,
                       onPressed: () => _showCronSheet(context, theme, colors),
                     ),
                   ),
@@ -190,7 +190,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                   Expanded(
                     child: _AgentQuickButton(
                       icon: Icons.extension_outlined,
-                      label: 'Skills',
+                      label: context.l10n.skills,
                       onPressed: () => _showSkillsSheet(context, theme, colors),
                     ),
                   ),
@@ -200,7 +200,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
               const SizedBox(height: 24),
 
               // Active sessions (limited to 5)
-              _buildSectionHeader(context, 'Active Sessions', Icons.chat_outlined),
+              _buildSectionHeader(context, context.l10n.activeSessions, Icons.chat_outlined),
               const SizedBox(height: 8),
               _buildSessionsCard(context, theme, colors),
             ],
@@ -440,7 +440,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Text(
-            'No active sessions',
+            context.l10n.noActiveSessions,
             style: TextStyle(color: colors.onSurfaceVariant),
           ),
         ),
@@ -462,7 +462,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
               style: theme.textTheme.bodyMedium,
             ),
             subtitle: Text(
-              '${session.messageCount} messages • ${session.totalTokens} tokens • ${_timeAgo(session.lastActivity)}',
+              '${context.l10n.messagesCount(session.messageCount)} • ${context.l10n.tokensCount(session.totalTokens)} • ${_timeAgo(session.lastActivity)}',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -474,8 +474,8 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                   final confirmed = await showDialog<bool>(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: const Text('Reset Session'),
-                      content: Text('Reset session "${session.key}"? This will clear all messages.'),
+                      title: Text(context.l10n.resetSession),
+                      content: Text(context.l10n.resetSessionConfirm(session.key)),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
@@ -495,7 +495,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                     await _loadAgentData();
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Session reset')),
+                        SnackBar(content: Text(context.l10n.sessionReset)),
                       );
                     }
                   }
@@ -749,7 +749,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Text('Workspace Files',
+              child: Text(context.l10n.workspaceFiles,
                   style: Theme.of(context).textTheme.titleMedium
                       ?.copyWith(fontWeight: FontWeight.w600)),
             ),
@@ -791,14 +791,14 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text('Scheduled Tasks',
+                    child: Text(context.l10n.scheduledTasks,
                         style: theme.textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w600)),
                   ),
                   IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () => _showAddCronJob(context),
-                    tooltip: 'Add scheduled task',
+                    tooltip: context.l10n.addScheduledTasks,
                   ),
                 ],
               ),
@@ -841,7 +841,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text('Skills',
+                    child: Text(context.l10n.skills,
                         style: theme.textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w600)),
                   ),
@@ -850,12 +850,12 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                       Navigator.pop(ctx);
                       _showClawHubBrowser(context);
                     },
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.explore, size: 18),
                         SizedBox(width: 6),
-                        Text('Browse'),
+                        Text(context.l10n.browseLabel),
                       ],
                     ),
                   ),
@@ -1091,7 +1091,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${agent.name} set as default')),
+        SnackBar(content: Text(context.l10n.switchedToAgent(agent.name))),
       );
     }
   }
@@ -1100,7 +1100,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
     final agents = ref.read(agentProfilesProvider);
     if (agents.length <= 1) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot delete the last agent')),
+        SnackBar(content: Text(context.l10n.cannotDeleteLastAgent)),
       );
       return;
     }
@@ -1236,14 +1236,14 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Login to ClawHub to access premium skills',
+                              context.l10n.clawHubLoginHint,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),
                           const SizedBox(width: 8),
                           FilledButton.tonal(
                             onPressed: () => _showClawHubAuth(context),
-                            child: const Text('Login'),
+                            child: Text(context.l10n.login),
                           ),
                         ],
                       ),
@@ -1334,8 +1334,8 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('ClawHub Account'),
-          content: const Text('You are currently logged in to ClawHub.'),
+          title: Text(context.l10n.clawHubAccount),
+          content: Text(context.l10n.loggedInToClawHub),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -1347,12 +1347,12 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(ctx).showSnackBar(
-                    const SnackBar(content: Text('Logged out from ClawHub')),
+                    SnackBar(content: Text(context.l10n.loggedOutFromClawHub)),
                   );
                 }
                 setState(() {});
               },
-              child: const Text('Logout'),
+              child: Text(context.l10n.logout),
             ),
           ],
         ),
@@ -1379,17 +1379,17 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Connect to ClawHub',
+                context.l10n.connectToClawHub,
                 style: Theme.of(ctx).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: tokenCtl,
-                decoration: const InputDecoration(
-                  labelText: 'API Token',
+                decoration: InputDecoration(
+                  labelText: context.l10n.apiTokenLabel,
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.key),
-                  hintText: 'Paste your ClawHub API token',
+                  hintText: context.l10n.pasteClawHubToken,
                 ),
                 maxLines: 2,
               ),
@@ -1417,7 +1417,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Connect'),
+                    : Text(context.l10n.connect),
               ),
             ],
           ),
@@ -1546,24 +1546,24 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                               context: ctx,
                               builder: (dCtx) => AlertDialog(
                                 icon: const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 32),
-                                title: const Text('Compatibility Warning'),
+                                title: Text(context.l10n.compatibilityWarning),
                                 content: Text(
-                                  'This skill was designed for desktop and may not work as-is on mobile.\n\n${compat.reason}\n\nWould you like to install an adapted version optimized for mobile?',
+                                  context.l10n.compatibilityWarningDesc(compat.reason),
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(dCtx, 'cancel'),
-                                    child: const Text('Cancel'),
+                                    child: Text(context.l10n.cancel),
                                   ),
                                   TextButton(
                                     onPressed: () => Navigator.pop(dCtx, 'original'),
-                                    child: const Text('Install Original'),
+                                    child: Text(context.l10n.installOriginal),
                                   ),
                                   FilledButton(
                                     onPressed: compat.adaptedContent != null
                                         ? () => Navigator.pop(dCtx, 'adapt')
                                         : null,
-                                    child: const Text('Install Adapted'),
+                                    child: Text(context.l10n.installAdapted),
                                   ),
                                 ],
                               ),
@@ -1621,9 +1621,9 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.download),
-                            const SizedBox(width: 8),
-                            const Text('Install'),
+                            Icon(Icons.download),
+                            SizedBox(width: 8),
+                            Text(context.l10n.installSkill),
                           ],
                         ),
                 ),

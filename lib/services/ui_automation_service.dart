@@ -64,6 +64,46 @@ class UiAutomationService {
   Future<Map<String, dynamic>> globalAction(String action) =>
       _invoke('ui_global_action', {'action': action});
 
+  /// Get device info: manufacturer, brand, model, Android version, screen size.
+  Future<Map<String, dynamic>> deviceInfo() => _invoke('ui_device_info');
+
+  /// Launch an app by package name or search by label.
+  Future<Map<String, dynamic>> launchApp({String? package_, String? search}) =>
+      _invoke('ui_launch_app', {
+        if (package_ != null) 'package': package_,
+        if (search != null) 'search': search,
+      });
+
+  /// Fire an Android intent with optional action, URI, type, package, extras.
+  Future<Map<String, dynamic>> launchIntent({
+    String? action,
+    String? uri,
+    String? type,
+    String? package_,
+    Map<String, dynamic>? extras,
+  }) =>
+      _invoke('ui_launch_intent', {
+        if (action != null) 'action': action,
+        if (uri != null) 'uri': uri,
+        if (type != null) 'type': type,
+        if (package_ != null) 'package': package_,
+        if (extras != null) 'extras': extras,
+      });
+
+  /// List exported activities and intent filters of a specific app.
+  Future<Map<String, dynamic>> appIntents(String package_) =>
+      _invoke('ui_app_intents', {'package': package_});
+
+  /// List installed apps, optionally filtered by search and launchable-only.
+  Future<Map<String, dynamic>> listApps({
+    bool launchableOnly = true,
+    String? search,
+  }) =>
+      _invoke('ui_list_apps', {
+        'launchable_only': launchableOnly,
+        if (search != null) 'search': search,
+      });
+
   // ─── Internal ──────────────────────────────────────────────────────────────
 
   Future<Map<String, dynamic>> _invoke(

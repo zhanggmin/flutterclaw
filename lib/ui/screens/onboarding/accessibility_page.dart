@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'package:flutterclaw/services/overlay_service.dart';
 import 'package:flutterclaw/services/ui_automation_service.dart';
 
@@ -111,7 +112,7 @@ class _AccessibilityPageState extends State<AccessibilityPage>
 
         // Title
         Text(
-          'Android Permissions',
+          context.l10n.androidPermissions,
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -121,8 +122,7 @@ class _AccessibilityPageState extends State<AccessibilityPage>
 
         // Description
         Text(
-          'FlutterClaw can control your screen on your behalf — tapping buttons, '
-          'filling forms, scrolling, and automating repetitive tasks across any app.',
+          context.l10n.androidPermissionsDesc,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: colors.onSurfaceVariant,
           ),
@@ -130,8 +130,7 @@ class _AccessibilityPageState extends State<AccessibilityPage>
         ),
         const SizedBox(height: 8),
         Text(
-          'Two permissions are needed for the full experience. '
-          'You can skip this and enable them later in Settings.',
+          context.l10n.twoPermissionsNeeded,
           style: theme.textTheme.bodySmall?.copyWith(
             color: colors.onSurfaceVariant,
           ),
@@ -142,8 +141,8 @@ class _AccessibilityPageState extends State<AccessibilityPage>
         // 1. Accessibility Service
         _PermissionCard(
           icon: Icons.touch_app_outlined,
-          title: 'Accessibility Service',
-          subtitle: 'Allows tapping, swiping, typing, and reading screen content',
+          title: context.l10n.accessibilityService,
+          subtitle: context.l10n.accessibilityServiceDesc,
           granted: accGranted,
           checking: _checking,
           onEnable: _openAccessibilitySettings,
@@ -153,8 +152,8 @@ class _AccessibilityPageState extends State<AccessibilityPage>
         // 2. Overlay permission
         _PermissionCard(
           icon: Icons.picture_in_picture_alt_outlined,
-          title: 'Display Over Other Apps',
-          subtitle: 'Shows a floating status chip so you can see what the agent is doing',
+          title: context.l10n.displayOverOtherApps,
+          subtitle: context.l10n.displayOverOtherAppsDesc,
           granted: overlayGranted,
           checking: _checking,
           onEnable: _openOverlaySettings,
@@ -166,7 +165,7 @@ class _AccessibilityPageState extends State<AccessibilityPage>
           FilledButton.icon(
             onPressed: widget.onContinue,
             icon: const Icon(Icons.check),
-            label: const Text('Continue'),
+            label: Text(context.l10n.continueButton),
             style: FilledButton.styleFrom(
               backgroundColor: colors.primary,
             ),
@@ -175,14 +174,14 @@ class _AccessibilityPageState extends State<AccessibilityPage>
           FilledButton.icon(
             onPressed: _openAccessibilitySettings,
             icon: const Icon(Icons.settings_outlined),
-            label: const Text('Open Accessibility Settings'),
+            label: Text(context.l10n.openAccessibilitySettings),
           ),
           const SizedBox(height: 12),
           Center(
             child: TextButton(
               onPressed: widget.onSkip,
               child: Text(
-                'Skip for now',
+                context.l10n.skipForNow,
                 style: TextStyle(color: colors.onSurfaceVariant),
               ),
             ),
@@ -264,9 +263,11 @@ class _PermissionCard extends StatelessWidget {
           else if (granted)
             Icon(Icons.check_circle, color: colors.primary)
           else
-            TextButton(
-              onPressed: onEnable,
-              child: const Text('Enable'),
+            Builder(
+              builder: (context) => TextButton(
+                onPressed: onEnable,
+                child: Text(context.l10n.enable),
+              ),
             ),
         ],
       ),

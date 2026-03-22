@@ -82,23 +82,23 @@ class SessionsScreen extends ConsumerWidget {
                           final name = await showDialog<String>(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              title: const Text('Rename session'),
+                              title: Text(context.l10n.renameSession),
                               content: TextField(
                                 controller: controller,
                                 autofocus: true,
-                                decoration: const InputDecoration(
-                                  hintText: 'My conversation name',
+                                decoration: InputDecoration(
+                                  hintText: context.l10n.myConversationName,
                                 ),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx),
-                                  child: const Text('Cancel'),
+                                  child: Text(context.l10n.cancel),
                                 ),
                                 FilledButton(
                                   onPressed: () =>
                                       Navigator.pop(ctx, controller.text),
-                                  child: const Text('Save'),
+                                  child: Text(context.l10n.save),
                                 ),
                               ],
                             ),
@@ -114,11 +114,11 @@ class SessionsScreen extends ConsumerWidget {
                         }
                       },
                       itemBuilder: (ctx) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'rename',
                           child: ListTile(
                             leading: Icon(Icons.edit_outlined),
-                            title: Text('Rename'),
+                            title: Text(context.l10n.renameAction),
                             dense: true,
                           ),
                         ),

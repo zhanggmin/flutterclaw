@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterclaw/core/agent/session_manager.dart';
 import 'package:flutterclaw/core/app_providers.dart';
+import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'package:flutterclaw/services/cron_service.dart';
 import 'package:flutterclaw/services/skills_service.dart';
 
@@ -81,7 +82,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
 
     if (_loading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Agent')),
+        appBar: AppBar(title: Text(context.l10n.agents)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -90,7 +91,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
     final agentEmoji = _parseAgentEmoji();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Agent')),
+      appBar: AppBar(title: Text(context.l10n.agents)),
       body: RefreshIndicator(
         onRefresh: _loadFiles,
         child: ListView(
@@ -134,7 +135,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                             ),
                           ),
                           Text(
-                            'Personal AI Assistant',
+                            context.l10n.personalAIAssistant,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colors.onSurfaceVariant,
                             ),
@@ -155,7 +156,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
             const SizedBox(height: 20),
 
             // Workspace files
-            _SectionTitle(title: 'Workspace Files'),
+            _SectionTitle(title: context.l10n.workspaceFiles),
             ..._files.entries.map((e) => _FileCard(
                   fileName: e.key,
                   preview: _previewText(e.value),
@@ -165,14 +166,14 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
             const SizedBox(height: 20),
 
             // Sessions
-            _SectionTitle(title: 'Sessions (${sessions.length})'),
+            _SectionTitle(title: context.l10n.sessionsCount(sessions.length)),
             if (sessions.isEmpty)
               Card(
                 child: ListTile(
                   leading: Icon(Icons.forum_outlined,
                       color: colors.onSurfaceVariant),
-                  title: const Text('No active sessions'),
-                  subtitle: const Text('Start a conversation to create one'),
+                  title: Text(context.l10n.noActiveSessions),
+                  subtitle: Text(context.l10n.startConversationToCreate),
                 ),
               )
             else
@@ -192,11 +193,11 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                           }
                         },
                         itemBuilder: (ctx) => [
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'reset',
                             child: ListTile(
                               leading: Icon(Icons.delete_outline),
-                              title: Text('Reset'),
+                              title: Text(context.l10n.reset),
                               dense: true,
                             ),
                           ),
@@ -209,7 +210,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
 
             // Cron Jobs
             _SectionTitle(
-              title: 'Cron Jobs',
+              title: context.l10n.cronJobs,
               trailing: IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () => _showAddCronJob(context),
@@ -225,7 +226,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
               child: Row(
                 children: [
                   Text(
-                    'Skills',
+                    context.l10n.skills,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: colors.primary,
                     ),
@@ -262,7 +263,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                   FilledButton.tonalIcon(
                     onPressed: () => _showClawHubBrowser(context),
                     icon: const Icon(Icons.explore, size: 18),
-                    label: const Text('Browse'),
+                    label: Text(context.l10n.browseLabel),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       minimumSize: Size.zero,
@@ -290,8 +291,8 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
         child: ListTile(
           leading: Icon(Icons.schedule,
               color: Theme.of(context).colorScheme.onSurfaceVariant),
-          title: const Text('No cron jobs'),
-          subtitle: const Text('Add scheduled tasks for your agent'),
+          title: Text(context.l10n.noCronJobs),
+          subtitle: Text(context.l10n.addScheduledTasks),
         ),
       );
     }
@@ -339,7 +340,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         value: 'run',
                         child: ListTile(
                           leading: const Icon(Icons.play_arrow),
-                          title: const Text('Run Now'),
+                          title: Text(context.l10n.runNow),
                           dense: true,
                         ),
                       ),
@@ -349,16 +350,16 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                           leading: Icon(
                               job.enabled ? Icons.pause : Icons.play_arrow),
                           title:
-                              Text(job.enabled ? 'Disable' : 'Enable'),
+                              Text(job.enabled ? context.l10n.disable : context.l10n.enable),
                           dense: true,
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: ListTile(
                           leading:
                               Icon(Icons.delete_outline, color: Colors.red),
-                          title: Text('Delete',
+                          title: Text(context.l10n.delete,
                               style: TextStyle(color: Colors.red)),
                           dense: true,
                         ),
@@ -386,11 +387,11 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                   size: 40,
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               const SizedBox(height: 12),
-              const Text('No skills installed',
+              Text(context.l10n.noSkillsInstalled,
                   style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
               Text(
-                'Browse ClawHub to discover and install skills',
+                context.l10n.browseClawHubToDiscover,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -400,7 +401,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
               FilledButton.icon(
                 onPressed: () => _showClawHubBrowser(context),
                 icon: const Icon(Icons.explore),
-                label: const Text('Browse Skills'),
+                label: Text(context.l10n.browseSkillsButton),
               ),
             ],
           ),
@@ -482,16 +483,16 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (d) => AlertDialog(
-        title: const Text('Remove skill?'),
-        content: Text('Remove "$name" from your skills?'),
+        title: Text(context.l10n.removeSkillTitle),
+        content: Text(context.l10n.removeSkillConfirm(name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(d, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(d, true),
-            child: const Text('Remove'),
+            child: Text(context.l10n.remove),
           ),
         ],
       ),
@@ -512,7 +513,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
       MaterialPageRoute(
         builder: (ctx) => Scaffold(
           appBar: AppBar(
-            title: const Text('ClawHub Skills'),
+            title: Text(context.l10n.clawHubSkills),
             actions: [
               IconButton(
                 icon: Icon(
@@ -521,8 +522,8 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                       : Icons.login,
                 ),
                 tooltip: skillsService.isClawHubAuthenticated
-                    ? 'Account'
-                    : 'Login to ClawHub',
+                    ? context.l10n.accountTooltip
+                    : context.l10n.loginToClawHub,
                 onPressed: () => _showClawHubAuth(context),
               ),
             ],
@@ -551,14 +552,14 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Login to ClawHub to access premium skills and install packages',
+                              context.l10n.clawHubLoginHint,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),
                           const SizedBox(width: 8),
                           FilledButton.tonal(
                             onPressed: () => _showClawHubAuth(context),
-                            child: const Text('Login'),
+                            child: Text(context.l10n.login),
                           ),
                         ],
                       ),
@@ -568,7 +569,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                     child: TextField(
                       controller: searchCtl,
                       decoration: InputDecoration(
-                        hintText: 'Search skills...',
+                        hintText: context.l10n.searchSkillsHint,
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: IconButton(
@@ -594,8 +595,8 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         }
                         final results = snapshot.data ?? [];
                         if (results.isEmpty) {
-                          return const Center(
-                            child: Text('No skills found. Try a different search.'),
+                          return Center(
+                            child: Text(context.l10n.noSkillsFound),
                           );
                         }
                         return ListView.builder(
@@ -663,12 +664,12 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('ClawHub Account'),
-          content: const Text('You are currently logged in to ClawHub.'),
+          title: Text(context.l10n.clawHubAccount),
+          content: Text(context.l10n.loggedInToClawHub),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Close'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () async {
@@ -676,12 +677,12 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                 if (ctx.mounted) {
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(ctx).showSnackBar(
-                    const SnackBar(content: Text('Logged out from ClawHub')),
+                    SnackBar(content: Text(context.l10n.loggedOutFromClawHub)),
                   );
                 }
                 setState(() {});
               },
-              child: const Text('Logout'),
+              child: Text(context.l10n.logout),
             ),
           ],
         ),
@@ -709,17 +710,17 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Connect to ClawHub',
+                context.l10n.connectToClawHub,
                 style: Theme.of(ctx).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: tokenCtl,
-                decoration: const InputDecoration(
-                  labelText: 'API Token',
+                decoration: InputDecoration(
+                  labelText: context.l10n.apiTokenLabel,
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.key),
-                  hintText: 'Paste your ClawHub API token',
+                  hintText: context.l10n.pasteClawHubToken,
                 ),
                 maxLines: 2,
               ),
@@ -744,7 +745,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'How to get your API token:',
+                            context.l10n.howToGetApiToken,
                             style: Theme.of(ctx).textTheme.labelLarge,
                           ),
                         ),
@@ -752,9 +753,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '1. Visit clawhub.ai and login with GitHub\n'
-                      '2. Run "clawhub login" in terminal\n'
-                      '3. Copy your token and paste it here',
+                      context.l10n.clawHubApiTokenInstructions,
                       style: Theme.of(ctx).textTheme.bodySmall,
                     ),
                   ],
@@ -767,8 +766,8 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                     : () async {
                         if (tokenCtl.text.trim().isEmpty) {
                           ScaffoldMessenger.of(ctx).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please enter an API token'),
+                            SnackBar(
+                              content: Text(context.l10n.pleaseEnterApiToken),
                               backgroundColor: Colors.orange,
                             ),
                           );
@@ -787,8 +786,8 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                           if (result.success) {
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(ctx).showSnackBar(
-                              const SnackBar(
-                                content: Text('Successfully connected to ClawHub'),
+                              SnackBar(
+                                content: Text(context.l10n.successfullyConnected),
                               ),
                             );
                             setState(() {});
@@ -796,7 +795,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                             ScaffoldMessenger.of(ctx).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                    'Connection failed: ${result.error ?? "Invalid token"}'),
+                                    '${context.l10n.connectionFailed}: ${result.error ?? "Invalid token"}'),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -809,7 +808,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Connect'),
+                    : Text(context.l10n.connect),
               ),
             ],
           ),
@@ -880,7 +879,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                       if (job.runCount > 0)
                         Chip(
                           avatar: const Icon(Icons.replay, size: 14),
-                          label: Text('${job.runCount} runs',
+                          label: Text(context.l10n.cronJobRuns(job.runCount),
                               style: theme.textTheme.labelSmall),
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           padding: EdgeInsets.zero,
@@ -890,7 +889,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                   if (job.nextRunAt != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      'Next run: ${_timeAgo(job.nextRunAt!)}',
+                      context.l10n.nextRunLabel(_timeAgo(job.nextRunAt!)),
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: colors.onSurfaceVariant),
                     ),
@@ -905,14 +904,14 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Last error: ${job.lastError}',
+                        context.l10n.lastErrorLabel(job.lastError!),
                         style: theme.textTheme.bodySmall
                             ?.copyWith(color: colors.onErrorContainer),
                       ),
                     ),
                   ],
                   const SizedBox(height: 16),
-                  Text('Task prompt', style: theme.textTheme.labelLarge),
+                  Text(context.l10n.taskPrompt, style: theme.textTheme.labelLarge),
                   const SizedBox(height: 6),
                   TextField(
                     controller: taskCtl,
@@ -921,7 +920,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                     onChanged: (_) => setSheetState(() {}),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      hintText: 'Instructions for the agent when this job fires…',
+                      hintText: context.l10n.cronJobHintText,
                       filled: true,
                       fillColor: colors.surfaceContainerHighest,
                     ),
@@ -932,7 +931,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Cancel'),
+                        child: Text(context.l10n.cancel),
                       ),
                       const SizedBox(width: 8),
                       FilledButton(
@@ -948,7 +947,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                                 setState(() {});
                               }
                             : null,
-                        child: const Text('Save'),
+                        child: Text(context.l10n.save),
                       ),
                     ],
                   ),
@@ -980,47 +979,47 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Add Cron Job',
+              Text(context.l10n.addCronJob,
                   style: Theme.of(ctx).textTheme.titleLarge),
               const SizedBox(height: 16),
               TextField(
                 controller: nameCtl,
-                decoration: const InputDecoration(
-                  labelText: 'Job Name',
+                decoration: InputDecoration(
+                  labelText: context.l10n.jobName,
                   border: OutlineInputBorder(),
-                  hintText: 'e.g. Daily Summary',
+                  hintText: context.l10n.dailySummaryExample,
                 ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: taskCtl,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Task Prompt',
+                decoration: InputDecoration(
+                  labelText: context.l10n.taskPrompt,
                   border: OutlineInputBorder(),
-                  hintText: 'What should the agent do?',
+                  hintText: context.l10n.whatShouldAgentDo,
                 ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<int>(
                 initialValue: intervalMinutes,
-                decoration: const InputDecoration(
-                  labelText: 'Interval',
+                decoration: InputDecoration(
+                  labelText: context.l10n.interval,
                   border: OutlineInputBorder(),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 5, child: Text('Every 5 minutes')),
+                items: [
+                  DropdownMenuItem(value: 5, child: Text(context.l10n.every5Minutes)),
                   DropdownMenuItem(
-                      value: 15, child: Text('Every 15 minutes')),
+                      value: 15, child: Text(context.l10n.every15Minutes)),
                   DropdownMenuItem(
-                      value: 30, child: Text('Every 30 minutes')),
-                  DropdownMenuItem(value: 60, child: Text('Every hour')),
+                      value: 30, child: Text(context.l10n.every30Minutes)),
+                  DropdownMenuItem(value: 60, child: Text(context.l10n.everyHour)),
                   DropdownMenuItem(
-                      value: 360, child: Text('Every 6 hours')),
+                      value: 360, child: Text(context.l10n.every6Hours)),
                   DropdownMenuItem(
-                      value: 720, child: Text('Every 12 hours')),
+                      value: 720, child: Text(context.l10n.every12Hours)),
                   DropdownMenuItem(
-                      value: 1440, child: Text('Every 24 hours')),
+                      value: 1440, child: Text(context.l10n.every24Hours)),
                 ],
                 onChanged: (v) {
                   if (v != null) {
@@ -1034,7 +1033,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Cancel'),
+                    child: Text(context.l10n.cancel),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
@@ -1051,7 +1050,7 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                       if (ctx.mounted) Navigator.pop(ctx);
                       setState(() {});
                     },
-                    child: const Text('Add'),
+                    child: Text(context.l10n.add),
                   ),
                 ],
               ),
@@ -1086,8 +1085,13 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                   }
                   if (ctx.mounted) Navigator.pop(ctx);
                   await _loadFiles();
+                  if (ctx.mounted) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(content: Text(context.l10n.fileSaved(fileName))),
+                    );
+                  }
                 },
-                child: const Text('Save'),
+                child: Text(context.l10n.save),
               ),
             ],
           ),
@@ -1289,14 +1293,14 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         context: ctx,
                         builder: (dCtx) => AlertDialog(
                           icon: const Icon(Icons.block, color: Colors.red, size: 32),
-                          title: const Text('Incompatible Skill'),
+                          title: Text(context.l10n.incompatibleSkill),
                           content: Text(
-                            'This skill cannot run on mobile (iOS/Android).\n\n${compat.reason}',
+                            context.l10n.incompatibleSkillDesc(compat.reason),
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(dCtx),
-                              child: const Text('OK'),
+                              child: Text(context.l10n.ok),
                             ),
                           ],
                         ),
@@ -1309,24 +1313,24 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         context: ctx,
                         builder: (dCtx) => AlertDialog(
                           icon: const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 32),
-                          title: const Text('Compatibility Warning'),
+                          title: Text(context.l10n.compatibilityWarning),
                           content: Text(
-                            'This skill was designed for desktop and may not work as-is on mobile.\n\n${compat.reason}\n\nWould you like to install an adapted version optimized for mobile?',
+                            context.l10n.compatibilityWarningDesc(compat.reason),
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(dCtx, 'cancel'),
-                              child: const Text('Cancel'),
+                              child: Text(context.l10n.cancel),
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(dCtx, 'original'),
-                              child: const Text('Install Original'),
+                              child: Text(context.l10n.installOriginal),
                             ),
                             FilledButton(
                               onPressed: compat.adaptedContent != null
                                   ? () => Navigator.pop(dCtx, 'adapt')
                                   : null,
-                              child: const Text('Install Adapted'),
+                              child: Text(context.l10n.installAdapted),
                             ),
                           ],
                         ),
@@ -1348,8 +1352,8 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(ok
-                                ? 'Installed ${skill.name}'
-                                : 'Failed to install ${skill.name}'),
+                                ? context.l10n.installedSkill(skill.name)
+                                : context.l10n.failedToInstallSkill(skill.name)),
                           ),
                         );
                         if (ok) setState(() {});
@@ -1365,15 +1369,15 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(ok
-                              ? 'Installed ${skill.name}'
-                              : 'Failed to install ${skill.name}'),
+                              ? context.l10n.installedSkill(skill.name)
+                              : context.l10n.failedToInstallSkill(skill.name)),
                         ),
                       );
                       if (ok) setState(() {});
                     }
                   },
                   icon: const Icon(Icons.download),
-                  label: const Text('Install Skill'),
+                  label: Text(context.l10n.installSkill),
                 ),
               ),
             ],

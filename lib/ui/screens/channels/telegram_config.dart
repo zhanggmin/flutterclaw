@@ -60,24 +60,24 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
       builder: (ctx) {
         final controller = TextEditingController();
         return AlertDialog(
-          title: const Text('Add Device'),
+          title: Text(context.l10n.addDevice),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'User ID',
-              hintText: 'Enter Telegram user ID',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.l10n.userIdLabel,
+              hintText: context.l10n.enterTelegramUserId,
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.number,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-              child: const Text('Add'),
+              child: Text(context.l10n.add),
             ),
           ],
         );
@@ -159,7 +159,7 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Telegram configuration saved')),
+          SnackBar(content: Text(context.l10n.telegramConfigSaved)),
         );
         Navigator.pop(context);
       }
@@ -174,24 +174,24 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
     final colors = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Telegram Configuration')),
+      appBar: AppBar(title: Text(context.l10n.telegramConfiguration)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // Bot Token Section
-          Text('Bot Token', style: theme.textTheme.titleMedium),
+          Text(context.l10n.botToken, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           TextField(
             controller: _tokenCtl,
             obscureText: true,
             decoration: InputDecoration(
-              labelText: 'Bot Token',
+              labelText: context.l10n.botToken,
               border: const OutlineInputBorder(),
-              hintText: 'Get from @BotFather',
+              hintText: context.l10n.fromBotFatherHint,
               prefixIcon: const Icon(Icons.key),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.paste),
-                tooltip: 'Paste',
+                tooltip: context.l10n.paste,
                 onPressed: () async {
                   final data = await Clipboard.getData(Clipboard.kTextPlain);
                   if (data?.text != null) _tokenCtl.text = data!.text!;
@@ -203,13 +203,12 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
           const SizedBox(height: 24),
 
           // Security Method Section
-          Text('Security Method', style: theme.textTheme.titleMedium),
+          Text(context.l10n.securityMethod, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
 
           SecurityMethodCard(
-            title: 'Pairing (Recommended)',
-            description:
-                'New users get a pairing code. You approve or reject them.',
+            title: context.l10n.pairingRecommended,
+            description: context.l10n.pairingDescription,
             icon: Icons.link,
             isSelected: _dmPolicy == 'pairing',
             onTap: () => setState(() => _dmPolicy = 'pairing'),
@@ -217,8 +216,8 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
           ),
 
           SecurityMethodCard(
-            title: 'Allowlist',
-            description: 'Only specific user IDs can access the bot.',
+            title: context.l10n.allowlistTitle,
+            description: context.l10n.allowlistDescription,
             icon: Icons.list_alt,
             isSelected: _dmPolicy == 'allowlist',
             onTap: () => setState(() => _dmPolicy = 'allowlist'),
@@ -226,9 +225,8 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
           ),
 
           SecurityMethodCard(
-            title: 'Open',
-            description:
-                'Anyone can use the bot immediately (not recommended).',
+            title: context.l10n.openAccess,
+            description: context.l10n.openAccessDescription,
             icon: Icons.public,
             isSelected: _dmPolicy == 'open',
             onTap: () => setState(() => _dmPolicy = 'open'),
@@ -236,9 +234,8 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
           ),
 
           SecurityMethodCard(
-            title: 'Disabled',
-            description:
-                'No DMs allowed. Bot will not respond to any messages.',
+            title: context.l10n.disabledAccess,
+            description: context.l10n.disabledAccessDescription,
             icon: Icons.block,
             isSelected: _dmPolicy == 'disabled',
             onTap: () => setState(() => _dmPolicy = 'disabled'),
@@ -254,15 +251,15 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
                 Expanded(
                   child: Text(
                     _dmPolicy == 'pairing'
-                        ? 'Approved Devices'
-                        : 'Allowed User IDs',
+                        ? context.l10n.approvedDevices
+                        : context.l10n.allowedUserIdsTitle,
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
                 if (_dmPolicy == 'allowlist')
                   IconButton.filledTonal(
                     icon: const Icon(Icons.add),
-                    tooltip: 'Add device',
+                    tooltip: context.l10n.addDeviceTooltip,
                     onPressed: _addDevice,
                   ),
               ],
@@ -285,15 +282,15 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
                       const SizedBox(height: 8),
                       Text(
                         _dmPolicy == 'pairing'
-                            ? 'No approved devices yet'
-                            : 'No allowed users configured',
+                            ? context.l10n.noApprovedDevicesYet
+                            : context.l10n.noAllowedUsersConfigured,
                         style: theme.textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 4),
                       Text(
                         _dmPolicy == 'pairing'
-                            ? 'Devices will appear here after you approve their pairing requests'
-                            : 'Add user IDs to allow them to use the bot',
+                            ? context.l10n.devicesAppearAfterApproval
+                            : context.l10n.addUserIdsHint,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
@@ -316,30 +313,30 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
                     ),
                     subtitle: Text(
                       entry.value.isNotEmpty
-                          ? 'ID: ${entry.key}'
+                          ? context.l10n.idPrefix(entry.key)
                           : (_dmPolicy == 'pairing'
-                                ? 'Approved device'
-                                : 'Allowed user'),
+                                ? context.l10n.approvedDevice
+                                : context.l10n.allowedUser),
                     ),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      tooltip: 'Remove',
+                      tooltip: context.l10n.remove,
                       onPressed: () async {
                         final confirmed = await showDialog<bool>(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: const Text('Remove device?'),
+                            title: Text(context.l10n.removeDevice),
                             content: Text(
-                              'Remove access for ${entry.value.isNotEmpty ? entry.value : entry.key}?',
+                              context.l10n.removeAccessFor(entry.value.isNotEmpty ? entry.value : entry.key),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(ctx, false),
-                                child: const Text('Cancel'),
+                                child: Text(context.l10n.cancel),
                               ),
                               FilledButton(
                                 onPressed: () => Navigator.pop(ctx, true),
-                                child: const Text('Remove'),
+                                child: Text(context.l10n.remove),
                               ),
                             ],
                           ),
@@ -369,7 +366,7 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.save),
-              label: Text(_isLoading ? 'Saving...' : 'Save & Connect'),
+              label: Text(_isLoading ? context.l10n.saving : context.l10n.saveAndConnect),
             ),
           ),
 
@@ -388,7 +385,7 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
                       Icon(Icons.help_outline, size: 20, color: colors.primary),
                       const SizedBox(width: 8),
                       Text(
-                        'How to get your bot token',
+                        context.l10n.howToGetBotToken,
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: colors.primary,
                           fontWeight: FontWeight.bold,
@@ -398,9 +395,7 @@ class _TelegramConfigScreenState extends ConsumerState<TelegramConfigScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '1. Open Telegram and search for @BotFather\n'
-                    '2. Send /newbot and follow the instructions\n'
-                    '3. Copy the token and paste it above',
+                    context.l10n.telegramTokenInstructions,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),

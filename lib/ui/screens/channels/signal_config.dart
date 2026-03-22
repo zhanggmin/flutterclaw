@@ -39,7 +39,7 @@ class _SignalConfigScreenState extends ConsumerState<SignalConfigScreen> {
     final account = _accountCtrl.text.trim();
     if (apiUrl.isEmpty || account.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('API URL and phone number are required')),
+        SnackBar(content: Text(context.l10n.apiUrlPhoneRequired)),
       );
       return;
     }
@@ -64,7 +64,7 @@ class _SignalConfigScreenState extends ConsumerState<SignalConfigScreen> {
       await configManager.save();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signal saved — restart gateway to connect')),
+        SnackBar(content: Text(context.l10n.signalConfigSaved)),
       );
       Navigator.pop(context);
     } catch (e) {
@@ -80,7 +80,7 @@ class _SignalConfigScreenState extends ConsumerState<SignalConfigScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Signal Configuration')),
+      appBar: AppBar(title: Text(context.l10n.signalConfiguration)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -90,15 +90,10 @@ class _SignalConfigScreenState extends ConsumerState<SignalConfigScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Requirements', style: theme.textTheme.titleMedium),
+                  Text(context.l10n.requirementsTitle, style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
                   Text(
-                    'Requires signal-cli-rest-api running on a server:\n\n'
-                    '  docker run -p 8080:8080 \\\n'
-                    '    -v /data:/home/.local/share/signal-cli \\\n'
-                    '    bbernhard/signal-cli-rest-api\n\n'
-                    'Register/link your Signal number via the REST API, '
-                    'then enter the URL and your phone number below.',
+                    context.l10n.signalRequirements,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -110,22 +105,22 @@ class _SignalConfigScreenState extends ConsumerState<SignalConfigScreen> {
           const SizedBox(height: 16),
           TextField(
             controller: _apiUrlCtrl,
-            decoration: const InputDecoration(
-              labelText: 'signal-cli-rest-api URL',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.l10n.signalApiUrl,
+              border: const OutlineInputBorder(),
               hintText: 'http://192.168.1.100:8080',
-              prefixIcon: Icon(Icons.link),
+              prefixIcon: const Icon(Icons.link),
             ),
             keyboardType: TextInputType.url,
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _accountCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Your Signal phone number',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.l10n.signalPhoneNumber,
+              border: const OutlineInputBorder(),
               hintText: '+12025551234',
-              prefixIcon: Icon(Icons.phone),
+              prefixIcon: const Icon(Icons.phone),
             ),
             keyboardType: TextInputType.phone,
           ),
@@ -138,7 +133,7 @@ class _SignalConfigScreenState extends ConsumerState<SignalConfigScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.check),
-            label: const Text('Save'),
+            label: Text(context.l10n.save),
           ),
         ],
       ),

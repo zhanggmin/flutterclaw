@@ -63,10 +63,10 @@ class _GatewayScreenState extends ConsumerState<GatewayScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.lock_outline),
-                  title: const Text('Access token'),
+                  title: Text(context.l10n.accessTokenLabel),
                   subtitle: Text(
                     config.gateway.token.isEmpty
-                        ? 'Not set — open access (loopback only)'
+                        ? context.l10n.notSetOpenAccess
                         : '••••••••',
                     style: TextStyle(
                       color: config.gateway.token.isEmpty
@@ -135,23 +135,23 @@ class _GatewayScreenState extends ConsumerState<GatewayScreen> {
     final result = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Gateway access token'),
+        title: Text(context.l10n.gatewayAccessToken),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Token',
-            hintText: 'Leave empty to disable auth',
+          decoration: InputDecoration(
+            labelText: context.l10n.tokenFieldLabel,
+            hintText: context.l10n.leaveEmptyDisableAuth,
           ),
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Save'),
+            child: Text(context.l10n.save),
           ),
         ],
       ),

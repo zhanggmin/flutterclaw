@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'package:markdown/markdown.dart' as md;
 
 /// A [MarkdownElementBuilder] for `pre` (fenced code block) elements that
@@ -42,13 +43,13 @@ class CopyableCodeBlockBuilder extends MarkdownElementBuilder {
           padding: const EdgeInsets.all(8),
           constraints: const BoxConstraints(),
           icon: Icon(Icons.copy, size: 16, color: theme.colorScheme.onSurfaceVariant),
-          tooltip: 'Copy',
+          tooltip: context.l10n.copyTooltip,
           onPressed: () {
             Clipboard.setData(ClipboardData(text: code));
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Copied to clipboard'),
-                duration: Duration(seconds: 1),
+              SnackBar(
+                content: Text(context.l10n.copiedToClipboard),
+                duration: const Duration(seconds: 1),
               ),
             );
           },

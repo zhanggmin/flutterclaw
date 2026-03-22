@@ -12,7 +12,15 @@ class ChatCommandResult {
   final bool handled;
   final String? response;
 
-  const ChatCommandResult({this.handled = false, this.response});
+  /// When true, the in-app chat should clear (like switching sessions) because
+  /// the transcript was reset on disk.
+  final bool clearChatUi;
+
+  const ChatCommandResult({
+    this.handled = false,
+    this.response,
+    this.clearChatUi = false,
+  });
 
   static const notHandled = ChatCommandResult();
 }
@@ -95,6 +103,7 @@ class ChatCommandHandler {
     return const ChatCommandResult(
       handled: true,
       response: 'Session reset. Starting fresh.',
+      clearChatUi: true,
     );
   }
 
