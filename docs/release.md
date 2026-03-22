@@ -1,12 +1,27 @@
 # Creating a new Android release
 
-This guide covers bumping the app version, building a release APK, and publishing it as a downloadable GitHub Release.
+This guide covers bumping the app version, **writing a changelog by comparing with the previous release**, building a release APK, and publishing it as a downloadable GitHub Release.
 
 Prerequisites:
 
 - [Flutter](https://docs.flutter.dev/get-started/install) SDK on your PATH
 - A clone of this repository
 - For uploading releases: [GitHub CLI](https://cli.github.com/) (`gh`) authenticated (`gh auth login`), or use the GitHub web UI instead
+
+---
+
+## Language policy (commits, PRs, release text)
+
+**All contributor-facing and release text must be in English.**
+
+| Area | Requirement |
+|------|-------------|
+| **Git commits** | Subject and body in English (e.g. `chore: bump version to 1.0.9+10`). |
+| **Pull requests** | Title and description in English; keep the main PR thread for that change in English so history and reviews stay consistent. |
+| **Changelog & GitHub Releases** | Release notes and the summarized changelog (§2) in English. |
+| **Store listings** | “What’s new” / release notes for this app: English unless a store requires a localized field (then mirror the English source). |
+
+End-user text inside the app is localized via ARB files; this policy applies to **metadata** (git, GitHub, release tooling), not to UI translations.
 
 ---
 
@@ -42,7 +57,48 @@ version: 1.0.8+9
 
 ---
 
-## 2. Build the release APK
+## 2. Changelog (compare with the previous version)
+
+Before you build or publish, **prepare the release notes** by summarizing what changed since the last shipped version. That baseline should be the **previous release tag** (or commit), not an arbitrary point in history.
+
+**Why:** Users and store listings need to know what is new; comparing against the prior version keeps the changelog accurate and reviewable.
+
+**Steps:**
+
+1. **Identify the previous release** (same scheme as your tags, e.g. `v1.0.8`):
+
+   ```bash
+   git fetch --tags
+   git tag -l 'v*' --sort=-v:refname | head -10
+   ```
+
+   Pick the tag that corresponds to the **last published** version (the one immediately before the version you are about to release).
+
+2. **Generate a raw list of commits** between that tag and your current branch (replace `v1.0.8` and adjust the range if your tag names differ):
+
+   ```bash
+   git log v1.0.8..HEAD --oneline --no-merges
+   ```
+
+   For a slightly more readable summary:
+
+   ```bash
+   git shortlog v1.0.8..HEAD --no-merges
+   ```
+
+3. **Turn that into human-readable notes in English** (see **Language policy** above): group fixes vs features, drop noise (chore-only bumps if you prefer), and write the text you will paste into the GitHub Release description (and Play Store “What’s new” if applicable).
+
+4. **Optional — GitHub compare in the browser:** open  
+   `https://github.com/<org>/<repo>/compare/<previous-tag>...HEAD`  
+   to review merged PRs and file diffs alongside the git log.
+
+If there is **no earlier tag**, use the first public commit or the branch point you consider “v1.0.0”, or state clearly in the notes that this is an initial release.
+
+Use the finished changelog as the body for `gh release create --notes` (see §4) or paste it into the release form on GitHub.
+
+---
+
+## 3. Build the release APK
 
 From the repository root:
 
@@ -69,7 +125,7 @@ Optional: confirm the version on the built artifact (example):
 
 ---
 
-## 3. Publish a GitHub Release with the APK
+## 4. Publish a GitHub Release with the APK
 
 ### Option A: GitHub CLI (recommended)
 
@@ -93,9 +149,11 @@ Optional: confirm the version on the built artifact (example):
 
    gh release create v1.0.9 \
      --title "v1.0.9" \
-     --notes "Brief release notes here." \
+     --notes-file CHANGELOG.md \
      flutterclaw-1.0.9.apk
    ```
+
+   Prepare `CHANGELOG.md` from §2 (changelog vs previous version), or use `--notes "..."` with inline text.
 
 Users will see `flutterclaw-1.0.9.apk` under **Assets** on the release page.
 
@@ -108,7 +166,7 @@ Users will see `flutterclaw-1.0.9.apk` under **Assets** on the release page.
 
 1. Push your commits and create a tag (`v1.0.9`) as above, or create the tag when drafting the release in the UI.
 2. Open the repository on GitHub → **Releases** → **Draft a new release**.
-3. Choose the tag, set title and description, then **Attach binaries** and upload `app-release.apk` (optionally renamed, e.g. `flutterclaw-1.0.9.apk`).
+3. Choose the tag, set title and **paste the changelog** (from §2) into the description, then **Attach binaries** and upload `app-release.apk` (optionally renamed, e.g. `flutterclaw-1.0.9.apk`).
 4. Publish the release.
 
 ---
@@ -119,8 +177,11 @@ Users will see `flutterclaw-1.0.9.apk` under **Assets** on the release page.
 |------|--------|
 | 1 | Increase `version` in `pubspec.yaml` (`name+build`) |
 | 2 | `flutter pub get` and commit `pubspec.yaml` |
-| 3 | `flutter build apk --release` |
-| 4 | Tag, push tag, `gh release create` (or web UI) with APK attached |
+| 3 | **Changelog:** compare `previous-tag..HEAD` (§2), draft notes in **English** for GitHub / store |
+| 4 | `flutter build apk --release` |
+| 5 | Tag, push tag, `gh release create` (or web UI) with APK attached and notes from §2 |
+
+**Language:** Use English for all commits and PRs tied to the release, plus release notes (see **Language policy**).
 
 ---
 
