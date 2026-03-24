@@ -8,6 +8,7 @@ import 'package:flutterclaw/data/models/config.dart';
 import 'package:flutterclaw/data/models/model_catalog.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'package:flutterclaw/services/analytics_service.dart';
+import 'package:flutterclaw/ui/widgets/provider_brand_icon.dart';
 
 /// Providers & Models settings sub-screen.
 class ProvidersModelsScreen extends ConsumerStatefulWidget {
@@ -60,10 +61,11 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                       color: colors.primaryContainer,
                       borderRadius: BorderRadius.circular(AppTokens.radiusSM),
                     ),
-                    child: Icon(
-                      catalogProv?.icon ?? Icons.key,
-                      color: colors.primary,
+                    child: ProviderBrandIcon(
+                      provider: catalogProv,
                       size: 20,
+                      iconColor: colors.primary,
+                      fallbackIcon: Icons.key,
                     ),
                   ),
                   title: Text(
@@ -170,12 +172,12 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                           : colors.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(AppTokens.radiusSM),
                     ),
-                    child: Icon(
-                      provider?.icon ?? Icons.smart_toy,
-                      color: isDefault
+                    child: ProviderBrandIcon(
+                      provider: provider,
+                      size: 22,
+                      iconColor: isDefault
                           ? colors.primary
                           : colors.onSurfaceVariant,
-                      size: 22,
                     ),
                   ),
                   title: Row(
@@ -322,8 +324,12 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              Icon(catalogProv?.icon ?? Icons.key,
-                  color: Theme.of(ctx).colorScheme.primary),
+              ProviderBrandIcon(
+                provider: catalogProv,
+                size: 24,
+                iconColor: Theme.of(ctx).colorScheme.primary,
+                fallbackIcon: Icons.key,
+              ),
               const SizedBox(width: 10),
               Text(catalogProv?.displayName ?? providerId,
                   style: Theme.of(ctx).textTheme.titleLarge),
@@ -507,8 +513,11 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              Icon(provider?.icon ?? Icons.smart_toy,
-                  color: Theme.of(ctx).colorScheme.primary),
+              ProviderBrandIcon(
+                provider: provider,
+                size: 24,
+                iconColor: Theme.of(ctx).colorScheme.primary,
+              ),
               const SizedBox(width: 10),
               Expanded(
                   child: Text(model.modelName,
@@ -1508,10 +1517,12 @@ class _ProviderChip extends StatelessWidget {
                   : null,
             ),
             child: Row(children: [
-              Icon(provider.icon,
-                  size: 20,
-                  color:
-                      isSelected ? colors.primary : colors.onSurfaceVariant),
+              ProviderBrandIcon(
+                provider: provider,
+                size: 20,
+                iconColor:
+                    isSelected ? colors.primary : colors.onSurfaceVariant,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(

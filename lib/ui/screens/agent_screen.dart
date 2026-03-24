@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterclaw/core/agent/session_manager.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/widgets/channel_brand_icon.dart';
 import 'package:flutterclaw/services/cron_service.dart';
 import 'package:flutterclaw/services/skills_service.dart';
 
@@ -179,7 +180,11 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
             else
               ...sessions.map((s) => Card(
                     child: ListTile(
-                      leading: Icon(_channelIcon(s.channelType)),
+                      leading: ChannelBrandIcon(
+                        channelType: s.channelType,
+                        size: 24,
+                        iconColor: colors.primary,
+                      ),
                       title: Text(s.key),
                       subtitle: Text(
                         '${s.messageCount} msgs | ${s.totalTokens} tokens | ${_timeAgo(s.lastActivity)}',
@@ -1125,14 +1130,6 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
     final preview = nonEmpty.take(2).join(' ').trim();
     return preview.length > 80 ? '${preview.substring(0, 80)}...' : preview;
   }
-
-  IconData _channelIcon(String channelType) => switch (channelType) {
-        'telegram' => Icons.telegram,
-        'discord' => Icons.discord,
-        'webchat' => Icons.chat,
-        'system' => Icons.settings,
-        _ => Icons.message,
-      };
 
   String _timeAgo(DateTime dt) {
     final diff = DateTime.now().difference(dt);

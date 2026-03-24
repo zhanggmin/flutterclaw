@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/widgets/channel_brand_icon.dart';
 
 class CompletionSummary {
   final String providerName;
@@ -137,13 +138,16 @@ class CompletionPage extends StatelessWidget {
                 )
               else ...[
                 if (summary.telegramEnabled)
-                  _ChannelChip(label: context.l10n.telegram, icon: Icons.send),
+                  _ChannelChip(
+                      label: context.l10n.telegram, channelType: 'telegram'),
                 if (summary.discordEnabled)
-                  _ChannelChip(label: context.l10n.discord, icon: Icons.forum),
+                  _ChannelChip(
+                      label: context.l10n.discord, channelType: 'discord'),
                 if (summary.whatsappEnabled)
-                  const _ChannelChip(label: 'WhatsApp', icon: Icons.chat),
+                  const _ChannelChip(label: 'WhatsApp', channelType: 'whatsapp'),
               ],
-              _ChannelChip(label: context.l10n.webChat, icon: Icons.web),
+              _ChannelChip(
+                  label: context.l10n.webChat, channelType: 'webchat'),
             ],
           ),
 
@@ -227,18 +231,23 @@ class _SummaryCard extends StatelessWidget {
 
 class _ChannelChip extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final String channelType;
 
-  const _ChannelChip({required this.label, required this.icon});
+  const _ChannelChip({required this.label, required this.channelType});
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+          ChannelBrandIcon(
+            channelType: channelType,
+            size: 16,
+            iconColor: primary,
+          ),
           const SizedBox(width: 6),
           Text(label, style: Theme.of(context).textTheme.bodyMedium),
         ],

@@ -4,6 +4,7 @@ import 'package:flutterclaw/core/agent/session_manager.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/data/models/agent_profile.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/widgets/channel_brand_icon.dart';
 
 class SessionSwitcherChip extends ConsumerWidget {
   const SessionSwitcherChip({super.key});
@@ -44,9 +45,10 @@ class SessionSwitcherChip extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  _channelIcon(activeKey),
-                  style: const TextStyle(fontSize: 16),
+                ChannelBrandIcon(
+                  channelType: activeKey.split(':').first,
+                  size: 18,
+                  iconColor: colors.onSecondaryContainer,
                 ),
                 const SizedBox(width: 6),
                 ConstrainedBox(
@@ -131,9 +133,10 @@ class SessionSwitcherChip extends ConsumerWidget {
                   final isActive = session.key == activeKey;
                   final label =
                       _sessionLabel(context, session.key, session, agents, activeAgent);
-                  final icon = _channelIcon(session.key);
+                  final channel = session.key.split(':').first;
                   final model = resolveModel(session);
                   final subtitle = _sessionSubtitle(context, session, model);
+                  final scheme = Theme.of(context).colorScheme;
 
                   return ListTile(
                     leading: Container(
@@ -141,16 +144,17 @@ class SessionSwitcherChip extends ConsumerWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         color: isActive
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest,
+                            ? scheme.primaryContainer
+                            : scheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                        child: Text(
-                          icon,
-                          style: const TextStyle(fontSize: 20),
+                        child: ChannelBrandIcon(
+                          channelType: channel,
+                          size: 22,
+                          iconColor: isActive
+                              ? scheme.primary
+                              : scheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -220,20 +224,6 @@ class SessionSwitcherChip extends ConsumerWidget {
     };
 
     return agentName.isNotEmpty ? '$agentName · $channelLabel' : channelLabel;
-  }
-
-  static String _channelIcon(String key) {
-    final channel = key.split(':').first;
-    return switch (channel) {
-      'webchat' => '🤖',
-      'telegram' => '✈️',
-      'discord' => '🎮',
-      'heartbeat' => '💓',
-      'cron' => '⏱',
-      'subagent' => '🔀',
-      'system' => '⚙️',
-      _ => '💬',
-    };
   }
 
   static String _sessionSubtitle(BuildContext context, SessionMeta meta, String modelName) {

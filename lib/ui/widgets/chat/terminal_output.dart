@@ -135,21 +135,26 @@ class _TerminalOutputState extends State<TerminalOutput> {
       }
     }
 
-    // Raw streaming text — write only the delta
+    // Raw streaming text — write only the delta.
+    // Skip whitespace-only content to avoid expanding the terminal height
+    // before real output arrives (e.g. when noise stripping leaves only \n\n).
     if (text.startsWith(_lastOutput) && _lastOutput.isNotEmpty) {
       final delta = text.substring(_lastOutput.length);
-      if (delta.isNotEmpty) {
+      if (delta.isNotEmpty && delta.trim().isNotEmpty) {
         debugPrint('[TermOut] streaming delta len=${delta.length} (total=${text.length})');
         _terminal.write(delta);
         _setHeightMode(_TerminalHeightMode.standard);
       }
     } else {
-      debugPrint('[TermOut] full replacement len=${text.length}');
-      // Full replacement
-      _terminal.buffer.clear();
-      _terminal.setCursor(0, 0);
-      _terminal.write(text);
-      _setHeightMode(_TerminalHeightMode.standard);
+      final hasVisibleContent = text.trim().isNotEmpty;
+      debugPrint('[TermOut] full replacement len=${text.length} visible=$hasVisibleContent');
+      if (hasVisibleContent) {
+        // Full replacement — only render and expand if there's real content.
+        _terminal.buffer.clear();
+        _terminal.setCursor(0, 0);
+        _terminal.write(text);
+        _setHeightMode(_TerminalHeightMode.standard);
+      }
     }
     _lastOutput = text;
   }
@@ -171,11 +176,11 @@ class _TerminalOutputState extends State<TerminalOutput> {
     final double terminalHeight;
     switch (_heightMode) {
       case _TerminalHeightMode.compact:
-        terminalHeight = 120;
+        terminalHeight = 60;
       case _TerminalHeightMode.standard:
-        terminalHeight = 280;
+        terminalHeight = 160;
       case _TerminalHeightMode.expanded:
-        terminalHeight = MediaQuery.of(context).size.height * 0.7;
+        terminalHeight = MediaQuery.of(context).size.height * 0.65;
     }
 
     return Container(

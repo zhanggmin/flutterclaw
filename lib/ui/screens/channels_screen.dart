@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/widgets/channel_brand_icon.dart';
 import 'package:flutterclaw/services/pairing_service.dart';
 import 'package:flutterclaw/services/background_service.dart';
 import 'package:flutterclaw/services/ios_gateway_service.dart';
@@ -452,7 +453,8 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
 
           // Chat (always available) — app primary color
           _ChannelTile(
-            icon: Icons.chat_rounded,
+            channelType: 'webchat',
+            iconColor: theme.colorScheme.primary,
             name: context.l10n.webChat,
             subtitle: context.l10n.webChatBuiltIn,
             isConnected: true,
@@ -461,7 +463,7 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
 
           // Telegram — brand blue #24A1DE
           _ChannelTile(
-            icon: Icons.telegram,
+            channelType: 'telegram',
             iconColor: const Color(0xFF24A1DE),
             name: 'Telegram',
             subtitle: _channelStatus(
@@ -477,7 +479,7 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
 
           // Discord — brand purple #5865F2
           _ChannelTile(
-            icon: Icons.headphones,
+            channelType: 'discord',
             iconColor: const Color(0xFF5865F2),
             name: 'Discord',
             subtitle: _channelStatus(
@@ -493,7 +495,7 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
 
           // Slack — brand aubergine #4A154B
           _ChannelTile(
-            icon: Icons.grid_view,
+            channelType: 'slack',
             iconColor: const Color(0xFF4A154B),
             name: 'Slack',
             subtitle: _channelStatus(
@@ -509,7 +511,7 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
 
           // Signal — brand navy #3A76F0
           _ChannelTile(
-            icon: Icons.lock,
+            channelType: 'signal',
             iconColor: const Color(0xFF3A76F0),
             name: 'Signal',
             subtitle: _channelStatus(
@@ -525,7 +527,7 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
 
           // WhatsApp — brand green #25D366
           _ChannelTile(
-            icon: Icons.chat_bubble,
+            channelType: 'whatsapp',
             iconColor: const Color(0xFF25D366),
             name: 'WhatsApp',
             subtitle: _channelStatus(
@@ -617,7 +619,7 @@ class _ChannelsScreenState extends ConsumerState<ChannelsScreen> {
 }
 
 class _ChannelTile extends StatelessWidget {
-  final IconData icon;
+  final String channelType;
   final Color? iconColor;
   final String name;
   final String subtitle;
@@ -626,7 +628,7 @@ class _ChannelTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _ChannelTile({
-    required this.icon,
+    required this.channelType,
     this.iconColor,
     required this.name,
     required this.subtitle,
@@ -653,7 +655,11 @@ class _ChannelTile extends StatelessWidget {
             color: (iconColor ?? theme.colorScheme.primary).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, size: 22, color: iconColor ?? theme.colorScheme.primary),
+          child: ChannelBrandIcon(
+            channelType: channelType,
+            size: 22,
+            iconColor: iconColor ?? theme.colorScheme.primary,
+          ),
         ),
         title: Text(name),
         subtitle: Text(subtitle),

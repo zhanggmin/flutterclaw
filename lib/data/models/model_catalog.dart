@@ -5,6 +5,8 @@ class CatalogProvider {
   final String displayName;
   final String description;
   final IconData icon;
+  /// Bundled brand mark (SVG under [assets/providers/]); null uses [icon].
+  final String? logoAsset;
   final String signupUrl;
   final String? apiBase;
   final bool hasFreeModels;
@@ -14,6 +16,7 @@ class CatalogProvider {
     required this.displayName,
     required this.description,
     required this.icon,
+    this.logoAsset,
     required this.signupUrl,
     this.apiBase,
     this.hasFreeModels = false,
@@ -51,6 +54,7 @@ class ModelCatalog {
       displayName: 'OpenRouter',
       description: 'Access 300+ models with one API key. Free models available.',
       icon: Icons.route,
+      logoAsset: 'assets/providers/openrouter.svg',
       signupUrl: 'https://openrouter.ai/keys',
       apiBase: 'https://openrouter.ai/api/v1',
       hasFreeModels: true,
@@ -60,6 +64,7 @@ class ModelCatalog {
       displayName: 'OpenAI',
       description: 'GPT-4.1, GPT-4o, o4-mini and more.',
       icon: Icons.auto_awesome,
+      logoAsset: 'assets/providers/openai.svg',
       signupUrl: 'https://platform.openai.com/api-keys',
       apiBase: 'https://api.openai.com/v1',
     ),
@@ -68,6 +73,7 @@ class ModelCatalog {
       displayName: 'Anthropic',
       description: 'Claude Haiku 4.5, Sonnet 4.5/4.6, Opus 4.6.',
       icon: Icons.psychology,
+      logoAsset: 'assets/providers/anthropic.svg',
       signupUrl: 'https://console.anthropic.com/settings/keys',
       apiBase: 'https://api.anthropic.com',
     ),
@@ -76,6 +82,7 @@ class ModelCatalog {
       displayName: 'xAI',
       description: 'Grok 4 and Grok 4 Fast — multimodal chat (docs.x.ai).',
       icon: Icons.bolt,
+      logoAsset: 'assets/providers/xai.svg',
       signupUrl: 'https://console.x.ai/',
       apiBase: 'https://api.x.ai/v1',
     ),
@@ -84,6 +91,7 @@ class ModelCatalog {
       displayName: 'Google',
       description: 'Gemini 3.x (preview) and 2.5 Flash/Pro — free tier on select models.',
       icon: Icons.star_outline,
+      logoAsset: 'assets/providers/google.svg',
       signupUrl: 'https://aistudio.google.com/app/apikey',
       // Google exposes an OpenAI-compatible endpoint under /v1beta/openai.
       // OpenAiProvider appends /chat/completions to this base.
@@ -95,6 +103,7 @@ class ModelCatalog {
       displayName: 'DeepSeek',
       description: 'DeepSeek-V3.2 (chat + reasoner) — 128K context (api-docs.deepseek.com).',
       icon: Icons.explore,
+      logoAsset: 'assets/providers/deepseek.svg',
       signupUrl: 'https://platform.deepseek.com/api_keys',
       apiBase: 'https://api.deepseek.com/v1',
     ),
@@ -104,6 +113,7 @@ class ModelCatalog {
       description:
           'GroqCloud — fast Llama inference. Model IDs: console.groq.com/docs/models. Not xAI Grok.',
       icon: Icons.flash_on,
+      logoAsset: 'assets/providers/groq.svg',
       signupUrl: 'https://console.groq.com/keys',
       apiBase: 'https://api.groq.com/openai/v1',
     ),
@@ -112,6 +122,7 @@ class ModelCatalog {
       displayName: 'Ollama',
       description: 'Run models locally on your machine.',
       icon: Icons.computer,
+      logoAsset: 'assets/providers/ollama.svg',
       signupUrl: 'https://ollama.com/download',
       apiBase: 'http://localhost:11434/v1',
     ),
@@ -120,6 +131,7 @@ class ModelCatalog {
       displayName: 'AWS Bedrock',
       description: 'Claude models via AWS Bedrock (SigV4 auth).',
       icon: Icons.cloud,
+      logoAsset: 'assets/providers/bedrock.svg',
       signupUrl: 'https://console.aws.amazon.com/bedrock/',
     ),
     CatalogProvider(

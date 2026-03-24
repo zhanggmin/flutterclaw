@@ -250,6 +250,23 @@ class AnthropicProvider implements LlmProvider {
             ? m.content as String
             : m.content.toString();
       } else {
+        // Consecutive tool results from a parallel tool call must be merged into
+        // a single user message. The Anthropic API requires ALL tool_result blocks
+        // for a given assistant turn to appear together in the immediately following
+        // user message — inserting a placeholder assistant between them breaks the
+        // pairing and causes a 400 "tool_use ids found without tool_result" error.
+        if (m.role == 'tool' && m.toolCallId != null && messages.isNotEmpty) {
+          final last = messages.last;
+          if (last['role'] == 'user' && _isToolResultMessage(last)) {
+            (last['content'] as List<dynamic>).add({
+              'type': 'tool_result',
+              'tool_use_id': m.toolCallId,
+              'content': _toolResultContent(m.content),
+            });
+            continue;
+          }
+        }
+
         final converted = _messageToAnthropic(m);
         // Anthropic requires strict user/assistant alternation.
         // If the previous message has the same role (e.g. a dangling user message
@@ -285,6 +302,13 @@ class AnthropicProvider implements LlmProvider {
     }
 
     return body;
+  }
+
+  bool _isToolResultMessage(Map<String, dynamic> m) {
+    if (m['role'] != 'user') return false;
+    final content = m['content'];
+    if (content is! List) return false;
+    return content.any((b) => b is Map && b['type'] == 'tool_result');
   }
 
   Map<String, dynamic> _messageToAnthropic(LlmMessage m) {

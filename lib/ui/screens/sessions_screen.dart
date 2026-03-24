@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/widgets/channel_brand_icon.dart';
 
 class SessionsScreen extends ConsumerWidget {
   const SessionsScreen({super.key});
@@ -45,7 +46,11 @@ class SessionsScreen extends ConsumerWidget {
                 final session = sessions[index];
                 return Card(
                   child: ListTile(
-                    leading: Icon(_channelIcon(session.channelType)),
+                    leading: ChannelBrandIcon(
+                      channelType: session.channelType,
+                      size: 24,
+                      iconColor: theme.colorScheme.primary,
+                    ),
                     title: Text(
                       session.label,
                       maxLines: 1,
@@ -146,13 +151,6 @@ class SessionsScreen extends ConsumerWidget {
             ),
     );
   }
-
-  IconData _channelIcon(String channelType) => switch (channelType) {
-        'telegram' => Icons.telegram,
-        'discord' => Icons.discord,
-        'webchat' => Icons.chat,
-        _ => Icons.message,
-      };
 
   String _timeAgo(DateTime dt, BuildContext context) {
     final diff = DateTime.now().difference(dt);

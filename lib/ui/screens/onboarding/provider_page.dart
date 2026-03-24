@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterclaw/data/models/model_catalog.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/widgets/provider_brand_icon.dart';
 
 class ProviderPage extends StatelessWidget {
   final String? selectedProviderId;
@@ -158,12 +159,12 @@ class _ProviderCard extends StatelessWidget {
                         : colors.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
-                    provider.icon,
-                    color: isSelected
+                  child: ProviderBrandIcon(
+                    provider: provider,
+                    size: 22,
+                    iconColor: isSelected
                         ? colors.onPrimary
                         : colors.onSurfaceVariant,
-                    size: 22,
                   ),
                 ),
                 const SizedBox(width: 14),

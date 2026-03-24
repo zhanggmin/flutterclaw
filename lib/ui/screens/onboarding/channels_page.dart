@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterclaw/channels/whatsapp.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/ui/widgets/channel_brand_icon.dart';
 import 'package:flutterclaw/ui/widgets/whatsapp_pairing_status_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -186,7 +187,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
         ),
         const SizedBox(height: 24),
         _ChannelCard(
-          icon: Icons.send,
+          channelType: 'telegram',
           name: context.l10n.telegram,
           description: context.l10n.connectTelegramBot,
           enabled: _telegramEnabled,
@@ -201,7 +202,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
         ),
         const SizedBox(height: 12),
         _ChannelCard(
-          icon: Icons.forum,
+          channelType: 'discord',
           name: context.l10n.discord,
           description: context.l10n.connectDiscordBot,
           enabled: _discordEnabled,
@@ -222,7 +223,11 @@ class _ChannelsPageState extends State<ChannelsPage> {
             child: Column(
               children: [
                 SwitchListTile(
-                  secondary: const Icon(Icons.chat),
+                  secondary: ChannelBrandIcon(
+                    channelType: 'whatsapp',
+                    size: 24,
+                    iconColor: colors.onSurfaceVariant,
+                  ),
                   title: const Text('WhatsApp'),
                   subtitle: const Text(
                     'Pair your personal WhatsApp account with a QR code',
@@ -400,7 +405,7 @@ class _WhatsAppModeOption extends StatelessWidget {
 }
 
 class _ChannelCard extends StatelessWidget {
-  final IconData icon;
+  final String channelType;
   final String name;
   final String description;
   final bool enabled;
@@ -411,7 +416,7 @@ class _ChannelCard extends StatelessWidget {
   final ValueChanged<String> onTokenChanged;
 
   const _ChannelCard({
-    required this.icon,
+    required this.channelType,
     required this.name,
     required this.description,
     required this.enabled,
@@ -434,7 +439,11 @@ class _ChannelCard extends StatelessWidget {
         child: Column(
           children: [
             SwitchListTile(
-              secondary: Icon(icon),
+              secondary: ChannelBrandIcon(
+                channelType: channelType,
+                size: 24,
+                iconColor: colors.onSurfaceVariant,
+              ),
               title: Text(name),
               subtitle: Text(description),
               value: enabled,
