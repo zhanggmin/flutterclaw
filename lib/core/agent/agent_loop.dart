@@ -428,6 +428,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     var loopMessages = List<LlmMessage>.from(messages);
     var continuationRound = 0;
     const maxContinuations = 2; // up to 3 rounds × maxToolIterations total
+    final provCred = configManager.config.providerCredentials[modelEntry.provider];
 
     continuation: while (true) {
       var maxIter = maxToolIterations;
@@ -443,6 +444,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
           temperature: temperature,
           timeoutSeconds: modelEntry.requestTimeout,
           supportsVision: modelEntry.supportsVision,
+          awsSecretKey: provCred?.awsSecretKey,
+          awsRegion: provCred?.awsRegion,
+          awsAuthMode: provCred?.awsAuthMode,
         );
 
         LlmResponse response;
@@ -572,6 +576,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
           temperature: temperature,
           timeoutSeconds: modelEntry.requestTimeout,
           supportsVision: modelEntry.supportsVision,
+          awsSecretKey: provCred?.awsSecretKey,
+          awsRegion: provCred?.awsRegion,
+          awsAuthMode: provCred?.awsAuthMode,
         );
         final gracefulResp = await providerRouter.chatCompletion(gracefulReq);
         final gracefulContent = gracefulResp.content ?? '';
@@ -682,6 +689,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     var contentBuffer = '';
     var continuationRound = 0;
     const maxContinuations = 2; // up to 3 rounds × maxToolIterations total
+    final provCredStream = configManager.config.providerCredentials[modelEntry.provider];
 
     continuation: while (true) {
       var maxIter = maxToolIterations;
@@ -698,6 +706,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
           temperature: temperature,
           timeoutSeconds: modelEntry.requestTimeout,
           supportsVision: modelEntry.supportsVision,
+          awsSecretKey: provCredStream?.awsSecretKey,
+          awsRegion: provCredStream?.awsRegion,
+          awsAuthMode: provCredStream?.awsAuthMode,
         );
 
         final toolCallsBuffer = <ToolCall>[];
@@ -876,6 +887,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
           temperature: temperature,
           timeoutSeconds: modelEntry.requestTimeout,
           supportsVision: modelEntry.supportsVision,
+          awsSecretKey: provCredStream?.awsSecretKey,
+          awsRegion: provCredStream?.awsRegion,
+          awsAuthMode: provCredStream?.awsAuthMode,
         );
         contentBuffer = '';
         await for (final event in providerRouter.chatCompletionStream(gracefulReq)) {
@@ -993,6 +1007,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     if (modelEntry == null) return null;
 
     try {
+      final summCred = configManager.config.providerCredentials[modelEntry.provider];
       final request = LlmRequest(
         model: modelEntry.model,
         apiKey: configManager.config.resolveApiKey(modelEntry),
@@ -1002,6 +1017,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
         temperature: 0.3,
         timeoutSeconds: modelEntry.requestTimeout,
         supportsVision: modelEntry.supportsVision,
+        awsSecretKey: summCred?.awsSecretKey,
+        awsRegion: summCred?.awsRegion,
+        awsAuthMode: summCred?.awsAuthMode,
       );
 
       final response = await providerRouter.chatCompletion(request);

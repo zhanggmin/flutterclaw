@@ -12,18 +12,34 @@ import 'package:flutterclaw/data/models/model_catalog.dart';
 class ProviderCredential {
   final String apiKey;
   final String? apiBase;
+  final String? awsSecretKey;
+  final String? awsRegion;
+  /// Bedrock auth mode: 'bearer' (token) or 'sigv4' (access key + secret).
+  final String? awsAuthMode;
 
-  const ProviderCredential({required this.apiKey, this.apiBase});
+  const ProviderCredential({
+    required this.apiKey,
+    this.apiBase,
+    this.awsSecretKey,
+    this.awsRegion,
+    this.awsAuthMode,
+  });
 
   factory ProviderCredential.fromJson(Map<String, dynamic> json) =>
       ProviderCredential(
         apiKey: json['api_key'] as String,
         apiBase: json['api_base'] as String?,
+        awsSecretKey: json['aws_secret_key'] as String?,
+        awsRegion: json['aws_region'] as String?,
+        awsAuthMode: json['aws_auth_mode'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
     'api_key': apiKey,
     if (apiBase != null) 'api_base': apiBase,
+    if (awsSecretKey != null) 'aws_secret_key': awsSecretKey,
+    if (awsRegion != null) 'aws_region': awsRegion,
+    if (awsAuthMode != null) 'aws_auth_mode': awsAuthMode,
   };
 }
 
@@ -532,10 +548,22 @@ class FlutterClawConfig {
         'https://api.openai.com/v1';
   }
 
-  /// Returns true if the given provider has a non-empty API key stored.
+  /// Returns true if the given provider has valid credentials stored.
   bool isProviderAuthenticated(String providerId) {
     final cred = providerCredentials[providerId];
-    return cred != null && cred.apiKey.isNotEmpty;
+    if (cred == null) return false;
+    if (providerId == 'bedrock') {
+      if (cred.awsAuthMode == 'bearer') {
+        // Bearer: just need the token and region.
+        return cred.apiKey.isNotEmpty &&
+            (cred.awsRegion?.isNotEmpty ?? false);
+      }
+      // SigV4: need access key, secret, and region.
+      return cred.apiKey.isNotEmpty &&
+          (cred.awsSecretKey?.isNotEmpty ?? false) &&
+          (cred.awsRegion?.isNotEmpty ?? false);
+    }
+    return cred.apiKey.isNotEmpty;
   }
 
   /// Returns a new config with the given provider credential saved (or replaced).

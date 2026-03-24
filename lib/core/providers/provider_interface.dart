@@ -23,6 +23,12 @@ class LlmRequest {
   /// Whether the active model supports image input.
   /// When false the provider should strip any image content before sending.
   final bool supportsVision;
+  /// AWS Secret Access Key (Bedrock SigV4 only).
+  final String? awsSecretKey;
+  /// AWS Region (Bedrock only, e.g. "us-east-1").
+  final String? awsRegion;
+  /// Bedrock auth mode: 'bearer' or 'sigv4'.
+  final String? awsAuthMode;
 
   const LlmRequest({
     required this.model,
@@ -34,6 +40,9 @@ class LlmRequest {
     this.temperature = 0.7,
     this.timeoutSeconds,
     this.supportsVision = true,
+    this.awsSecretKey,
+    this.awsRegion,
+    this.awsAuthMode,
   });
 
   Map<String, dynamic> toJson() => {
@@ -72,6 +81,9 @@ class LlmRequest {
     double? temperature,
     int? timeoutSeconds,
     bool? supportsVision,
+    String? awsSecretKey,
+    String? awsRegion,
+    String? awsAuthMode,
   }) => LlmRequest(
     model: model ?? this.model,
     apiKey: apiKey ?? this.apiKey,
@@ -82,6 +94,9 @@ class LlmRequest {
     temperature: temperature ?? this.temperature,
     timeoutSeconds: timeoutSeconds ?? this.timeoutSeconds,
     supportsVision: supportsVision ?? this.supportsVision,
+    awsSecretKey: awsSecretKey ?? this.awsSecretKey,
+    awsRegion: awsRegion ?? this.awsRegion,
+    awsAuthMode: awsAuthMode ?? this.awsAuthMode,
   );
 }
 

@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 
 import '../../data/models/config.dart';
 import 'anthropic_provider.dart';
+import 'bedrock_provider.dart';
 import 'openai_provider.dart';
 import 'provider_interface.dart';
 
@@ -25,6 +26,7 @@ class ProviderRouter {
       _dio = dio ?? Dio() {
     _openAiProvider = OpenAiProvider(dio: _dio);
     _anthropicProvider = AnthropicProvider(dio: _dio);
+    _bedrockProvider = BedrockProvider(dio: _dio);
 
     _vendorMap = {
       'openai': VendorConfig(
@@ -79,6 +81,10 @@ class ProviderRouter {
         provider: _openAiProvider,
         defaultApiBase: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
       ),
+      'bedrock': VendorConfig(
+        provider: _bedrockProvider,
+        defaultApiBase: '', // dynamic: built from region
+      ),
     };
   }
 
@@ -86,6 +92,7 @@ class ProviderRouter {
   final Dio _dio;
   late final OpenAiProvider _openAiProvider;
   late final AnthropicProvider _anthropicProvider;
+  late final BedrockProvider _bedrockProvider;
   late final Map<String, VendorConfig> _vendorMap;
 
   /// Round-robin index per model name.
@@ -127,9 +134,15 @@ class ProviderRouter {
     // "xiaomi/mimo-v2-pro"). Use [ModelEntry.provider], not [ModelEntry.vendor] —
     // the latter is only the first path segment and is often "minimax", not "openrouter".
     // Other vendors: first path segment is our internal prefix; strip it for the API.
+    // Bedrock: model ID is the full Bedrock model identifier (no prefix stripping).
     final modelForApi = modelEntry.provider == 'openrouter'
         ? modelEntry.model
-        : modelEntry.modelId;
+        : modelEntry.provider == 'bedrock'
+            ? modelEntry.model
+            : modelEntry.modelId;
+
+    // Resolve AWS credentials for Bedrock from provider-level credentials.
+    final cred = _config.providerCredentials[modelEntry.provider];
 
     return LlmRequest(
       model: modelForApi,
@@ -140,6 +153,9 @@ class ProviderRouter {
       maxTokens: maxTokens,
       temperature: temperature,
       timeoutSeconds: modelEntry.requestTimeout,
+      awsSecretKey: cred?.awsSecretKey,
+      awsRegion: cred?.awsRegion,
+      awsAuthMode: cred?.awsAuthMode,
     );
   }
 

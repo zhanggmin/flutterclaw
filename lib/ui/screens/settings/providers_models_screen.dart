@@ -73,7 +73,9 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                     ),
                   ),
                   subtitle: Text(
-                    cred.apiBase ?? catalogProv?.apiBase ?? '',
+                    provId == 'bedrock' && cred.awsRegion != null
+                        ? 'Region: ${cred.awsRegion}'
+                        : cred.apiBase ?? catalogProv?.apiBase ?? '',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
@@ -297,14 +299,18 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
       BuildContext context, String providerId, ProviderCredential cred) {
     final configManager = ref.read(configManagerProvider);
     final catalogProv = ModelCatalog.getProvider(providerId);
+    final isBedrock = providerId == 'bedrock';
     final keyCtl = TextEditingController(text: cred.apiKey);
     final baseCtl = TextEditingController(
         text: cred.apiBase ?? catalogProv?.apiBase ?? '');
+    final secretCtl = TextEditingController(text: cred.awsSecretKey ?? '');
+    final regionCtl = TextEditingController(text: cred.awsRegion ?? 'us-east-1');
+    var editAuthMode = cred.awsAuthMode ?? 'bearer';
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (ctx) => Padding(
+      builder: (ctx) => StatefulBuilder(builder: (ctx, setSheetState) => Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
           left: 20,
@@ -323,11 +329,30 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                   style: Theme.of(ctx).textTheme.titleLarge),
             ]),
             const SizedBox(height: 20),
+            if (isBedrock) ...[
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(value: 'bearer', label: Text('Bearer Token')),
+                  ButtonSegment(value: 'sigv4', label: Text('Access Keys')),
+                ],
+                selected: {editAuthMode},
+                onSelectionChanged: (v) => setSheetState(() {
+                  editAuthMode = v.first;
+                  keyCtl.clear();
+                  secretCtl.clear();
+                }),
+              ),
+              const SizedBox(height: 12),
+            ],
             TextField(
               controller: keyCtl,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: context.l10n.apiKey,
+                labelText: isBedrock
+                    ? (editAuthMode == 'bearer'
+                        ? 'Bearer Token'
+                        : 'AWS Access Key ID')
+                    : context.l10n.apiKey,
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.key),
                 suffixIcon: IconButton(
@@ -340,15 +365,48 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: baseCtl,
-              decoration: InputDecoration(
-                labelText: context.l10n.apiBaseUrl,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.link),
+            if (isBedrock && editAuthMode == 'sigv4') ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: secretCtl,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'AWS Secret Access Key',
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.paste),
+                    tooltip: context.l10n.paste,
+                    onPressed: () async {
+                      final data = await Clipboard.getData(Clipboard.kTextPlain);
+                      if (data?.text != null) secretCtl.text = data!.text!;
+                    },
+                  ),
+                ),
               ),
-            ),
+            ],
+            if (isBedrock) ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: regionCtl,
+                decoration: const InputDecoration(
+                  labelText: 'AWS Region',
+                  hintText: 'us-east-1',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.public),
+                ),
+              ),
+            ] else ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: baseCtl,
+                decoration: InputDecoration(
+                  labelText: context.l10n.apiBaseUrl,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.link),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             Row(children: [
               TextButton.icon(
@@ -392,9 +450,16 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                 onPressed: () async {
                   final newCred = ProviderCredential(
                     apiKey: keyCtl.text.trim(),
-                    apiBase: baseCtl.text.trim().isNotEmpty
-                        ? baseCtl.text.trim()
+                    apiBase: isBedrock
+                        ? 'https://bedrock-runtime.${regionCtl.text.trim()}.amazonaws.com'
+                        : baseCtl.text.trim().isNotEmpty
+                            ? baseCtl.text.trim()
+                            : null,
+                    awsSecretKey: isBedrock && editAuthMode == 'sigv4'
+                        ? secretCtl.text.trim()
                         : null,
+                    awsRegion: isBedrock ? regionCtl.text.trim() : null,
+                    awsAuthMode: isBedrock ? editAuthMode : null,
                   );
                   configManager.update(configManager.config
                       .withProviderCredential(providerId, newCred));
@@ -407,7 +472,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
             ]),
           ],
         ),
-      ),
+      )),
     );
   }
 
@@ -714,11 +779,16 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
   String? _selectedProviderId;
   final _apiKeyCtl = TextEditingController();
   final _apiBaseCtl = TextEditingController();
+  final _awsSecretKeyCtl = TextEditingController();
+  final _awsRegionCtl = TextEditingController(text: 'us-east-1');
+  String _awsAuthMode = 'bearer'; // 'bearer' or 'sigv4'
 
   @override
   void dispose() {
     _apiKeyCtl.dispose();
     _apiBaseCtl.dispose();
+    _awsSecretKeyCtl.dispose();
+    _awsRegionCtl.dispose();
     super.dispose();
   }
 
@@ -728,6 +798,7 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
     final colors = theme.colorScheme;
     final showBaseUrl =
         _selectedProviderId == 'ollama' || _selectedProviderId == 'custom';
+    final isBedrock = _selectedProviderId == 'bedrock';
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.addProvider)),
@@ -782,12 +853,31 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
                 ),
               );
             }),
+            if (isBedrock) ...[
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(value: 'bearer', label: Text('Bearer Token')),
+                  ButtonSegment(value: 'sigv4', label: Text('Access Keys')),
+                ],
+                selected: {_awsAuthMode},
+                onSelectionChanged: (v) => setState(() {
+                  _awsAuthMode = v.first;
+                  _apiKeyCtl.clear();
+                  _awsSecretKeyCtl.clear();
+                }),
+              ),
+              const SizedBox(height: 12),
+            ],
             TextField(
               controller: _apiKeyCtl,
               obscureText: true,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                labelText: context.l10n.apiKey,
+                labelText: isBedrock
+                    ? (_awsAuthMode == 'bearer'
+                        ? 'Bearer Token'
+                        : 'AWS Access Key ID')
+                    : context.l10n.apiKey,
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.key),
                 suffixIcon: IconButton(
@@ -803,6 +893,43 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
                 ),
               ),
             ),
+            if (isBedrock && _awsAuthMode == 'sigv4') ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: _awsSecretKeyCtl,
+                obscureText: true,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  labelText: 'AWS Secret Access Key',
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.paste),
+                    tooltip: context.l10n.paste,
+                    onPressed: () async {
+                      final data = await Clipboard.getData(Clipboard.kTextPlain);
+                      if (data?.text != null) {
+                        _awsSecretKeyCtl.text = data!.text!;
+                        setState(() {});
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ],
+            if (isBedrock) ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: _awsRegionCtl,
+                onChanged: (_) => setState(() {}),
+                decoration: const InputDecoration(
+                  labelText: 'AWS Region',
+                  hintText: 'us-east-1',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.public),
+                ),
+              ),
+            ],
             if (showBaseUrl) ...[
               const SizedBox(height: 12),
               TextField(
@@ -819,10 +946,18 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
               width: double.infinity,
               height: 48,
               child: Consumer(builder: (ctx, ref, _) {
+                bool canSave;
+                if (isBedrock) {
+                  canSave = _apiKeyCtl.text.trim().isNotEmpty &&
+                      _awsRegionCtl.text.trim().isNotEmpty;
+                  if (_awsAuthMode == 'sigv4') {
+                    canSave = canSave && _awsSecretKeyCtl.text.trim().isNotEmpty;
+                  }
+                } else {
+                  canSave = _apiKeyCtl.text.trim().isNotEmpty;
+                }
                 return FilledButton.icon(
-                  onPressed: _apiKeyCtl.text.trim().isEmpty
-                      ? null
-                      : () => _save(ref),
+                  onPressed: canSave ? () => _save(ref) : null,
                   icon: const Icon(Icons.check),
                   label: Text(context.l10n.save),
                 );
@@ -837,11 +972,19 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
   void _save(WidgetRef ref) async {
     final configManager = ref.read(configManagerProvider);
     final catalogProv = ModelCatalog.getProvider(_selectedProviderId!);
+    final isBedrock = _selectedProviderId == 'bedrock';
     final credential = ProviderCredential(
       apiKey: _apiKeyCtl.text.trim(),
-      apiBase: _apiBaseCtl.text.trim().isNotEmpty
-          ? _apiBaseCtl.text.trim()
-          : catalogProv?.apiBase,
+      apiBase: isBedrock
+          ? 'https://bedrock-runtime.${_awsRegionCtl.text.trim()}.amazonaws.com'
+          : _apiBaseCtl.text.trim().isNotEmpty
+              ? _apiBaseCtl.text.trim()
+              : catalogProv?.apiBase,
+      awsSecretKey: isBedrock && _awsAuthMode == 'sigv4'
+          ? _awsSecretKeyCtl.text.trim()
+          : null,
+      awsRegion: isBedrock ? _awsRegionCtl.text.trim() : null,
+      awsAuthMode: isBedrock ? _awsAuthMode : null,
     );
     configManager.update(configManager.config
         .withProviderCredential(_selectedProviderId!, credential));
@@ -870,12 +1013,17 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
   final _apiKeyCtl = TextEditingController();
   final _apiBaseCtl = TextEditingController();
   final _customModelCtl = TextEditingController();
+  final _awsSecretKeyCtl = TextEditingController();
+  final _awsRegionCtl = TextEditingController(text: 'us-east-1');
+  String _modelAwsAuthMode = 'bearer';
 
   @override
   void dispose() {
     _apiKeyCtl.dispose();
     _apiBaseCtl.dispose();
     _customModelCtl.dispose();
+    _awsSecretKeyCtl.dispose();
+    _awsRegionCtl.dispose();
     super.dispose();
   }
 
@@ -886,6 +1034,7 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
     final config = ref.watch(configManagerProvider).config;
     final alreadyAuthenticated = _selectedProviderId != null &&
         config.isProviderAuthenticated(_selectedProviderId!);
+    final isModelBedrock = _selectedProviderId == 'bedrock';
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.addModel)),
@@ -1016,12 +1165,31 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                   ),
                 );
               }),
+              if (isModelBedrock) ...[
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(value: 'bearer', label: Text('Bearer Token')),
+                    ButtonSegment(value: 'sigv4', label: Text('Access Keys')),
+                  ],
+                  selected: {_modelAwsAuthMode},
+                  onSelectionChanged: (v) => setState(() {
+                    _modelAwsAuthMode = v.first;
+                    _apiKeyCtl.clear();
+                    _awsSecretKeyCtl.clear();
+                  }),
+                ),
+                const SizedBox(height: 12),
+              ],
               TextField(
                 controller: _apiKeyCtl,
                 obscureText: true,
                 onChanged: (_) => setState(() {}),
                 decoration: InputDecoration(
-                  labelText: context.l10n.apiKey,
+                  labelText: isModelBedrock
+                      ? (_modelAwsAuthMode == 'bearer'
+                          ? 'Bearer Token'
+                          : 'AWS Access Key ID')
+                      : context.l10n.apiKey,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key),
                   suffixIcon: IconButton(
@@ -1038,6 +1206,44 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                   ),
                 ),
               ),
+              if (isModelBedrock && _modelAwsAuthMode == 'sigv4') ...[
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _awsSecretKeyCtl,
+                  obscureText: true,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    labelText: 'AWS Secret Access Key',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.paste),
+                      tooltip: context.l10n.paste,
+                      onPressed: () async {
+                        final data =
+                            await Clipboard.getData(Clipboard.kTextPlain);
+                        if (data?.text != null) {
+                          _awsSecretKeyCtl.text = data!.text!;
+                          setState(() {});
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
+              if (isModelBedrock) ...[
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _awsRegionCtl,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    labelText: 'AWS Region',
+                    hintText: 'us-east-1',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.public),
+                  ),
+                ),
+              ],
               if (_selectedProviderId == 'ollama' ||
                   _selectedProviderId == 'custom') ...[
                 const SizedBox(height: 12),
@@ -1056,11 +1262,9 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
               width: double.infinity,
               height: 48,
               child: FilledButton.icon(
-                onPressed: _selectedModelId == null ||
-                        (!alreadyAuthenticated &&
-                            _apiKeyCtl.text.trim().isEmpty)
-                    ? null
-                    : _addModel,
+                onPressed: _canAddModel(alreadyAuthenticated)
+                    ? _addModel
+                    : null,
                 icon: const Icon(Icons.add),
                 label: Text(context.l10n.addModel),
               ),
@@ -1069,6 +1273,18 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
         ],
       ),
     );
+  }
+
+  bool _canAddModel(bool alreadyAuthenticated) {
+    if (_selectedModelId == null) return false;
+    if (alreadyAuthenticated) return true;
+    if (_apiKeyCtl.text.trim().isEmpty) return false;
+    if (_selectedProviderId == 'bedrock') {
+      if (_awsRegionCtl.text.trim().isEmpty) return false;
+      if (_modelAwsAuthMode == 'sigv4' &&
+          _awsSecretKeyCtl.text.trim().isEmpty) return false;
+    }
+    return true;
   }
 
   void _addModel() async {
@@ -1092,23 +1308,37 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
         config.isProviderAuthenticated(_selectedProviderId!);
 
     var updatedConfig = config;
+    final isBedrock = _selectedProviderId == 'bedrock';
     if (!alreadyAuthenticated && _apiKeyCtl.text.trim().isNotEmpty) {
       final credential = ProviderCredential(
         apiKey: _apiKeyCtl.text.trim(),
-        apiBase: _apiBaseCtl.text.trim().isNotEmpty
-            ? _apiBaseCtl.text.trim()
-            : provider?.apiBase,
+        apiBase: isBedrock
+            ? 'https://bedrock-runtime.${_awsRegionCtl.text.trim()}.amazonaws.com'
+            : _apiBaseCtl.text.trim().isNotEmpty
+                ? _apiBaseCtl.text.trim()
+                : provider?.apiBase,
+        awsSecretKey: isBedrock && _modelAwsAuthMode == 'sigv4'
+            ? _awsSecretKeyCtl.text.trim()
+            : null,
+        awsRegion: isBedrock ? _awsRegionCtl.text.trim() : null,
+        awsAuthMode: isBedrock ? _modelAwsAuthMode : null,
       );
       updatedConfig = updatedConfig.withProviderCredential(
           _selectedProviderId!, credential);
     }
 
+    final bedrockApiBase = isBedrock
+        ? 'https://bedrock-runtime.${(updatedConfig.providerCredentials[_selectedProviderId!]?.awsRegion ?? _awsRegionCtl.text.trim())}.amazonaws.com'
+        : null;
+
     final modelEntry = ModelEntry(
       modelName: catalogModel?.displayName ?? _selectedModelId!,
       model: _selectedModelId!,
-      apiBase: _apiBaseCtl.text.trim().isNotEmpty
-          ? _apiBaseCtl.text.trim()
-          : provider?.apiBase,
+      apiBase: isBedrock
+          ? bedrockApiBase
+          : _apiBaseCtl.text.trim().isNotEmpty
+              ? _apiBaseCtl.text.trim()
+              : provider?.apiBase,
       provider: _selectedProviderId!,
       isFree: catalogModel?.isFree ?? false,
       input: catalogModel?.input,

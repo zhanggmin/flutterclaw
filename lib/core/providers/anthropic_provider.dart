@@ -26,7 +26,7 @@ class AnthropicProvider implements LlmProvider {
   @override
   Future<LlmResponse> chatCompletion(LlmRequest request) async {
     final url = _buildUrl(request.apiBase);
-    final body = _buildBody(request, stream: false);
+    final body = buildBody(request, stream: false);
 
     try {
       final response = await _dio.post<Map<String, dynamic>>(
@@ -44,7 +44,7 @@ class AnthropicProvider implements LlmProvider {
         ),
       );
 
-      return _parseNonStreamResponse(response.data!);
+      return parseNonStreamResponse(response.data!);
     } on DioException catch (e) {
       throw _handleDioError(e);
     }
@@ -53,7 +53,7 @@ class AnthropicProvider implements LlmProvider {
   @override
   Stream<LlmStreamEvent> chatCompletionStream(LlmRequest request) async* {
     final url = _buildUrl(request.apiBase);
-    final body = _buildBody(request, stream: true);
+    final body = buildBody(request, stream: true);
 
     Response<ResponseBody> response;
     try {
@@ -238,7 +238,9 @@ class AnthropicProvider implements LlmProvider {
     return false;
   }
 
-  Map<String, dynamic> _buildBody(LlmRequest request, {required bool stream}) {
+  /// Builds the Anthropic Messages API request body.
+  /// Exposed for reuse by [BedrockProvider].
+  Map<String, dynamic> buildBody(LlmRequest request, {required bool stream}) {
     String? system;
     final messages = <Map<String, dynamic>>[];
 
@@ -469,7 +471,9 @@ class AnthropicProvider implements LlmProvider {
     }).toList();
   }
 
-  LlmResponse _parseNonStreamResponse(Map<String, dynamic> json) {
+  /// Parses a non-streaming Anthropic Messages API response.
+  /// Exposed for reuse by [BedrockProvider].
+  LlmResponse parseNonStreamResponse(Map<String, dynamic> json) {
     final contentList = json['content'] as List<dynamic>?;
     String? content;
     List<ToolCall>? toolCalls;

@@ -682,8 +682,11 @@ final skillsServiceProvider = Provider<SkillsService>((ref) {
           'https://api.openai.com/v1';
       final modelForApi = entry.provider == 'openrouter'
           ? entry.model
-          : entry.modelId;
+          : entry.provider == 'bedrock'
+              ? entry.model
+              : entry.modelId;
 
+      final cred = config.providerCredentials[entry.provider];
       final provider = vendorConfig?.provider ?? OpenAiProvider();
       final request = LlmRequest(
         model: modelForApi,
@@ -696,6 +699,9 @@ final skillsServiceProvider = Provider<SkillsService>((ref) {
         maxTokens: 4096,
         temperature: 0.2,
         timeoutSeconds: entry.requestTimeout,
+        awsSecretKey: cred?.awsSecretKey,
+        awsRegion: cred?.awsRegion,
+        awsAuthMode: cred?.awsAuthMode,
       );
 
       final response = await provider.chatCompletion(request);

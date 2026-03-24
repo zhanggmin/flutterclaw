@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutterclaw/core/providers/anthropic_provider.dart';
+import 'package:flutterclaw/core/providers/bedrock_provider.dart';
 import 'package:flutterclaw/core/providers/openai_provider.dart';
 import 'package:flutterclaw/core/providers/provider_interface.dart';
 import 'package:flutterclaw/data/models/config.dart';
@@ -32,8 +33,12 @@ class SimpleProviderRouter implements ProviderRouter {
 /// API base URL. Anthropic uses a different API format from all other
 /// OpenAI-compatible providers (different endpoint, auth header, body).
 LlmProvider _resolveProvider(LlmRequest request) {
-  if (request.apiBase.toLowerCase().contains('anthropic.com')) {
+  final base = request.apiBase.toLowerCase();
+  if (base.contains('anthropic.com')) {
     return AnthropicProvider();
+  }
+  if (base.contains('bedrock-runtime')) {
+    return BedrockProvider();
   }
   return OpenAiProvider();
 }
