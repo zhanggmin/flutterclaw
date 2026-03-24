@@ -135,7 +135,7 @@ class RunShellCommandTool extends Tool {
         chunkCount++;
         debugPrint('[SandboxTool] stdout chunk #$chunkCount len=${data.length}');
         stdoutBuf.write(_stripAnsi(data)); // Strip ANSI for LLM
-        yield _stripStreamNoise(data); // Noise-filtered ANSI output → xterm
+        yield _stripStreamNoise(data); // Noise-filtered for xterm
       } else if (type == 'stderr') {
         final data = event['data'] as String? ?? '';
         chunkCount++;
@@ -159,14 +159,18 @@ class RunShellCommandTool extends Tool {
     })}';
   }
 
-  // Strips TinyEMU serial echo noise from streaming output for the xterm widget.
-  // Removes ash prompt/echo lines (e.g. "~ # cmd") and the exit sentinel.
+  // Strips TinyEMU serial noise from streaming output for the xterm widget:
+  // - ash prompt/echo lines (e.g. "~ # cmd", "/root # cmd")
+  // - internal wrapper commands (cd to workdir, echo sentinel)
+  // - the exit sentinel itself (__WAMR_EXIT__<code>)
   // Preserves ANSI escape codes so xterm renders colors correctly.
   static final _streamPromptRe = RegExp(r'^[~/][^ ]*? # .*', multiLine: true);
   static final _sentinelRe = RegExp(r'__WAMR_EXIT__[^\n]*');
+  static final _cdWrapperRe = RegExp(r"cd '[^']*' 2>/dev/null \|\| cd /root\r?\n?");
   static String _stripStreamNoise(String s) => s
       .replaceAll(_streamPromptRe, '')
       .replaceAll(_sentinelRe, '')
+      .replaceAll(_cdWrapperRe, '')
       .replaceAll(RegExp(r'\n{3,}'), '\n\n');
 
   // Strips ANSI escape sequences and TinyEMU/ash prompt lines so the LLM
@@ -179,6 +183,8 @@ class RunShellCommandTool extends Tool {
   static String _stripAnsi(String s) => s
       .replaceAll(_ansiRe, '')
       .replaceAll(_promptRe, '')
+      .replaceAll(_sentinelRe, '')
+      .replaceAll(_cdWrapperRe, '')
       .replaceAll('\r', '')
       .replaceAll(RegExp(r'\n{3,}'), '\n\n')
       .trim();

@@ -50,7 +50,13 @@ class _TerminalOutputState extends State<TerminalOutput> {
   void initState() {
     super.initState();
     _terminal = Terminal(maxLines: 1000, onOutput: _handleTerminalOutput);
-    _applyOutput(widget.output ?? '');
+    final initial = widget.output ?? '';
+    if (initial.isEmpty && widget.isStreaming) {
+      // Show a dim placeholder so the terminal isn't blank while waiting
+      // for the first output (common with slow ops like apk/network).
+      _terminal.write('\x1b[2mRunning...\x1b[0m');
+    }
+    _applyOutput(initial);
   }
 
   /// Forwards user keystrokes to the VM's stdin when streaming.
@@ -68,6 +74,12 @@ class _TerminalOutputState extends State<TerminalOutput> {
       _applyOutput(newOutput);
     }
   }
+
+  /// Normalize line endings for xterm: bare `\n` only moves the cursor down
+  /// without returning to column 0, causing a "staircase" effect. Ensure every
+  /// `\n` is preceded by `\r` so the cursor resets to the left margin.
+  static String _normalizeForXterm(String s) =>
+      s.replaceAll('\r\n', '\n').replaceAll('\n', '\r\n');
 
   void _applyOutput(String text) {
     if (text.isEmpty) {
@@ -99,15 +111,15 @@ class _TerminalOutputState extends State<TerminalOutput> {
             // History load: no streaming happened, render from stripped JSON.
             _terminal.buffer.clear();
             _terminal.setCursor(0, 0);
-            if (stdout.isNotEmpty) _terminal.write(stdout);
-            if (stderr.isNotEmpty) _terminal.write('\x1b[31m$stderr\x1b[0m');
+            if (stdout.isNotEmpty) _terminal.write(_normalizeForXterm(stdout));
+            if (stderr.isNotEmpty) _terminal.write('\x1b[31m${_normalizeForXterm(stderr)}\x1b[0m');
             _setHeightMode(_TerminalHeightMode.standard);
           } else if (timedOut) {
             debugPrint('[TermOut] JSON branch: timed out');
             _terminal.buffer.clear();
             _terminal.setCursor(0, 0);
             _terminal.write(
-                '\x1b[33mCommand timed out (>${(json['timeout_ms'] ?? 30000) ~/ 1000}s).\n'
+                '\x1b[33mCommand timed out (>${(json['timeout_ms'] ?? 30000) ~/ 1000}s).\r\n'
                 'Try using a longer timeout for network operations.\x1b[0m');
             _setHeightMode(_TerminalHeightMode.standard);
           } else {
@@ -142,7 +154,7 @@ class _TerminalOutputState extends State<TerminalOutput> {
       final delta = text.substring(_lastOutput.length);
       if (delta.isNotEmpty && delta.trim().isNotEmpty) {
         debugPrint('[TermOut] streaming delta len=${delta.length} (total=${text.length})');
-        _terminal.write(delta);
+        _terminal.write(_normalizeForXterm(delta));
         _setHeightMode(_TerminalHeightMode.standard);
       }
     } else {
@@ -152,7 +164,7 @@ class _TerminalOutputState extends State<TerminalOutput> {
         // Full replacement — only render and expand if there's real content.
         _terminal.buffer.clear();
         _terminal.setCursor(0, 0);
-        _terminal.write(text);
+        _terminal.write(_normalizeForXterm(text));
         _setHeightMode(_TerminalHeightMode.standard);
       }
     }

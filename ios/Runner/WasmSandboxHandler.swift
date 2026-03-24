@@ -779,8 +779,17 @@ class WasmSandboxHandler: NSObject, FlutterStreamHandler {
         // DNS: use the gvisor-tap-vsock gateway (192.168.127.1) which provides a
         // DNS proxy. The image already ships with this, but DHCP or init scripts
         // may overwrite it, so we set it explicitly.
+        //
+        // Network wait: the gvisor-tap-vsock bridge goroutine connects to the
+        // WASI TCP listener AFTER boot. DHCP then assigns 192.168.127.3 to eth0.
+        // We must wait for eth0 to get an IP before signaling READY, otherwise
+        // commands like `apk add` fail with "network unreachable".
+        // Fallback: if DHCP doesn't work within 20s, manually configure the
+        // static IP + default route so networking still works.
         let probe = """
             echo "nameserver 192.168.127.1" > /etc/resolv.conf
+            i=0; while [ $i -lt 20 ]; do ifconfig eth0 2>/dev/null | grep -q 'inet ' && break; i=$((i+1)); sleep 1; done
+            ifconfig eth0 2>/dev/null | grep -q 'inet ' || { ifconfig eth0 192.168.127.3 netmask 255.255.255.0 up 2>/dev/null; route add default gw 192.168.127.1 2>/dev/null; }
             echo "__WAMR_READY__"
 
             """
