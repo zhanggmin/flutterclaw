@@ -467,8 +467,9 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
   final sandboxSvc = ref.read(sandboxServiceProvider);
   registry.register(RunShellCommandTool(sandboxSvc));
 
-  // Skill management tools (install from ClawHub, create, list, remove)
+  // Skill management tools (search/install from ClawHub, create, list, remove)
   final skillsSvc = ref.read(skillsServiceProvider);
+  registry.register(SkillSearchTool(skillsService: skillsSvc));
   registry.register(SkillInstallTool(skillsService: skillsSvc));
   registry.register(SkillCreateTool(skillsService: skillsSvc));
   registry.register(SkillListTool(skillsService: skillsSvc));
@@ -798,6 +799,12 @@ final channelStartupProvider = FutureProvider<void>((ref) async {
     final discord = DiscordChannelAdapter(
       token: config.channels.discord.token!,
       allowedUserIds: config.channels.discord.allowFrom,
+      dmPolicy: config.channels.discord.dmPolicy,
+      pairingService: pairingService,
+      chatCommandHandler: (sessionKey, command) async {
+        final result = await commandHandler.handle(sessionKey, command);
+        return result.handled ? result.response : null;
+      },
     );
     router.registerAdapter(discord);
   }

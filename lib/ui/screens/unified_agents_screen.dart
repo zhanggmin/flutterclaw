@@ -605,6 +605,15 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
   }
 
   Widget _buildSkillsCard(BuildContext context, ThemeData theme, ColorScheme colors) {
+    return _buildSkillsCardWithCallback(context, theme, colors, null);
+  }
+
+  Widget _buildSkillsCardWithCallback(
+    BuildContext context,
+    ThemeData theme,
+    ColorScheme colors,
+    void Function(void Function())? setSheetState,
+  ) {
     final skillsService = ref.read(skillsServiceProvider);
     final skills = skillsService.skills;
 
@@ -674,19 +683,31 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
+                if (skill.location == 'workspace')
+                  IconButton(
+                    icon: Icon(Icons.delete_outline, size: 20, color: colors.error),
+                    onPressed: () async {
+                      final removed = await _confirmRemoveSkill(context, skill.name);
+                      if (removed && setSheetState != null) {
+                        setSheetState(() {});
+                      }
+                    },
+                    tooltip: context.l10n.delete,
+                  ),
                 Switch(
                   value: skill.enabled,
                   onChanged: (val) {
                     skillsService.toggleSkill(skill.name, val);
-                    setState(() {});
+                    if (setSheetState != null) {
+                      setSheetState(() {});
+                    } else {
+                      setState(() {});
+                    }
                   },
                 ),
               ],
             ),
             onTap: () => _showSkillContent(context, skill),
-            onLongPress: skill.location == 'workspace'
-                ? () => _confirmRemoveSkill(context, skill.name)
-                : null,
           ),
         );
       }).toList(),
@@ -810,56 +831,58 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (ctx, sc) => Column(
-          children: [
-            const SizedBox(height: 8),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colors.onSurfaceVariant.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (ctx, sc) => Column(
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colors.onSurfaceVariant.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(context.l10n.skills,
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w600)),
-                  ),
-                  FilledButton.tonal(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      _showClawHubBrowser(context);
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.explore, size: 18),
-                        SizedBox(width: 6),
-                        Text(context.l10n.browseLabel),
-                      ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(context.l10n.skills,
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w600)),
                     ),
-                  ),
-                ],
+                    FilledButton.tonal(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        _showClawHubBrowser(context);
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.explore, size: 18),
+                          SizedBox(width: 6),
+                          Text(context.l10n.browseLabel),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView(
-                controller: sc,
-                padding: const EdgeInsets.all(16),
-                children: [_buildSkillsCard(context, theme, colors)],
+              Expanded(
+                child: ListView(
+                  controller: sc,
+                  padding: const EdgeInsets.all(16),
+                  children: [_buildSkillsCardWithCallback(context, theme, colors, setSheetState)],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1154,7 +1177,7 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
     }
   }
 
-  Future<void> _confirmRemoveSkill(BuildContext context, String name) async {
+  Future<bool> _confirmRemoveSkill(BuildContext context, String name) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1172,11 +1195,19 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (confirmed != true) return false;
 
     final skillsService = ref.read(skillsServiceProvider);
     await skillsService.removeSkill(name);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Skill "$name" removed')),
+      );
+    }
+
     setState(() {});
+    return true;
   }
 
   void _showClawHubBrowser(BuildContext context) {
