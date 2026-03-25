@@ -139,7 +139,7 @@ class DiscordChannelAdapter implements ChannelAdapter {
         'op': _opIdentify,
         'd': {
           'token': token,
-          'intents': 1 << 9 | 1 << 0, // GUILD_MESSAGES, DIRECT_MESSAGES
+          'intents': 1 << 9 | 1 << 12 | 1 << 15, // GUILD_MESSAGES, DIRECT_MESSAGES, MESSAGE_CONTENT
           'properties': {'os': 'android', 'browser': 'flutter', 'device': 'flutterclaw'},
         },
       });
@@ -222,6 +222,7 @@ class DiscordChannelAdapter implements ChannelAdapter {
     final bot = d['author']?['bot'] == true;
     if (bot) return;
 
+    final messageId = d['id'] as String? ?? '';
     final channelId = d['channel_id'] as String? ?? '';
     final content = d['content'] as String? ?? '';
     final guildId = d['guild_id'] as String?;
@@ -251,15 +252,16 @@ class DiscordChannelAdapter implements ChannelAdapter {
       }
     }
 
-    // Check for audio attachments
+    // Check for audio and image attachments
     Uint8List? audioBytes;
     String? audioFormat;
+    List<String>? photoUrls;
     final attachments = d['attachments'] as List<dynamic>?;
     if (attachments != null) {
       for (final att in attachments) {
         final a = att as Map<String, dynamic>;
         final mime = a['content_type'] as String? ?? '';
-        if (mime.startsWith('audio/')) {
+        if (mime.startsWith('audio/') && audioBytes == null) {
           final url = a['url'] as String?;
           if (url != null) {
             try {
@@ -281,13 +283,18 @@ class DiscordChannelAdapter implements ChannelAdapter {
             } catch (e) {
               _log.warning('Failed to download Discord audio attachment: $e');
             }
-            break;
+          }
+        } else if (mime.startsWith('image/')) {
+          final url = a['url'] as String?;
+          if (url != null) {
+            photoUrls ??= [];
+            photoUrls.add(url);
           }
         }
       }
     }
 
-    if (content.isEmpty && audioBytes == null) return;
+    if (content.isEmpty && audioBytes == null && (photoUrls == null || photoUrls.isEmpty)) return;
 
     final incoming = IncomingMessage(
       channelType: _type,
@@ -296,10 +303,19 @@ class DiscordChannelAdapter implements ChannelAdapter {
       chatId: channelId,
       text: content,
       isGroup: isGroup,
+      messageId: messageId.isNotEmpty ? messageId : null,
       replyToMessageId: (d['referenced_message'] as Map<String, dynamic>?)?['id'] as String?,
       timestamp: DateTime.now(),
       audioBytes: audioBytes,
       audioFormat: audioFormat,
+      photoUrls: photoUrls,
+      channelContext: {
+        'channel': _type,
+        'chat_id': channelId,
+        'message_id': messageId,
+        'sender_id': authorId,
+        'is_group': isGroup.toString(),
+      },
     );
 
     _handler?.call(incoming).catchError((e, st) {
@@ -384,6 +400,12 @@ class DiscordChannelAdapter implements ChannelAdapter {
   Future<void> sendMessage(OutgoingMessage message) async {
     if (message.channelType != _type) return;
     try {
+      // Handle Discord-specific actions
+      if (message.action != null) {
+        await _handleAction(message);
+        return;
+      }
+
       // Send audio as file attachment if provided
       if (message.audioBytes != null) {
         final ext = message.audioMimeType?.contains('ogg') == true ? 'ogg' : 'wav';
@@ -410,6 +432,27 @@ class DiscordChannelAdapter implements ChannelAdapter {
     } catch (e, st) {
       _log.severe('Failed to send Discord message', e, st);
       rethrow;
+    }
+  }
+
+  Future<void> _handleAction(OutgoingMessage message) async {
+    final channelId = message.chatId;
+    final msgId = message.targetMessageId ?? '';
+    switch (message.action) {
+      case 'react':
+        final encoded = Uri.encodeComponent(message.emoji ?? '');
+        await _dio.put('/channels/$channelId/messages/$msgId/reactions/$encoded/@me');
+      case 'unreact':
+        final encoded = Uri.encodeComponent(message.emoji ?? '');
+        await _dio.delete('/channels/$channelId/messages/$msgId/reactions/$encoded/@me');
+      case 'edit':
+        await _dio.patch('/channels/$channelId/messages/$msgId', data: {'content': message.text});
+      case 'delete':
+        await _dio.delete('/channels/$channelId/messages/$msgId');
+      case 'typing':
+        await _dio.post('/channels/$channelId/typing');
+      default:
+        _log.warning('Unknown Discord action: ${message.action}');
     }
   }
 
