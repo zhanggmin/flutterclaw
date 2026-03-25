@@ -798,6 +798,12 @@ final channelStartupProvider = FutureProvider<void>((ref) async {
     final discord = DiscordChannelAdapter(
       token: config.channels.discord.token!,
       allowedUserIds: config.channels.discord.allowFrom,
+      dmPolicy: config.channels.discord.dmPolicy,
+      pairingService: pairingService,
+      chatCommandHandler: (sessionKey, command) async {
+        final result = await commandHandler.handle(sessionKey, command);
+        return result.handled ? result.response : null;
+      },
     );
     router.registerAdapter(discord);
   }
