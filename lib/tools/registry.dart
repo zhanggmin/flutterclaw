@@ -85,6 +85,17 @@ class ToolRegistry {
     });
   }
 
+  /// Removes a core tool by name. No-op if the tool is not registered.
+  void unregister(String name) {
+    _tools.remove(name);
+  }
+
+  /// Removes all tools whose name starts with [prefix].
+  /// Used to bulk-remove MCP proxy tools when a server disconnects.
+  void unregisterPrefix(String prefix) {
+    _tools.removeWhere((key, _) => key.startsWith(prefix));
+  }
+
   /// Registers a hidden tool with optional TTL. If ttl > 0, it will expire after tickTTL calls.
   void registerHidden(Tool tool, {int ttl = 5}) {
     _sync(() {
