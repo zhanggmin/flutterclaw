@@ -1206,7 +1206,9 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
       );
     }
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
     return true;
   }
 
