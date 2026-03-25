@@ -714,42 +714,46 @@ class _UnifiedAgentsScreenState extends ConsumerState<UnifiedAgentsScreen> {
   }
 
   void _showWorkspaceSheet(BuildContext context, ColorScheme colors) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (ctx, sc) => Column(
-          children: [
-            const SizedBox(height: 8),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colors.onSurfaceVariant.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
+    // Reload workspace files from disk before showing the sheet
+    _loadAgentData().then((_) {
+      if (!context.mounted) return;
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) => DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (ctx, sc) => Column(
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colors.onSurfaceVariant.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(context.l10n.workspaceFiles,
-                  style: Theme.of(context).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600)),
-            ),
-            Expanded(
-              child: ListView(
-                controller: sc,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                children: _buildWorkspaceFiles(context, colors),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(context.l10n.workspaceFiles,
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600)),
               ),
-            ),
-          ],
+              Expanded(
+                child: ListView(
+                  controller: sc,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: _buildWorkspaceFiles(context, colors),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   void _showCronSheet(BuildContext context, ThemeData theme, ColorScheme colors) {
