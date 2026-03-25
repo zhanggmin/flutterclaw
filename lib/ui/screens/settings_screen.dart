@@ -5,6 +5,7 @@ import 'package:flutterclaw/core/package_info_provider.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'package:flutterclaw/ui/screens/settings/about_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/gateway_screen.dart';
+import 'package:flutterclaw/ui/screens/settings/mcp_servers_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/providers_models_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/tool_policies_screen.dart';
 
@@ -43,6 +44,22 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const GatewayScreen()),
+            ),
+          ),
+          _SettingsTile(
+            icon: Icons.extension_outlined,
+            title: 'MCP Servers',
+            subtitle: () {
+              final servers = config.mcpServers;
+              if (servers.isEmpty) return 'No servers configured';
+              final enabled = servers.where((s) => s.enabled).length;
+              return enabled == 0
+                  ? '${servers.length} servers, none active'
+                  : '$enabled of ${servers.length} servers active';
+            }(),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const McpServersScreen()),
             ),
           ),
           _SettingsTile(
