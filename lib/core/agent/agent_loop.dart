@@ -1203,6 +1203,50 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
         .firstOrNull;
   }
 
+  // -- Public helpers -------------------------------------------------------
+
+  /// Returns a minimal system prompt suitable for `/btw` ephemeral queries.
+  ///
+  /// Includes the agent's runtime context and identity (IDENTITY.md, SOUL.md,
+  /// USER.md) but skips the full workspace file set and episodic memory so
+  /// the call is fast and cheap.  No history is attached — the caller provides
+  /// only the user question.
+  Future<String> buildBtwSystemPrompt(String sessionKey) async {
+    final agentProfile = _resolveSessionAgent(sessionKey);
+    final agentId = agentProfile?.id;
+
+    String workspace;
+    try {
+      workspace = agentId != null
+          ? await configManager.getAgentWorkspace(agentId)
+          : await configManager.workspacePath;
+    } catch (_) {
+      workspace = await configManager.workspacePath;
+    }
+
+    final now = DateTime.now();
+    final tz = now.timeZoneName;
+    final buf = StringBuffer();
+
+    buf.writeln('# Runtime');
+    buf.writeln('- Platform: ${Platform.operatingSystem}');
+    buf.writeln('- Current date/time: ${now.toIso8601String()} ($tz)');
+    buf.writeln('- Workspace: $workspace');
+    buf.writeln('- Engine: FlutterClaw (btw/side-channel mode)');
+    buf.writeln();
+    buf.writeln('You are answering a quick side question. Be concise.');
+
+    // Include identity/soul if available — gives the answer the right persona
+    for (final name in ['IDENTITY.md', 'SOUL.md', 'USER.md']) {
+      final content = await _readFile('$workspace/$name');
+      if (content != null && content.trim().isNotEmpty) {
+        buf.writeln('\n## $name\n${content.trim()}');
+      }
+    }
+
+    return buf.toString();
+  }
+
   // -- System prompt --------------------------------------------------------
 
   Future<String> _buildSystemPrompt({
