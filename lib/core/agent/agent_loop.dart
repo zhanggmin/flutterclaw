@@ -581,6 +581,17 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
           LlmMessage(role: 'assistant', content: content),
         );
 
+        // Auto-title: after the first real user+assistant exchange, generate a
+        // short descriptive title for the session so the sessions list is useful.
+        final sessionMeta = sessionManager.listSessions()
+            .where((s) => s.key == sessionKey)
+            .firstOrNull;
+        if (sessionMeta != null &&
+            sessionMeta.displayName == null &&
+            sessionMeta.messageCount <= 4) {
+          _autoTitleSession(sessionKey, message, content, modelEntry);
+        }
+
         return AgentResponse(
           content: content,
           toolCallsExecuted: toolCallsExecuted,
@@ -1229,6 +1240,72 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     }
   }
 
+  // -- Auto-title -----------------------------------------------------------
+
+  /// Generates a short descriptive title for a new session after the first
+  /// user+assistant exchange and saves it via [SessionManager.renameSession].
+  ///
+  /// Runs fire-and-forget (not awaited by the caller) so it never blocks the
+  /// chat response. Failures are silently ignored.
+  void _autoTitleSession(
+    String sessionKey,
+    String userMessage,
+    String assistantReply,
+    dynamic modelEntry,
+  ) {
+    Future(() async {
+      try {
+        final cred = configManager.config.providerCredentials[
+            modelEntry.provider as String?];
+        final request = LlmRequest(
+          model: modelEntry.model as String,
+          apiKey: configManager.config.resolveApiKey(modelEntry),
+          apiBase: configManager.config.resolveApiBase(modelEntry),
+          messages: [
+            const LlmMessage(
+              role: 'system',
+              content:
+                  'Generate a short session title (3-6 words max) that describes '
+                  'what this conversation is about. Reply with ONLY the title, '
+                  'no punctuation, no quotes.',
+            ),
+            LlmMessage(
+              role: 'user',
+              content: 'User: ${userMessage.substring(0, userMessage.length.clamp(0, 300))}\n'
+                  'Assistant: ${assistantReply.substring(0, assistantReply.length.clamp(0, 200))}',
+            ),
+            const LlmMessage(
+              role: 'user',
+              content: 'Session title:',
+            ),
+          ],
+          maxTokens: 20,
+          temperature: 0.3,
+          timeoutSeconds: (modelEntry.requestTimeout as int?) ?? 30,
+          supportsVision: false,
+          awsSecretKey: cred?.awsSecretKey,
+          awsRegion: cred?.awsRegion,
+          awsAuthMode: cred?.awsAuthMode,
+        );
+
+        final response = await providerRouter.chatCompletion(request);
+        final rawTitle = response.content?.trim() ?? '';
+        if (rawTitle.isEmpty) return;
+
+        final title = rawTitle
+            .replaceAll('"', '')
+            .replaceAll("'", '')
+            .trim();
+        if (title.isNotEmpty && title.length <= 80) {
+          await sessionManager.renameSession(sessionKey, title);
+          _log.info('Auto-titled session $sessionKey: "$title"');
+        }
+      } catch (e) {
+        _log.fine('Auto-title failed for $sessionKey: $e');
+      }
+    });
+  }
+
   /// Filters a message list down to "real conversation" — removing noise
   /// that adds no informational value to a summary:
   ///   • System injections (role == 'system')
@@ -1236,18 +1313,14 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
   ///   • Tool results that are empty, error-only, or just truncation markers
   List<LlmMessage> _filterRealConversation(List<LlmMessage> messages) {
     return messages.where((m) {
-      // Drop system messages (they're injected fresh on every turn)
       if (m.role == 'system') return false;
 
       final content = m.content;
       final text = content is String ? content : content?.toString() ?? '';
 
-      // Drop empty messages
       if (text.trim().isEmpty) return false;
 
-      // Drop tool results that contain only a truncation marker
       if (m.role == 'tool' && text.contains('[... TOOL RESULT TRUNCATED')) {
-        // Keep if there's at least some real content besides the marker
         final withoutMarker = text.replaceAll(
           RegExp(r'\[\.{3} TOOL RESULT TRUNCATED.*?\]', dotAll: true),
           '',
@@ -1261,10 +1334,6 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
   /// Silent agentic turn that runs before compaction to let the model persist
   /// important information to memory before old messages are summarized away.
-  ///
-  /// Uses a minimal subset of tools (only memory_write) to avoid side-effects.
-  /// The turn is not streamed and its messages are not added to the main
-  /// session transcript — it only matters what the tool actually writes to disk.
   Future<void> _runMemoryFlush(
     String sessionKey,
     List<LlmMessage> context,
@@ -1272,13 +1341,11 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
   ) async {
     _log.info('Memory flush: checking for important facts before compaction');
     try {
-      // Resolve workspace path for the session agent
       final agentProfile = _resolveSessionAgent(sessionKey);
       final workspacePath = agentProfile != null
           ? await configManager.getAgentWorkspace(agentProfile.id)
           : await configManager.workspacePath;
 
-      // Only the memory_write tool is exposed during the flush.
       final memoryTool = toolRegistry.get('memory_write');
       final flushTools = memoryTool != null
           ? [
