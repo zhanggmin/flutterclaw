@@ -722,6 +722,7 @@ final chatCommandHandlerProvider = Provider<ChatCommandHandler>((ref) {
     sessionManager: ref.read(sessionManagerProvider),
     configManager: ref.read(configManagerProvider),
     agentLoop: ref.read(agentLoopProvider),
+    providerRouter: ref.read(providerRouterProvider),
     sandboxService: ref.read(sandboxServiceProvider),
   );
 });
@@ -967,6 +968,9 @@ class ChatMessage {
   // Shell command message (for terminal-style rendering)
   final bool isShellCommand;
 
+  // Ephemeral /btw side-question — shown with dashed border, not saved to transcript
+  final bool isBtw;
+
   const ChatMessage({
     required this.text,
     required this.isUser,
@@ -986,6 +990,7 @@ class ChatMessage {
     this.errorCtaUrl,
     this.errorCtaLabel,
     this.isShellCommand = false,
+    this.isBtw = false,
   });
 
   ChatMessage copyWith({
@@ -1720,6 +1725,7 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
             isUser: false,
             timestamp: DateTime.now(),
             isShellCommand: isShellCmd,
+            isBtw: result.isBtw,
           ),
         ];
         return;

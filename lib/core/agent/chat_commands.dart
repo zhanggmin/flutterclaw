@@ -3,11 +3,17 @@
 /// Intercepts messages starting with "/" before sending to the LLM.
 library;
 
+import 'package:logging/logging.dart';
+
 import 'package:flutterclaw/core/agent/agent_loop.dart';
+import 'package:flutterclaw/core/agent/provider_router.dart';
 import 'package:flutterclaw/core/agent/session_manager.dart';
 import 'package:flutterclaw/core/agent/token_budget_manager.dart';
+import 'package:flutterclaw/core/providers/provider_interface.dart';
 import 'package:flutterclaw/data/models/config.dart';
 import 'package:flutterclaw/services/sandbox_service.dart';
+
+final _log = Logger('flutterclaw.chat_commands');
 
 class ChatCommandResult {
   final bool handled;
@@ -17,10 +23,15 @@ class ChatCommandResult {
   /// the transcript was reset on disk.
   final bool clearChatUi;
 
+  /// When true, this is a /btw ephemeral response — shown with a distinct
+  /// visual style and NOT added to the persistent session transcript.
+  final bool isBtw;
+
   const ChatCommandResult({
     this.handled = false,
     this.response,
     this.clearChatUi = false,
+    this.isBtw = false,
   });
 
   static const notHandled = ChatCommandResult();
@@ -30,12 +41,14 @@ class ChatCommandHandler {
   final SessionManager sessionManager;
   final ConfigManager configManager;
   final AgentLoop agentLoop;
+  final ProviderRouter providerRouter;
   final SandboxService sandboxService;
 
   ChatCommandHandler({
     required this.sessionManager,
     required this.configManager,
     required this.agentLoop,
+    required this.providerRouter,
     required this.sandboxService,
   });
 
@@ -53,7 +66,8 @@ class ChatCommandHandler {
       case '/reset':
         return _handleReset(sessionKey);
       case '/compact':
-        return _handleCompact(sessionKey);
+        final instructions = message.trim().replaceFirst(RegExp(r'^/compact\s*', caseSensitive: false), '');
+        return _handleCompact(sessionKey, customInstructions: instructions.isEmpty ? null : instructions);
       case '/model':
         return _handleModel(sessionKey, args);
       case '/think':
@@ -66,6 +80,9 @@ class ChatCommandHandler {
         return _handleShell(args);
       case '/context':
         return _handleContext(sessionKey);
+      case '/btw':
+        final question = message.trim().replaceFirst(RegExp(r'^/btw\s*', caseSensitive: false), '');
+        return _handleBtw(sessionKey, question);
       case '/help':
         return _handleHelp();
       default:
@@ -88,6 +105,13 @@ class ChatCommandHandler {
     final modelName =
         meta.modelOverride ?? configManager.config.agents.defaults.modelName;
 
+    final cacheInfo = StringBuffer();
+    if (meta.cacheReadTokens > 0 || meta.cacheWriteTokens > 0) {
+      cacheInfo.write(
+        '\n- **Cache:** ${meta.cacheReadTokens} read / ${meta.cacheWriteTokens} write',
+      );
+    }
+
     return ChatCommandResult(
       handled: true,
       response: '**Session Status**\n\n'
@@ -95,7 +119,8 @@ class ChatCommandHandler {
           '- **Model:** $modelName\n'
           '- **Messages:** ${meta.messageCount}\n'
           '- **Tokens:** ${meta.totalTokens} total '
-          '(${meta.inputTokens} in / ${meta.outputTokens} out)\n'
+          '(${meta.inputTokens} in / ${meta.outputTokens} out)'
+          '$cacheInfo\n'
           '- **Channel:** ${meta.channelType}\n'
           '- **Last activity:** ${meta.lastActivity.toIso8601String()}',
     );
@@ -110,12 +135,18 @@ class ChatCommandHandler {
     );
   }
 
-  Future<ChatCommandResult> _handleCompact(String sessionKey) async {
-    final summary = await agentLoop.compactSession(sessionKey);
+  Future<ChatCommandResult> _handleCompact(
+    String sessionKey, {
+    String? customInstructions,
+  }) async {
+    final summary = await agentLoop.compactSession(
+      sessionKey,
+      customInstructions: customInstructions,
+    );
     if (summary == null) {
       return const ChatCommandResult(
         handled: true,
-        response: 'Nothing to compact (session too short).',
+        response: 'Nothing to compact (session too short or safeguard active).',
       );
     }
     return ChatCommandResult(
@@ -288,9 +319,7 @@ class ChatCommandHandler {
     final safeLimit =
         TokenBudgetManager.getSafeContextLimit(modelName, configManager);
 
-    // Estimate context from session messages
     final messages = sessionManager.getContextMessages(sessionKey);
-    int systemTokens = 0; // can't measure without re-building prompt
     int toolTokens = 0;
     int convTokens = 0;
 
@@ -302,7 +331,7 @@ class ChatCommandHandler {
         convTokens += t;
       }
     }
-    final total = systemTokens + convTokens + toolTokens;
+    final total = convTokens + toolTokens;
     final pct = contextWindow > 0 ? (total * 100 / contextWindow).round() : 0;
     final bar = _contextBar(total, contextWindow);
 
@@ -332,6 +361,70 @@ class ChatCommandHandler {
     return '$emoji `[$bar]` ${(pct * 100).round()}%';
   }
 
+  /// Handles `/btw <question>` — runs the question in an ephemeral side channel
+  /// without touching the main session transcript.
+  Future<ChatCommandResult> _handleBtw(
+    String sessionKey,
+    String question,
+  ) async {
+    if (question.isEmpty) {
+      return const ChatCommandResult(
+        handled: true,
+        response: 'Usage: `/btw <question>`\n\nAsk a quick side question '
+            'without adding it to the session context.',
+      );
+    }
+
+    final defaults = configManager.config.agents.defaults;
+    final session = sessionManager.getSession(sessionKey);
+    final modelName = session?.modelOverride ?? defaults.modelName;
+    final modelEntry = configManager.config.getModel(modelName);
+
+    if (modelEntry == null) {
+      return ChatCommandResult(
+        handled: true,
+        response: 'Error: model "$modelName" not configured.',
+      );
+    }
+
+    try {
+      final systemPrompt = await agentLoop.buildBtwSystemPrompt(sessionKey);
+      final cred = configManager.config.providerCredentials[modelEntry.provider];
+      final request = LlmRequest(
+        model: modelEntry.model,
+        apiKey: configManager.config.resolveApiKey(modelEntry),
+        apiBase: configManager.config.resolveApiBase(modelEntry),
+        messages: [
+          LlmMessage(role: 'system', content: systemPrompt),
+          LlmMessage(role: 'user', content: question),
+        ],
+        maxTokens: 1024,
+        temperature: defaults.temperature,
+        timeoutSeconds: modelEntry.requestTimeout,
+        supportsVision: false,
+        awsSecretKey: cred?.awsSecretKey,
+        awsRegion: cred?.awsRegion,
+        awsAuthMode: cred?.awsAuthMode,
+      );
+
+      final response = await providerRouter.chatCompletion(request);
+      final answer = response.content?.trim() ?? '(no response)';
+
+      _log.fine('/btw answered ${question.length} chars → ${answer.length} chars');
+      return ChatCommandResult(
+        handled: true,
+        response: answer,
+        isBtw: true,
+      );
+    } catch (e) {
+      _log.warning('/btw failed: $e');
+      return ChatCommandResult(
+        handled: true,
+        response: 'Error: $e',
+      );
+    }
+  }
+
   ChatCommandResult _handleHelp() {
     return const ChatCommandResult(
       handled: true,
@@ -344,6 +437,7 @@ class ChatCommandHandler {
           '- `/verbose on|off` -- toggle verbose mode\n'
           '- `/usage off|tokens|full` -- usage footer mode\n'
           '- `/context` -- context window usage breakdown\n'
+          '- `/btw <question>` -- quick side question (no context pollution)\n'
           '- `/sh <command>` -- run command in Alpine sandbox\n'
           '- `/help` -- show this help',
     );
