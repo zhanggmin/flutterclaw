@@ -119,6 +119,14 @@ class AgentsDefaults {
   /// automatic compaction will be triggered.
   final double autoCompactThreshold;
 
+  /// Typing indicator mode for channels (default: 'instant').
+  /// Mirrors OpenClaw's `agents.defaults.typingMode`:
+  ///   • 'never'    — never send typing
+  ///   • 'instant'  — send typing immediately when request arrives
+  ///   • 'thinking' — send typing only when the model starts generating
+  ///   • 'message'  — send typing only when text starts streaming
+  final String typingMode;
+
   const AgentsDefaults({
     this.workspace = '~/.flutterclaw/workspace',
     this.modelName = 'gpt-4o',
@@ -129,6 +137,7 @@ class AgentsDefaults {
     this.maxToolResultTokens = 50000,
     this.autoCompactEnabled = true,
     this.autoCompactThreshold = 0.85,
+    this.typingMode = 'instant',
   });
 
   factory AgentsDefaults.fromJson(Map<String, dynamic> json) => AgentsDefaults(
@@ -142,6 +151,7 @@ class AgentsDefaults {
     maxToolResultTokens: json['max_tool_result_tokens'] as int? ?? 50000,
     autoCompactEnabled: json['auto_compact_enabled'] as bool? ?? true,
     autoCompactThreshold: (json['auto_compact_threshold'] as num?)?.toDouble() ?? 0.85,
+    typingMode: json['typing_mode'] as String? ?? 'instant',
   );
 
   Map<String, dynamic> toJson() => {
@@ -154,6 +164,7 @@ class AgentsDefaults {
     'max_tool_result_tokens': maxToolResultTokens,
     'auto_compact_enabled': autoCompactEnabled,
     'auto_compact_threshold': autoCompactThreshold,
+    'typing_mode': typingMode,
   };
 }
 
