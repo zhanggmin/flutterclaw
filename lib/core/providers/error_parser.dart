@@ -120,6 +120,10 @@ FailoverReason _classifyFailover(int? statusCode, String raw) {
           lower.contains('network')) {
         return FailoverReason.networkError;
       }
+      // On-device model failures are not retryable via cloud failover.
+      if (lower.contains('on-device') || lower.contains('generation_failed')) {
+        return FailoverReason.networkError;
+      }
       return FailoverReason.unknown;
   }
 }
@@ -164,6 +168,32 @@ FailoverReason _classifyFailover(int? statusCode, String raw) {
       ctaLabel: 'Abrir ajustes de privacidad',
     );
   }
+  if (lower.contains('on-device model not available') ||
+      lower.contains('apple intelligence') ||
+      lower.contains('foundationmodels') ||
+      lower.contains('gemini nano')) {
+    final reasonMatch =
+        RegExp(r'not available[:\s]+(.+)$', caseSensitive: false)
+            .firstMatch(raw);
+    final reason = reasonMatch?.group(1)?.trim() ?? raw;
+    return (
+      message: 'Modelo on-device no disponible: $reason',
+      title: 'On-Device',
+      ctaUrl: null,
+      ctaLabel: null,
+    );
+  }
+  if (lower.contains('on-device generation failed') ||
+      lower.contains('generation_failed')) {
+    return (
+      message: 'El modelo on-device fallo al generar la respuesta: $raw\n'
+          'Intenta de nuevo o cambia a un modelo en la nube.',
+      title: 'On-Device',
+      ctaUrl: null,
+      ctaLabel: null,
+    );
+  }
+
   return (
     message: _friendlyMessage(statusCode, raw),
     title: null,

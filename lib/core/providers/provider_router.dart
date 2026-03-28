@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import '../../data/models/config.dart';
 import 'anthropic_provider.dart';
 import 'bedrock_provider.dart';
+import 'on_device_provider.dart';
 import 'openai_provider.dart';
 import 'provider_interface.dart';
 
@@ -27,6 +28,7 @@ class ProviderRouter {
     _openAiProvider = OpenAiProvider(dio: _dio);
     _anthropicProvider = AnthropicProvider(dio: _dio);
     _bedrockProvider = BedrockProvider(dio: _dio);
+    _onDeviceProvider = OnDeviceProvider();
 
     _vendorMap = {
       'openai': VendorConfig(
@@ -85,6 +87,12 @@ class ProviderRouter {
         provider: _bedrockProvider,
         defaultApiBase: '', // dynamic: built from region
       ),
+      // On-device: Apple Foundation Models (iOS 26+) or Gemini Nano (Android).
+      // No API key or network required — availability detected at runtime.
+      'ondevice': VendorConfig(
+        provider: _onDeviceProvider,
+        defaultApiBase: 'on-device',
+      ),
     };
   }
 
@@ -93,6 +101,7 @@ class ProviderRouter {
   late final OpenAiProvider _openAiProvider;
   late final AnthropicProvider _anthropicProvider;
   late final BedrockProvider _bedrockProvider;
+  late final OnDeviceProvider _onDeviceProvider;
   late final Map<String, VendorConfig> _vendorMap;
 
   /// Round-robin index per model name.

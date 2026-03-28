@@ -4,6 +4,7 @@ library;
 import 'package:flutterclaw/core/providers/anthropic_provider.dart';
 import 'package:flutterclaw/core/providers/bedrock_provider.dart';
 import 'package:flutterclaw/core/providers/error_parser.dart';
+import 'package:flutterclaw/core/providers/on_device_provider.dart';
 import 'package:flutterclaw/core/providers/openai_provider.dart';
 import 'package:flutterclaw/core/providers/provider_interface.dart';
 import 'package:flutterclaw/data/models/config.dart';
@@ -35,6 +36,9 @@ class SimpleProviderRouter implements ProviderRouter {
 /// OpenAI-compatible providers (different endpoint, auth header, body).
 LlmProvider _resolveProvider(LlmRequest request) {
   final base = request.apiBase.toLowerCase();
+  if (base == 'on-device') {
+    return OnDeviceProvider();
+  }
   if (base.contains('anthropic.com')) {
     return AnthropicProvider();
   }

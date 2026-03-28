@@ -192,6 +192,17 @@ class ModelCatalog {
       icon: Icons.tune,
       signupUrl: '',
     ),
+    CatalogProvider(
+      id: 'ondevice',
+      displayName: 'On-Device',
+      description:
+          'Apple Foundation Models (iOS 26+) or Gemini Nano (Android 14+). '
+          'Free, private, works offline. No API key needed.',
+      icon: Icons.phone_iphone,
+      signupUrl: '',
+      apiBase: 'on-device',
+      hasFreeModels: true,
+    ),
   ];
 
   static const models = <CatalogModel>[
@@ -606,6 +617,18 @@ class ModelCatalog {
       contextWindow: 1048576,
       description: 'Google Gemini 3.1 Flash-Lite via OpenRouter',
       input: ['text', 'image'],
+    ),
+    // On-device models — free, private, offline-capable
+    CatalogModel(
+      id: 'ondevice/on-device',
+      displayName: 'On-Device AI',
+      providerId: 'ondevice',
+      isFree: true,
+      contextWindow: 4096,
+      description:
+          'Apple Foundation Models (iOS 26+) or Gemini Nano (Android 14+). '
+          'Runs entirely on your device — no internet, no API key, full privacy.',
+      input: ['text'],
     ),
   ];
 

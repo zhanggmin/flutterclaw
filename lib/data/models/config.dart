@@ -596,6 +596,8 @@ class FlutterClawConfig {
 
   /// Returns true if the given provider has valid credentials stored.
   bool isProviderAuthenticated(String providerId) {
+    // On-device provider needs no API key — availability is checked at runtime.
+    if (providerId == 'ondevice') return true;
     final cred = providerCredentials[providerId];
     if (cred == null) return false;
     if (providerId == 'bedrock') {
