@@ -81,8 +81,8 @@ class HeartbeatRunner {
         channelType: 'system',
         chatId: 'heartbeat',
       );
-    } catch (e) {
-      _log.warning('Heartbeat tick failed: $e');
+    } catch (e, st) {
+      _log.warning('Heartbeat tick failed: $e\n$st');
     }
   }
 }
