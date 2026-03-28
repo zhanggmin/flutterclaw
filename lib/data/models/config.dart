@@ -735,7 +735,24 @@ class ConfigManager {
   FlutterClawConfig _config;
   String? _configPath;
 
+  /// Optional secrets resolver. When set, [resolveApiKeyAsync] supports
+  /// `{"$ref": "secrets/..."}` and `{"$ref": "env:..."}` references.
+  Future<String?> Function(String ref)? secretsResolver;
+
   ConfigManager([this._config = const FlutterClawConfig()]);
+
+  /// Async variant of [FlutterClawConfig.resolveApiKey] that also handles
+  /// `{"$ref": "secrets/..."}` and `{"$ref": "env:..."}` references.
+  Future<String> resolveApiKeyAsync(ModelEntry entry) async {
+    final raw = _config.resolveApiKey(entry);
+    if (secretsResolver != null && raw.startsWith(r'{"$ref"')) {
+      try {
+        final resolved = await secretsResolver!(raw);
+        if (resolved != null && resolved.isNotEmpty) return resolved;
+      } catch (_) {}
+    }
+    return raw;
+  }
 
   FlutterClawConfig get config => _config;
 

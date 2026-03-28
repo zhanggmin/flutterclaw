@@ -10,6 +10,7 @@ import 'package:flutterclaw/services/ios_gateway_service.dart';
 import 'package:flutterclaw/services/live_activity_service.dart';
 import 'package:logging/logging.dart';
 import 'package:flutterclaw/channels/channel_interface.dart';
+import 'package:flutterclaw/data/models/interactive_reply.dart';
 import 'package:flutterclaw/channels/discord.dart';
 import 'package:flutterclaw/channels/router.dart';
 import 'package:flutterclaw/channels/telegram.dart';
@@ -74,9 +75,23 @@ import 'package:flutterclaw/tools/tool_status_formatter.dart';
 import 'package:flutterclaw/services/mcp/mcp_client_manager.dart';
 import 'package:flutterclaw/tools/mcp_proxy_tool.dart';
 import 'package:flutterclaw/tools/mcp_management_tools.dart';
+import 'package:flutterclaw/tools/tts_tool.dart';
+import 'package:flutterclaw/tools/pdf_tool.dart';
+import 'package:flutterclaw/services/connectivity_service.dart';
+import 'package:flutterclaw/services/battery_service.dart';
+import 'package:flutterclaw/services/auth_profile_service.dart';
+import 'package:flutterclaw/services/secrets_resolver.dart';
+import 'package:flutterclaw/services/secure_key_store.dart';
 
 final configManagerProvider = Provider<ConfigManager>((ref) {
-  return ConfigManager();
+  final mgr = ConfigManager();
+  // Wire secrets resolver so $ref values in API keys are resolved at use time.
+  mgr.secretsResolver = (ref_) => SecureKeyStore.getSecret(
+        ref_.startsWith(r'{"$ref":"secrets/')
+            ? ref_.substring(r'{"$ref":"secrets/'.length).replaceAll('"}}', '').replaceAll('"}', '')
+            : ref_,
+      );
+  return mgr;
 });
 
 /// Provider for list of all agent profiles
@@ -265,6 +280,8 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
   registry.register(WebFetchTool(headlessBrowser: headlessBrowser));
   registry.register(HttpRequestTool());
   registry.register(ImageGenTool(configManager: configManager));
+  registry.register(TtsTool(ref.read(textToSpeechServiceProvider)));
+  registry.register(PdfTool(configManager: configManager));
   registry.register(headlessBrowser);
   registry.register(MemorySearchTool(wsPath));
   registry.register(MemoryGetTool(wsPath));
@@ -592,6 +609,8 @@ final agentLoopProvider = Provider<AgentLoop>((ref) {
     toolRegistry: ref.watch(toolRegistryProvider),
     sessionManager: ref.watch(sessionManagerProvider),
     hookRunner: ref.read(hookRunnerProvider),
+    connectivityService: ref.read(connectivityServiceProvider),
+    batteryService: ref.read(batteryServiceProvider),
     skillsPromptGetter: () async {
       await skillsService.loadSkills();
       return skillsService.getSkillsPrompt();
@@ -627,6 +646,36 @@ final agentLoopProvider = Provider<AgentLoop>((ref) {
     return response.content;
   });
   return loop;
+});
+
+final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
+  final svc = ConnectivityService();
+  unawaited(svc.init());
+  ref.onDispose(svc.dispose);
+  return svc;
+});
+
+final batteryServiceProvider = Provider<BatteryService>((ref) {
+  return BatteryService();
+});
+
+final authProfileServiceProvider = FutureProvider<AuthProfileService>((ref) async {
+  final configManager = ref.read(configManagerProvider);
+  final base = await configManager.configDir;
+  final svc = AuthProfileService(
+    profilesFilePath: '$base/auth_profiles.json',
+    readKey: (id) => SecureKeyStore.getSecret('profile_$id'),
+    writeKey: (id, key) => SecureKeyStore.saveSecret('profile_$id', key),
+    deleteKey: (id) => SecureKeyStore.deleteSecret('profile_$id'),
+  );
+  await svc.load();
+  return svc;
+});
+
+final secretsResolverProvider = Provider<SecretsResolver>((ref) {
+  return SecretsResolver(
+    readSecret: (name) => SecureKeyStore.getSecret(name),
+  );
 });
 
 final webChatAdapterProvider = Provider<WebChatChannelAdapter>((ref) {
@@ -1003,6 +1052,10 @@ class ChatMessage {
   // Ephemeral /btw side-question — shown with dashed border, not saved to transcript
   final bool isBtw;
 
+  /// Optional interactive reply blocks (buttons, selects) emitted by a tool.
+  /// The chat UI renders these below the message text as touch-friendly widgets.
+  final InteractiveReply? interactiveReply;
+
   const ChatMessage({
     required this.text,
     required this.isUser,
@@ -1023,6 +1076,7 @@ class ChatMessage {
     this.errorCtaLabel,
     this.isShellCommand = false,
     this.isBtw = false,
+    this.interactiveReply,
   });
 
   ChatMessage copyWith({
@@ -1036,6 +1090,7 @@ class ChatMessage {
     String? errorTitle,
     String? errorCtaUrl,
     String? errorCtaLabel,
+    InteractiveReply? interactiveReply,
   }) => ChatMessage(
     text: text ?? this.text,
     isUser: isUser,
@@ -1054,6 +1109,7 @@ class ChatMessage {
     errorTitle: errorTitle ?? this.errorTitle,
     errorCtaUrl: errorCtaUrl ?? this.errorCtaUrl,
     errorCtaLabel: errorCtaLabel ?? this.errorCtaLabel,
+    interactiveReply: interactiveReply ?? this.interactiveReply,
   );
 }
 
@@ -1456,6 +1512,25 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
           state = updated;
         }
 
+        // If a tool returned an interactive payload, inject an interactive
+        // message into the chat so the user can tap buttons/selects.
+        if (event.toolDetails != null) {
+          final interactive = parseInteractiveReply(event.toolDetails!['interactive']);
+          if (interactive != null) {
+            final updated = List<ChatMessage>.from(state);
+            updated.insert(
+              updated.length - 1,
+              ChatMessage(
+                text: '',
+                isUser: false,
+                timestamp: DateTime.now(),
+                interactiveReply: interactive,
+              ),
+            );
+            state = updated;
+          }
+        }
+
         if (event.textDelta != null) {
           buffer.write(event.textDelta);
           final updated = List<ChatMessage>.from(state);
@@ -1479,6 +1554,15 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
             errorCtaLabel: resp?.errorCtaLabel,
           );
           state = updated;
+
+          // If battery-aware or offline switching changed the model, sync
+          // the actual model used to the Live Activity so it shows correctly.
+          if (resp?.modelUsed != null) {
+            final gwNotifier = ref.read(gatewayStateProvider.notifier);
+            if (resp!.modelUsed != ref.read(gatewayStateProvider).currentModel) {
+              gwNotifier.setModel(resp.modelUsed!);
+            }
+          }
 
           if (_isAppInBackground && finalText.trim().isNotEmpty) {
             _sendBackgroundNotification(finalText);

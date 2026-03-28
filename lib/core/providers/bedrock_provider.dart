@@ -389,8 +389,9 @@ class BedrockProvider implements LlmProvider {
   /// `anthropic_version` which Bedrock expects in the body (not as a header).
   Map<String, dynamic> _bedrockBody(LlmRequest request, {required bool stream}) {
     final body = _anthropic.buildBody(request, stream: stream);
-    body.remove('model');  // model is in the URL path
-    body.remove('stream'); // streaming is determined by URL endpoint
+    body.remove('model');        // model is in the URL path
+    body.remove('stream');       // streaming is determined by URL endpoint
+    body.remove('output_config'); // Bedrock does not support the effort-2025-11-24 beta
     body['anthropic_version'] = 'bedrock-2023-05-31';
     return body;
   }

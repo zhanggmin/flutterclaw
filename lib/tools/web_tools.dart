@@ -6,6 +6,7 @@ library;
 
 import 'package:dio/dio.dart';
 import 'package:flutterclaw/data/models/config.dart';
+import 'package:flutterclaw/services/ssrf_guard.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
 
@@ -274,6 +275,9 @@ class WebFetchTool extends Tool {
     } catch (_) {
       return ToolResult.error('Invalid URL: $urlStr');
     }
+
+    final ssrfError = validateFetchUrl(uri.toString());
+    if (ssrfError != null) return ToolResult.error(ssrfError);
 
     try {
       final response = await _dio.get<String>(

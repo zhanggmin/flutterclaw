@@ -9,7 +9,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutterclaw/core/agent/link_understanding.dart';
 import 'package:flutterclaw/core/agent/provider_router.dart';
+import 'package:flutterclaw/services/battery_service.dart';
+import 'package:flutterclaw/services/connectivity_service.dart';
 import 'package:flutterclaw/core/agent/session_manager.dart';
 import 'package:flutterclaw/core/agent/token_budget_manager.dart';
 import 'package:flutterclaw/core/providers/error_parser.dart';
@@ -33,6 +36,9 @@ class AgentResponse {
   final String? errorTitle;
   final String? errorCtaUrl;
   final String? errorCtaLabel;
+  /// The model name actually used (may differ from config when battery-aware
+  /// switching or offline fallback kicks in).
+  final String? modelUsed;
 
   const AgentResponse({
     required this.content,
@@ -43,6 +49,7 @@ class AgentResponse {
     this.errorTitle,
     this.errorCtaUrl,
     this.errorCtaLabel,
+    this.modelUsed,
   });
 
   bool get isError => errorStatusCode != null;
@@ -53,6 +60,9 @@ class AgentStreamEvent {
   final String? toolName;
   final Map<String, dynamic>? toolArgs;
   final String? toolResult;
+  /// Structured details from the tool result (e.g. interactive reply payload).
+  /// Consumers like ChatNotifier use this to render rich UI beyond plain text.
+  final Map<String, dynamic>? toolDetails;
   /// Incremental output chunk from a streaming tool (e.g. sandbox_exec).
   /// The UI appends this to the expandable tool result card in real time.
   final String? toolResultChunk;
@@ -64,6 +74,7 @@ class AgentStreamEvent {
     this.toolName,
     this.toolArgs,
     this.toolResult,
+    this.toolDetails,
     this.toolResultChunk,
     this.isDone = false,
     this.finalResponse,
@@ -93,6 +104,14 @@ class AgentLoop {
   /// Optional hook runner for session lifecycle events.
   HookRunner? hookRunner;
 
+  /// Optional connectivity service. When set, the agent loop checks network
+  /// state before each LLM call and falls back to a local model when offline.
+  ConnectivityService? connectivityService;
+
+  /// Optional battery service. When set, injects battery context into the
+  /// system prompt and prefers lighter models on low battery.
+  BatteryService? batteryService;
+
   AgentLoop({
     required this.configManager,
     required this.providerRouter,
@@ -101,6 +120,8 @@ class AgentLoop {
     this.skillsPromptGetter,
     this.onToolStatus,
     this.hookRunner,
+    this.connectivityService,
+    this.batteryService,
   });
 
   // Cached device info for system prompt injection
@@ -752,6 +773,28 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     if (ephemeralContext != null) {
       messages.add(LlmMessage(role: 'system', content: ephemeralContext));
     }
+
+    // Auto-fetch any URLs in the user message and inject as ephemeral context.
+    // Only runs for plain-text messages (not multimodal content blocks).
+    if (contentBlocks == null && message.trim().isNotEmpty) {
+      final webFetch = toolRegistry.get('web_fetch');
+      if (webFetch != null) {
+        final linkContext = await runLinkUnderstanding(
+          message,
+          fetchUrl: (url) async {
+            final result = await webFetch.execute({'url': url, 'max_chars': 2000});
+            return result.isError ? null : result.content;
+          },
+        );
+        if (linkContext != null) {
+          messages.add(LlmMessage(
+            role: 'system',
+            content: '[Link context auto-fetched from message]\n\n$linkContext',
+          ));
+        }
+      }
+    }
+
     messages.addAll(context);
 
     // Most APIs require at least one user message. When the hatch fires with an
@@ -764,12 +807,49 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
     // Use the session's agent settings, fall back to defaults
     final defaults = configManager.config.agents.defaults;
-    final modelName =
+    var modelName =
         session?.modelOverride ?? sessionAgent?.modelName ?? defaults.modelName;
     final temperature = sessionAgent?.temperature ?? defaults.temperature;
     final maxTokens = sessionAgent?.maxTokens ?? defaults.maxTokens;
     final maxToolIterations =
         sessionAgent?.maxToolIterations ?? defaults.maxToolIterations;
+
+    // ── Battery-aware model selection ────────────────────────────────────────
+    if (batteryService != null) {
+      final batteryCtx = await batteryService!.buildRuntimeContext();
+      if (batteryCtx != null) {
+        messages.add(LlmMessage(role: 'system', content: batteryCtx));
+      }
+      final level = await batteryService!.getBatteryLevel();
+      final charging = await batteryService!.isCharging();
+      if (!charging && level <= 10) {
+        // Critically low battery: prefer fastest/cheapest available model
+        final lowModel = _findLowestCostModel();
+        if (lowModel != null && lowModel != modelName) {
+          _log.info('Battery critical ($level%): switching from $modelName to $lowModel');
+          modelName = lowModel;
+        }
+      }
+    }
+
+    // ── Connectivity / offline fallback ──────────────────────────────────────
+    if (connectivityService != null && !connectivityService!.isOnline) {
+      final ollamaModel = _findOllamaModel();
+      if (ollamaModel != null) {
+        _log.info('Offline: falling back to local model $ollamaModel');
+        modelName = ollamaModel;
+      } else {
+        yield AgentStreamEvent(
+          isDone: true,
+          finalResponse: AgentResponse(
+            content: 'No internet connection and no local model configured. '
+                'Connect to the internet or set up Ollama in Settings → Providers.',
+            sessionKey: sessionKey,
+          ),
+        );
+        return;
+      }
+    }
 
     final modelEntry = configManager.config.getModel(modelName);
     if (modelEntry == null) {
@@ -992,7 +1072,10 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
             final result = await chunkFuture;
             onToolStatus?.call(tc.function.name, args, isDone: true);
             toolCallsExecuted++;
-            yield AgentStreamEvent(toolResult: result.content);
+            yield AgentStreamEvent(
+              toolResult: result.content,
+              toolDetails: result.details,
+            );
 
             // Persist tool result
             final toolMsg = LlmMessage(
@@ -1030,6 +1113,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
             toolCallsExecuted: toolCallsExecuted,
             usage: totalUsage,
             sessionKey: sessionKey,
+            modelUsed: modelName,
           ),
         );
         return;
@@ -1106,6 +1190,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
         toolCallsExecuted: toolCallsExecuted,
         usage: totalUsage,
         sessionKey: sessionKey,
+        modelUsed: modelName,
       ),
     );
   }
@@ -1949,5 +2034,37 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     }
 
     _log.info('After emergency truncation: $currentTokens tokens');
+  }
+
+  // ── Connectivity / Battery helpers ────────────────────────────────────────
+
+  /// Returns the model name of the first configured Ollama model, or null.
+  String? _findOllamaModel() {
+    for (final m in configManager.config.modelList) {
+      if (m.provider == 'ollama' ||
+          (m.apiBase?.contains('localhost') ?? false) ||
+          (m.apiBase?.contains('11434') ?? false)) {
+        return m.modelName;
+      }
+    }
+    return null;
+  }
+
+  /// Returns the model name considered "lightest" — prefers free/small models.
+  /// Falls back to the first configured model if nothing specific is found.
+  String? _findLowestCostModel() {
+    final models = configManager.config.modelList;
+    if (models.isEmpty) return null;
+    // Prefer explicitly free models
+    final free = models.where((m) => m.isFree).toList();
+    if (free.isNotEmpty) return free.first.modelName;
+    // Prefer models with "mini", "haiku", "flash", "small", "nano" in their ID
+    final small = models.where((m) {
+      final id = m.model.toLowerCase();
+      return id.contains('mini') || id.contains('haiku') ||
+             id.contains('flash') || id.contains('small') || id.contains('nano');
+    }).toList();
+    if (small.isNotEmpty) return small.first.modelName;
+    return models.first.modelName;
   }
 }
