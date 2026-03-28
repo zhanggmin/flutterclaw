@@ -214,9 +214,10 @@ final contextUsageProvider = Provider<double>((ref) {
     contextMessages.map((m) => {'content': m.content}).toList(),
   );
 
-  // Fixed estimate for the system prompt (workspace files + runtime context
-  // + device guidance). Typical agent workspace = ~25K tokens.
-  const kSystemPromptEstimate = 25000;
+  // Estimate for the system prompt (workspace files + runtime context).
+  // Capped at 50% of the context window so small-context models (e.g.
+  // on-device, 4K tokens) don't show 100% before the first message.
+  final kSystemPromptEstimate = (contextWindow * 0.5).toInt().clamp(0, 25000);
 
   final totalEstimate = kSystemPromptEstimate + messageTokens;
   final ratio = totalEstimate / contextWindow;

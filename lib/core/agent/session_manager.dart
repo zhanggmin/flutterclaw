@@ -331,6 +331,7 @@ class SessionManager {
         if (message.toolCalls != null)
           'toolCalls': message.toolCalls!.map((e) => e.toJson()).toList(),
         if (message.toolCallId != null) 'toolCallId': message.toolCallId,
+        if (message.metadata != null) 'metadata': message.metadata,
       },
     );
 
@@ -930,12 +931,16 @@ class SessionManager {
             .toList();
       }
 
+      final rawMeta = e.data['metadata'];
+      final metadata = rawMeta is Map ? Map<String, dynamic>.from(rawMeta) : null;
+
       messages.add(LlmMessage(
         role: role,
         content: content,
         name: name,
         toolCalls: toolCalls,
         toolCallId: toolCallId,
+        metadata: metadata,
       ));
     }
 

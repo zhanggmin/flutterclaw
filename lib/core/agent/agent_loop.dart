@@ -22,6 +22,7 @@ import 'package:flutterclaw/data/models/config.dart';
 import 'package:flutterclaw/data/models/model_catalog.dart';
 import 'package:flutterclaw/services/hook_runner.dart';
 import 'package:flutterclaw/services/ui_automation_service.dart';
+import 'package:flutterclaw/core/providers/on_device_tool_selector.dart';
 import 'package:flutterclaw/tools/registry.dart';
 import 'package:logging/logging.dart';
 
@@ -52,7 +53,8 @@ class AgentResponse {
     this.modelUsed,
   });
 
-  bool get isError => errorStatusCode != null;
+  bool get isError =>
+      errorStatusCode != null || errorTitle != null || errorCtaUrl != null;
 }
 
 class AgentStreamEvent {
@@ -398,7 +400,15 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     // Use the agent that owns this session (e.g. Agent B when B is being called)
     final sessionAgent =
         _resolveSessionAgent(sessionKey) ?? configManager.config.activeAgent;
-    final systemPrompt = await _buildSystemPrompt(agentId: sessionAgent?.id);
+    // Use the session's agent settings, fall back to defaults
+    final defaults = configManager.config.agents.defaults;
+    final modelName =
+        session?.modelOverride ?? sessionAgent?.modelName ?? defaults.modelName;
+    final isOnDevice = configManager.config.getModel(modelName)?.provider == 'ondevice';
+
+    final systemPrompt = isOnDevice
+        ? _buildOnDeviceSystemPrompt(agentId: sessionAgent?.id)
+        : await _buildSystemPrompt(agentId: sessionAgent?.id);
 
     final userContent = contentBlocks ?? message;
     final shouldPersist = contentBlocks != null || message.trim().isNotEmpty;
@@ -416,7 +426,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     if (systemPrompt.isNotEmpty) {
       messages.add(LlmMessage(role: 'system', content: systemPrompt));
     }
-    final ephemeralContext = _buildChannelContextPrompt(channelContext);
+    final ephemeralContext = isOnDevice ? null : _buildChannelContextPrompt(channelContext);
     if (ephemeralContext != null) {
       messages.add(LlmMessage(role: 'system', content: ephemeralContext));
     }
@@ -425,21 +435,13 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     if (!messages.any((m) => m.role == 'user' || m.role == 'assistant')) {
       messages.add(const LlmMessage(role: 'user', content: '.'));
     }
-
-    // Use the session's agent settings, fall back to defaults
-    final defaults = configManager.config.agents.defaults;
-    final modelName =
-        session?.modelOverride ?? sessionAgent?.modelName ?? defaults.modelName;
     final temperature = sessionAgent?.temperature ?? defaults.temperature;
     final maxTokens = sessionAgent?.maxTokens ?? defaults.maxTokens;
     final maxToolIterations =
         sessionAgent?.maxToolIterations ?? defaults.maxToolIterations;
 
-    _log.info(
-      'AgentLoop: using model=$modelName (sessionAgent=${sessionAgent?.name}, sessionAgent.model=${sessionAgent?.modelName}, defaults.model=${defaults.modelName})',
-    );
-    _log.info(
-      'AgentLoop: available models in config: ${configManager.config.modelList.map((m) => m.modelName).join(", ")}',
+    _log.fine(
+      'AgentLoop: model=$modelName session=$sessionKey agent=${sessionAgent?.name}',
     );
 
     final modelEntry = configManager.config.getModel(modelName);
@@ -507,11 +509,26 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
       }
     }
 
-    final tools = toolRegistry.toProviderDefs();
+    var tools = toolRegistry.toProviderDefs();
     var toolCallsExecuted = 0;
     UsageInfo? totalUsage;
     var loopMessages = List<LlmMessage>.from(messages);
     var continuationRound = 0;
+
+    // On-device models: inject tool instructions into system prompt instead of
+    // passing tool schemas (which OnDeviceProvider ignores). Select only the
+    // most relevant 3–5 tools to fit the tiny context window.
+    if (isOnDevice && tools.isNotEmpty) {
+      final selectedTools = OnDeviceToolSelector.select(message, tools);
+      final toolInstruction = OnDeviceToolSelector.buildToolInstruction(selectedTools);
+      if (toolInstruction.isNotEmpty && loopMessages.isNotEmpty && loopMessages.first.role == 'system') {
+        final existing = loopMessages.first.content as String? ?? '';
+        loopMessages[0] = LlmMessage(role: 'system', content: '$existing\n\n$toolInstruction');
+      } else if (toolInstruction.isNotEmpty) {
+        loopMessages.insert(0, LlmMessage(role: 'system', content: toolInstruction));
+      }
+      tools = []; // Don't pass schemas — on-device uses prompt-based tool calling.
+    }
     const maxContinuations = 2; // up to 3 rounds × maxToolIterations total
     final provCred = configManager.config.providerCredentials[modelEntry.provider];
 
@@ -748,10 +765,21 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     // Use the agent that owns this session so its identity/workspace is loaded
     final sessionAgent =
         _resolveSessionAgent(sessionKey) ?? configManager.config.activeAgent;
-    final systemPrompt = await _buildSystemPrompt(
-      userLanguage: userLanguage,
-      agentId: sessionAgent?.id,
-    );
+    // Use the session's agent settings, fall back to defaults
+    final defaults = configManager.config.agents.defaults;
+    var modelName =
+        session?.modelOverride ?? sessionAgent?.modelName ?? defaults.modelName;
+    final isOnDeviceStream = configManager.config.getModel(modelName)?.provider == 'ondevice';
+
+    final systemPrompt = isOnDeviceStream
+        ? _buildOnDeviceSystemPrompt(
+            userLanguage: userLanguage,
+            agentId: sessionAgent?.id,
+          )
+        : await _buildSystemPrompt(
+            userLanguage: userLanguage,
+            agentId: sessionAgent?.id,
+          );
 
     // Persist user message (only if not empty or has content blocks)
     final userContent = contentBlocks ?? message;
@@ -769,14 +797,15 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     if (systemPrompt.isNotEmpty) {
       messages.add(LlmMessage(role: 'system', content: systemPrompt));
     }
-    final ephemeralContext = _buildChannelContextPrompt(channelContext);
+    final ephemeralContext = isOnDeviceStream ? null : _buildChannelContextPrompt(channelContext);
     if (ephemeralContext != null) {
       messages.add(LlmMessage(role: 'system', content: ephemeralContext));
     }
 
     // Auto-fetch any URLs in the user message and inject as ephemeral context.
     // Only runs for plain-text messages (not multimodal content blocks).
-    if (contentBlocks == null && message.trim().isNotEmpty) {
+    // Skip for on-device models to save context budget.
+    if (!isOnDeviceStream && contentBlocks == null && message.trim().isNotEmpty) {
       final webFetch = toolRegistry.get('web_fetch');
       if (webFetch != null) {
         final linkContext = await runLinkUnderstanding(
@@ -804,11 +833,6 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     if (!messages.any((m) => m.role == 'user' || m.role == 'assistant')) {
       messages.add(const LlmMessage(role: 'user', content: '.'));
     }
-
-    // Use the session's agent settings, fall back to defaults
-    final defaults = configManager.config.agents.defaults;
-    var modelName =
-        session?.modelOverride ?? sessionAgent?.modelName ?? defaults.modelName;
     final temperature = sessionAgent?.temperature ?? defaults.temperature;
     final maxTokens = sessionAgent?.maxTokens ?? defaults.maxTokens;
     final maxToolIterations =
@@ -834,20 +858,27 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
     // ── Connectivity / offline fallback ──────────────────────────────────────
     if (connectivityService != null && !connectivityService!.isOnline) {
-      final ollamaModel = _findOllamaModel();
-      if (ollamaModel != null) {
-        _log.info('Offline: falling back to local model $ollamaModel');
-        modelName = ollamaModel;
+      // Prefer on-device model (no network, no server required).
+      final onDeviceModel = _findOnDeviceModel();
+      if (onDeviceModel != null) {
+        _log.info('Offline: falling back to on-device model $onDeviceModel');
+        modelName = onDeviceModel;
       } else {
-        yield AgentStreamEvent(
-          isDone: true,
-          finalResponse: AgentResponse(
-            content: 'No internet connection and no local model configured. '
-                'Connect to the internet or set up Ollama in Settings → Providers.',
-            sessionKey: sessionKey,
-          ),
-        );
-        return;
+        final ollamaModel = _findOllamaModel();
+        if (ollamaModel != null) {
+          _log.info('Offline: falling back to local Ollama model $ollamaModel');
+          modelName = ollamaModel;
+        } else {
+          yield AgentStreamEvent(
+            isDone: true,
+            finalResponse: AgentResponse(
+              content: 'No internet connection and no local model configured. '
+                  'Connect to the internet or set up an On-Device or Ollama model in Settings → Providers.',
+              sessionKey: sessionKey,
+            ),
+          );
+          return;
+        }
       }
     }
 
@@ -919,7 +950,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
       }
     }
 
-    final tools = toolRegistry.toProviderDefs();
+    var tools = toolRegistry.toProviderDefs();
     var toolCallsExecuted = 0;
     UsageInfo? totalUsage;
     var loopMessages = List<LlmMessage>.from(messages);
@@ -927,6 +958,20 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     var continuationRound = 0;
     const maxContinuations = 2; // up to 3 rounds × maxToolIterations total
     final provCredStream = configManager.config.providerCredentials[modelEntry.provider];
+
+    // On-device models: inject tool instructions into system prompt instead of
+    // passing tool schemas (which OnDeviceProvider ignores).
+    if (isOnDeviceStream && tools.isNotEmpty) {
+      final selectedTools = OnDeviceToolSelector.select(message, tools);
+      final toolInstruction = OnDeviceToolSelector.buildToolInstruction(selectedTools);
+      if (toolInstruction.isNotEmpty && loopMessages.isNotEmpty && loopMessages.first.role == 'system') {
+        final existing = loopMessages.first.content as String? ?? '';
+        loopMessages[0] = LlmMessage(role: 'system', content: '$existing\n\n$toolInstruction');
+      } else if (toolInstruction.isNotEmpty) {
+        loopMessages.insert(0, LlmMessage(role: 'system', content: toolInstruction));
+      }
+      tools = []; // Don't pass schemas — on-device uses prompt-based tool calling.
+    }
 
     // Resolve thinking/effort settings: keyword detection → session level → model default.
     final sessionMetaStream = sessionManager.getMeta(sessionKey);
@@ -1648,6 +1693,38 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
   // -- System prompt --------------------------------------------------------
 
+  // ── On-device compact system prompt ──────────────────────────────────────
+  //
+  // On-device models (Apple Foundation Models, Gemini Nano) have a ~4K token
+  // context window. The full system prompt can exceed 100K chars and would
+  // overflow the context completely, causing the model to echo the prompt
+  // instead of generating a response. This builds a minimal prompt (~200–400
+  // tokens) with just the essentials.
+
+  String _buildOnDeviceSystemPrompt({String? userLanguage, String? agentId}) {
+    final agent = agentId != null
+        ? configManager.config.agentProfiles
+            .where((a) => a.id == agentId)
+            .firstOrNull
+        : configManager.config.activeAgent;
+    final name = agent?.name ?? 'Claw';
+    final vibe = agent?.vibe ?? '';
+
+    final buf = StringBuffer();
+    buf.writeln('You are $name, a helpful AI assistant on a mobile device.');
+    if (vibe.isNotEmpty) buf.writeln('Personality: $vibe');
+
+    final now = DateTime.now();
+    buf.writeln('Current date: ${now.toIso8601String().substring(0, 10)}');
+
+    if (userLanguage != null && userLanguage.isNotEmpty) {
+      buf.writeln('IMPORTANT: Respond in ${_getLanguageName(userLanguage)}.');
+    }
+
+    buf.writeln('Be concise and helpful. Answer the user directly.');
+    return buf.toString().trim();
+  }
+
   Future<String> _buildSystemPrompt({
     String? userLanguage,
     String? agentId,
@@ -2037,6 +2114,14 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
   }
 
   // ── Connectivity / Battery helpers ────────────────────────────────────────
+
+  /// Returns the model name of the first configured on-device model, or null.
+  String? _findOnDeviceModel() {
+    for (final m in configManager.config.modelList) {
+      if (m.provider == 'ondevice') return m.modelName;
+    }
+    return null;
+  }
 
   /// Returns the model name of the first configured Ollama model, or null.
   String? _findOllamaModel() {
