@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:flutterclaw/services/ssrf_guard.dart';
 
 import 'registry.dart';
 
@@ -105,6 +106,9 @@ class HttpRequestTool extends Tool {
     if (urlStr == null || urlStr.isEmpty) {
       return ToolResult.error('url is required');
     }
+
+    final ssrfError = validateFetchUrl(urlStr);
+    if (ssrfError != null) return ToolResult.error(ssrfError);
 
     final method = ((args['method'] as String?) ?? 'GET').toUpperCase();
     final headers = _toStringMap(args['headers']);

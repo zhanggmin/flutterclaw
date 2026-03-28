@@ -35,4 +35,22 @@ class SecureKeyStore {
     }
     return result;
   }
+
+  // ---------------------------------------------------------------------------
+  // Generic named secrets (used by AuthProfileService and SecretsResolver)
+  // ---------------------------------------------------------------------------
+
+  static const _secretPrefix = 'secret_';
+
+  static Future<void> saveSecret(String name, String value) async {
+    await _storage.write(key: '$_secretPrefix$name', value: value);
+  }
+
+  static Future<String?> getSecret(String name) async {
+    return _storage.read(key: '$_secretPrefix$name');
+  }
+
+  static Future<void> deleteSecret(String name) async {
+    await _storage.delete(key: '$_secretPrefix$name');
+  }
 }

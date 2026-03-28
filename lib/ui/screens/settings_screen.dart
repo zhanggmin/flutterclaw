@@ -7,6 +7,7 @@ import 'package:flutterclaw/ui/screens/settings/about_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/gateway_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/mcp_servers_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/providers_models_screen.dart';
+import 'package:flutterclaw/ui/screens/settings/credentials_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/security_settings_screen.dart';
 import 'package:flutterclaw/ui/screens/settings/tool_policies_screen.dart';
 
@@ -23,6 +24,15 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.settings)),
       body: ListView(
         children: [
+          _SettingsTile(
+            icon: Icons.key_outlined,
+            title: 'Credentials',
+            subtitle: 'Multi-key rotation per provider',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CredentialsScreen()),
+            ),
+          ),
           _SettingsTile(
             icon: Icons.hub_outlined,
             title: context.l10n.providersAndModels,

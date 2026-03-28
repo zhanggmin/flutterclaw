@@ -11,6 +11,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutterclaw/core/agent/session_disk_budget.dart';
 import 'package:flutterclaw/core/providers/provider_interface.dart';
 import 'package:flutterclaw/data/models/config.dart';
 import 'package:logging/logging.dart';
@@ -231,6 +232,9 @@ class SessionManager {
   final Map<String, List<LlmMessage>> _contextCache = {};
   String? _sessionsDir;
   String? _lastEntryId;
+  final _diskBudget = const SessionDiskBudget();
+  int _messagesSinceLastBudgetCheck = 0;
+  static const int _kBudgetCheckInterval = 20; // check every 20 messages
 
   final _messageController =
       StreamController<(String, LlmMessage)>.broadcast();
@@ -354,6 +358,41 @@ class SessionManager {
     _messageController.add((key, message));
     _sessionsChangedController.add(null);
     await _saveStore(dir);
+
+    // Periodically check disk budget
+    _messagesSinceLastBudgetCheck++;
+    if (_messagesSinceLastBudgetCheck >= _kBudgetCheckInterval) {
+      _messagesSinceLastBudgetCheck = 0;
+      unawaited(_runDiskBudgetCheck(dir));
+    }
+  }
+
+  /// Run disk budget enforcement in the background (fire-and-forget).
+  Future<void> _runDiskBudgetCheck(String sessionsDir) async {
+    try {
+      final knownIds = _meta.values.map((m) => m.sessionId).toSet();
+      // Active sessions: those with recent activity (last 24 hours)
+      final activeIds = _meta.values
+          .where((m) => m.isActive)
+          .map((m) => m.sessionId)
+          .toSet();
+      final pruned = await _diskBudget.enforce(
+        sessionsDir: sessionsDir,
+        knownSessionIds: knownIds,
+        activeSessionIds: activeIds,
+      );
+      if (pruned > 0) {
+        _log.info('Disk budget: pruned $pruned session file(s)');
+      }
+    } catch (e) {
+      _log.warning('Disk budget check failed: $e');
+    }
+  }
+
+  /// Manually trigger a disk budget check. Can be called on app resume.
+  Future<void> checkDiskBudget() async {
+    final dir = await _getSessionsDir();
+    await _runDiskBudgetCheck(dir);
   }
 
   /// Update the display name for a session and persist immediately.

@@ -41,17 +41,49 @@ class ToolResult {
   /// Whether this is an async operation (for future expansion).
   final bool isAsync;
 
+  /// Optional structured payload for the UI layer.
+  ///
+  /// Used for interactive replies (buttons, selects), media paths, etc.
+  /// The LLM only sees [content]; this field is for the chat UI renderer.
+  ///
+  /// Interactive reply format (mirrors OpenClaw interactive/payload.ts):
+  /// ```json
+  /// {
+  ///   "interactive": {
+  ///     "blocks": [
+  ///       {"type": "text", "text": "Choose an option:"},
+  ///       {"type": "buttons", "buttons": [
+  ///         {"label": "Yes", "value": "yes", "style": "success"},
+  ///         {"label": "No",  "value": "no",  "style": "danger"}
+  ///       ]}
+  ///     ]
+  ///   }
+  /// }
+  /// ```
+  final Map<String, dynamic>? details;
+
   const ToolResult({
     required this.content,
     this.isError = false,
     this.isAsync = false,
+    this.details,
   });
 
-  factory ToolResult.success(String content) =>
-      ToolResult(content: content, isError: false);
+  factory ToolResult.success(String content, {Map<String, dynamic>? details}) =>
+      ToolResult(content: content, isError: false, details: details);
 
   factory ToolResult.error(String message) =>
       ToolResult(content: message, isError: true);
+
+  factory ToolResult.interactive({
+    required String content,
+    required Map<String, dynamic> interactive,
+  }) =>
+      ToolResult(
+        content: content,
+        isError: false,
+        details: {'interactive': interactive},
+      );
 }
 
 /// Entry in the registry: tool plus metadata.

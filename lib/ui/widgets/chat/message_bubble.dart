@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
+import 'package:flutterclaw/data/models/interactive_reply.dart';
 import 'package:flutterclaw/ui/theme/semantic_colors.dart';
 import 'copyable_code_block.dart';
 import 'terminal_output.dart';
@@ -59,6 +60,10 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
 
     if (!isUser && widget.message.isBtw) {
       return _buildBtwBubble(context, theme);
+    }
+
+    if (!isUser && widget.message.interactiveReply != null) {
+      return _buildInteractiveBubble(context, theme, colors);
     }
 
     final agentEmoji = isUser
@@ -663,6 +668,123 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
     );
   }
 
+  /// Renders interactive reply blocks (buttons, selects, text) from a tool result.
+  Widget _buildInteractiveBubble(
+    BuildContext context,
+    ThemeData theme,
+    ColorScheme colors,
+  ) {
+    final reply = widget.message.interactiveReply!;
+    final agentEmoji = ref.watch(activeAgentProvider)?.emoji ?? '🤖';
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            margin: const EdgeInsets.only(right: 6, bottom: 4),
+            alignment: Alignment.center,
+            child: Text(agentEmoji, style: const TextStyle(fontSize: 18)),
+          ),
+          Flexible(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.85,
+              ),
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(4),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: reply.blocks.map((block) {
+                  if (block is InteractiveTextBlock) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        block.text,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurface,
+                        ),
+                      ),
+                    );
+                  }
+                  if (block is InteractiveButtonsBlock) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: block.buttons.map((btn) {
+                          final (bgColor, fgColor) = switch (btn.style) {
+                            InteractiveButtonStyle.success => (
+                                colors.tertiary,
+                                colors.onTertiary,
+                              ),
+                            InteractiveButtonStyle.danger => (
+                                colors.error,
+                                colors.onError,
+                              ),
+                            InteractiveButtonStyle.secondary => (
+                                colors.surfaceContainerHigh,
+                                colors.onSurface,
+                              ),
+                            _ => (colors.primary, colors.onPrimary),
+                          };
+                          return FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: bgColor,
+                              foregroundColor: fgColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () => ref
+                                .read(chatProvider.notifier)
+                                .sendMessage(btn.value),
+                            child: Text(btn.label),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                  if (block is InteractiveSelectBlock) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: _InteractiveSelect(
+                        block: block,
+                        onSelected: (value) => ref
+                            .read(chatProvider.notifier)
+                            .sendMessage(value),
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                }).toList(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSlashCommandBubble(BuildContext context, ThemeData theme) {
     final colors = theme.colorScheme;
     return Align(
@@ -1083,3 +1205,52 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 }
+
+// ---------------------------------------------------------------------------
+// Interactive select widget
+// ---------------------------------------------------------------------------
+
+class _InteractiveSelect extends StatefulWidget {
+  final InteractiveSelectBlock block;
+  final void Function(String value) onSelected;
+
+  const _InteractiveSelect({required this.block, required this.onSelected});
+
+  @override
+  State<_InteractiveSelect> createState() => _InteractiveSelectState();
+}
+
+class _InteractiveSelectState extends State<_InteractiveSelect> {
+  String? _selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return DropdownButtonFormField<String>(
+      initialValue: _selected,
+      hint: Text(
+        widget.block.placeholder ?? 'Select an option…',
+        style: TextStyle(color: colors.onSurface.withValues(alpha: 0.6)),
+      ),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        isDense: true,
+      ),
+      items: widget.block.options
+          .map(
+            (opt) => DropdownMenuItem(
+              value: opt.value,
+              child: Text(opt.label),
+            ),
+          )
+          .toList(),
+      onChanged: (value) {
+        if (value == null) return;
+        setState(() => _selected = value);
+        widget.onSelected(value);
+      },
+    );
+  }
+}
+
