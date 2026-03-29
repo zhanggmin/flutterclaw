@@ -608,6 +608,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
           for (final tc in response.toolCalls!) {
             final args = _parseToolArgs(tc.function.arguments);
+            // Inject session context so tools that need to reach back to the user
+            // (e.g. web_browse request_user_action) know which channel to use.
+            args['__session_key'] = sessionKey;
             _log.info('Tool start: ${tc.function.name} (onToolStatus=${onToolStatus != null})');
             onToolStatus?.call(tc.function.name, args, isDone: false);
             final result = await toolRegistry.execute(tc.function.name, args);
@@ -1046,6 +1049,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
           for (final tc in toolCallsBuffer) {
             final args = _parseToolArgs(tc.function.arguments);
+            args['__session_key'] = sessionKey;
             onToolStatus?.call(tc.function.name, args, isDone: false);
             yield AgentStreamEvent(toolName: tc.function.name, toolArgs: args);
 

@@ -254,7 +254,10 @@ const _kUserAgents = {
 class HeadlessBrowserTool extends Tool {
   // --- Config & callbacks ---
   final BrowserConfig _config;
-  final Future<void> Function(String url, String message)? _onRequestUserAction;
+  /// Called just before blocking for user input. Receives the URL, the agent's
+  /// message, and the current session key (e.g. "telegram:123456789") so the
+  /// callback can send a message back through the originating channel.
+  final Future<void> Function(String url, String message, String? sessionKey)? _onRequestUserAction;
   /// Optional callback to describe a screenshot via a parallel vision LLM call.
   /// Receives the raw JPEG bytes; returns a text description or null on failure.
   final Future<String?> Function(Uint8List bytes, String mimeType)? _onDescribeImage;
@@ -282,7 +285,7 @@ class HeadlessBrowserTool extends Tool {
 
   HeadlessBrowserTool({
     BrowserConfig config = const BrowserConfig(),
-    Future<void> Function(String url, String message)? onRequestUserAction,
+    Future<void> Function(String url, String message, String? sessionKey)? onRequestUserAction,
     Future<String?> Function(Uint8List bytes, String mimeType)? onDescribeImage,
   })  : _config = config,
         _onRequestUserAction = onRequestUserAction,
@@ -1607,8 +1610,10 @@ class HeadlessBrowserTool extends Tool {
       return ToolResult.error('No active page. Navigate first.');
     }
 
-    // Show visible browser overlay — waits until user dismisses it
-    await overlayCallback(currentUrl, message);
+    // Show visible browser overlay — waits until user dismisses it.
+    // Pass the session key so the callback can notify the user via their channel.
+    final sessionKey = args['__session_key'] as String?;
+    await overlayCallback(currentUrl, message, sessionKey);
 
     // Reload headless page to pick up session changes (CAPTCHA solved, login completed, etc.)
     if (_controller != null) {
