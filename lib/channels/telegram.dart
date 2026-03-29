@@ -47,6 +47,11 @@ class TelegramChannelAdapter implements ChannelAdapter {
   int _backoffSeconds = 1;
   final Map<String, Timer> _typingTimers = {};
 
+  /// Per-chat processing queues — ensures messages within the same chat are
+  /// handled in order while different chats can be processed concurrently.
+  /// This prevents the poll loop from blocking on long-running tool execution.
+  final Map<String, Future<void>> _chatQueues = {};
+
   static const _maxBackoffSeconds = 300;
 
   @override
@@ -235,28 +240,11 @@ class TelegramChannelAdapter implements ChannelAdapter {
             audioDuration: audioData?.$3,
           );
 
-          // Start typing indicator + hourglass status reaction
+          // Process the message asynchronously so the poll loop can continue
+          // fetching new updates. Per-chat ordering is preserved via _chatQueues
+          // so messages within the same chat are still handled sequentially.
           final incomingMsgId = message['message_id'] as int?;
-          if (typingMode == 'instant') startTyping(chatIdStr);
-          if (incomingMsgId != null) {
-            await _setReaction(chatIdStr, incomingMsgId, '⏳');
-          }
-
-          try {
-            await _handler!(incoming);
-            // Swap ⏳ for ✅ on success
-            if (incomingMsgId != null) {
-              await _setReaction(chatIdStr, incomingMsgId, '✅');
-            }
-          } catch (e, st) {
-            _log.severe('Handler error processing Telegram message', e, st);
-            // Clear reaction on error (remove via empty list)
-            if (incomingMsgId != null) {
-              await _clearReaction(chatIdStr, incomingMsgId);
-            }
-          } finally {
-            stopTyping(chatIdStr);
-          }
+          _enqueueHandler(chatIdStr, incoming, incomingMsgId);
         }
       } catch (e, st) {
         _log.warning('Telegram poll error, reconnecting in $_backoffSeconds s', e, st);
@@ -264,6 +252,35 @@ class TelegramChannelAdapter implements ChannelAdapter {
         _backoffSeconds = min(_backoffSeconds * 2, _maxBackoffSeconds);
       }
     }
+  }
+
+  /// Enqueue a handler invocation for [chatId], preserving per-chat ordering
+  /// while allowing different chats to be processed concurrently.
+  void _enqueueHandler(
+    String chatId,
+    IncomingMessage incoming,
+    int? incomingMsgId,
+  ) {
+    final previous = _chatQueues[chatId] ?? Future<void>.value();
+    _chatQueues[chatId] = previous.then((_) async {
+      if (typingMode == 'instant') startTyping(chatId);
+      if (incomingMsgId != null) {
+        await _setReaction(chatId, incomingMsgId, '⏳');
+      }
+      try {
+        await _handler!(incoming);
+        if (incomingMsgId != null) {
+          await _setReaction(chatId, incomingMsgId, '✅');
+        }
+      } catch (e, st) {
+        _log.severe('Handler error processing Telegram message', e, st);
+        if (incomingMsgId != null) {
+          await _clearReaction(chatId, incomingMsgId);
+        }
+      } finally {
+        stopTyping(chatId);
+      }
+    });
   }
 
   /// Check DM policy. Returns true if the sender is allowed.
@@ -444,21 +461,29 @@ class TelegramChannelAdapter implements ChannelAdapter {
     if (message.text.isNotEmpty) {
       final chunks = _splitMessage(message.text, 4000);
       for (final chunk in chunks) {
+        final params = <String, dynamic>{
+          'chat_id': message.chatId,
+          'text': chunk,
+          'parse_mode': 'Markdown',
+        };
+        if (message.replyToMessageId != null) {
+          params['reply_to_message_id'] =
+              int.tryParse(message.replyToMessageId!) ??
+                  message.replyToMessageId;
+        }
         try {
-          final params = <String, dynamic>{
-            'chat_id': message.chatId,
-            'text': chunk,
-            'parse_mode': 'Markdown',
-          };
-          if (message.replyToMessageId != null) {
-            params['reply_to_message_id'] =
-                int.tryParse(message.replyToMessageId!) ??
-                    message.replyToMessageId;
-          }
           await _dio.post('/sendMessage', data: params);
-        } catch (e, st) {
-          _log.severe('Failed to send Telegram message', e, st);
-          rethrow;
+        } catch (e, _) {
+          // Markdown rejected — retry as plain text.
+          _log.warning('Telegram Markdown send failed, retrying as plain text',
+              e);
+          try {
+            params.remove('parse_mode');
+            await _dio.post('/sendMessage', data: params);
+          } catch (e2, st2) {
+            _log.severe('Telegram plain text send also failed', e2, st2);
+            rethrow;
+          }
         }
       }
     }

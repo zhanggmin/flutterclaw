@@ -257,7 +257,13 @@ class ToolRegistry {
       }
     }
 
-    final result = await tool.execute(args);
+    ToolResult result;
+    try {
+      result = await tool.execute(args);
+    } catch (e, st) {
+      _log.severe('Tool "$name" threw during execute', e, st);
+      return ToolResult.error('Tool "$name" failed: $e');
+    }
 
     if (_hookRunner != null) {
       await _hookRunner!.runPostToolUse(
@@ -324,29 +330,34 @@ class ToolRegistry {
 
     ToolResult result;
 
-    if (tool.supportsStreaming) {
-      final stream = tool.executeStream(args);
-      if (stream != null) {
-        var resultContent = '';
-        await for (final chunk in stream) {
-          // \x00CLEAR\x00 prefix: reset the accumulated result to this chunk.
-          // Used by tools that first yield progress indicators and then yield
-          // the authoritative final content (e.g. sandbox_exec).
-          if (chunk.startsWith('\x00CLEAR\x00')) {
-            resultContent = chunk.substring(7); // skip the 7-char sentinel (\x00CLEAR\x00)
-            onChunk(chunk); // pass through so UI can handle the clear
-          } else {
-            resultContent += chunk;
-            onChunk(chunk);
+    try {
+      if (tool.supportsStreaming) {
+        final stream = tool.executeStream(args);
+        if (stream != null) {
+          var resultContent = '';
+          await for (final chunk in stream) {
+            // \x00CLEAR\x00 prefix: reset the accumulated result to this chunk.
+            // Used by tools that first yield progress indicators and then yield
+            // the authoritative final content (e.g. sandbox_exec).
+            if (chunk.startsWith('\x00CLEAR\x00')) {
+              resultContent = chunk.substring(7); // skip the 7-char sentinel (\x00CLEAR\x00)
+              onChunk(chunk); // pass through so UI can handle the clear
+            } else {
+              resultContent += chunk;
+              onChunk(chunk);
+            }
           }
+          result = ToolResult.success(resultContent);
+        } else {
+          result = await tool.execute(args);
         }
-        result = ToolResult.success(resultContent);
       } else {
+        // Non-streaming fallback
         result = await tool.execute(args);
       }
-    } else {
-      // Non-streaming fallback
-      result = await tool.execute(args);
+    } catch (e, st) {
+      _log.severe('Tool "$name" threw during executeWithProgress', e, st);
+      return ToolResult.error('Tool "$name" failed: $e');
     }
 
     // Apply truncation middleware if needed

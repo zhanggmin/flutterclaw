@@ -384,6 +384,11 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
   }
 
   /// Non-streaming: process a message and return the final response.
+  ///
+  /// [onIntermediateMessage] is called with each text segment the agent
+  /// produces before a tool call. This lets channel handlers forward
+  /// intermediate progress to the user (e.g. on Telegram) instead of only
+  /// sending the final response after the entire tool loop completes.
   Future<AgentResponse> processMessage(
     String sessionKey,
     String message, {
@@ -391,6 +396,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     String chatId = 'default',
     List<Map<String, dynamic>>? contentBlocks,
     Map<String, dynamic>? channelContext,
+    Future<void> Function(String text)? onIntermediateMessage,
   }) async {
     await hookRunner?.runLifecycle(HookEvent.sessionStart, sessionKey);
     await sessionManager.getOrCreate(sessionKey, channelType, chatId);
@@ -598,13 +604,25 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
         if (response.toolCalls != null && response.toolCalls!.isNotEmpty) {
           // Persist assistant message with tool calls
+          final intermediateText = response.content ?? '';
           final assistantMsg = LlmMessage(
             role: 'assistant',
-            content: response.content ?? '',
+            content: intermediateText,
             toolCalls: response.toolCalls,
           );
           await sessionManager.addMessage(sessionKey, assistantMsg);
           loopMessages.add(assistantMsg);
+
+          // Forward intermediate text to the channel so the user sees
+          // progress between tool calls (not just the final response).
+          if (onIntermediateMessage != null &&
+              intermediateText.trim().isNotEmpty) {
+            try {
+              await onIntermediateMessage(intermediateText);
+            } catch (e) {
+              _log.warning('onIntermediateMessage failed', e);
+            }
+          }
 
           for (final tc in response.toolCalls!) {
             final args = _parseToolArgs(tc.function.arguments);
@@ -613,7 +631,13 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
             args['__session_key'] = sessionKey;
             _log.info('Tool start: ${tc.function.name} (onToolStatus=${onToolStatus != null})');
             onToolStatus?.call(tc.function.name, args, isDone: false);
-            final result = await toolRegistry.execute(tc.function.name, args);
+            ToolResult result;
+            try {
+              result = await toolRegistry.execute(tc.function.name, args);
+            } catch (e, st) {
+              _log.severe('Tool ${tc.function.name} threw unexpectedly', e, st);
+              result = ToolResult.error('Tool "${tc.function.name}" crashed: $e');
+            }
             onToolStatus?.call(tc.function.name, args, isDone: true);
             toolCallsExecuted++;
 
@@ -1057,23 +1081,39 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
             // output is shown in the expandable tool card as it arrives.
             final StreamController<AgentStreamEvent> chunkCtrl =
                 StreamController<AgentStreamEvent>();
-            final chunkFuture = Stream.fromFuture(
-              toolRegistry.executeWithProgress(
+
+            ToolResult result;
+            try {
+              final chunkFuture = toolRegistry.executeWithProgress(
                 tc.function.name,
                 args,
-                onChunk: (chunk) => chunkCtrl.add(
-                  AgentStreamEvent(toolResultChunk: chunk),
-                ),
-              ),
-            ).first.then((result) {
-              chunkCtrl.close();
-              return result;
-            });
+                onChunk: (chunk) {
+                  if (!chunkCtrl.isClosed) {
+                    chunkCtrl.add(AgentStreamEvent(toolResultChunk: chunk));
+                  }
+                },
+              ).then((r) {
+                chunkCtrl.close();
+                return r;
+              }).catchError((Object e, StackTrace st) {
+                _log.severe('Streaming tool ${tc.function.name} threw', e, st);
+                if (!chunkCtrl.isClosed) chunkCtrl.close();
+                return ToolResult.error(
+                    'Tool "${tc.function.name}" crashed: $e');
+              });
 
-            await for (final chunkEvent in chunkCtrl.stream) {
-              yield chunkEvent;
+              await for (final chunkEvent in chunkCtrl.stream) {
+                yield chunkEvent;
+              }
+              result = await chunkFuture;
+            } catch (e, st) {
+              _log.severe(
+                  'Streaming tool ${tc.function.name} outer error', e, st);
+              if (!chunkCtrl.isClosed) chunkCtrl.close();
+              result = ToolResult.error(
+                  'Tool "${tc.function.name}" crashed: $e');
             }
-            final result = await chunkFuture;
+
             onToolStatus?.call(tc.function.name, args, isDone: true);
             toolCallsExecuted++;
             yield AgentStreamEvent(
@@ -1724,6 +1764,19 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     if (Platform.isAndroid) {
       sections.add(await _buildUiAutomationGuidance());
     }
+
+    // Tool usage guidance — runtime hints the LLM should always see.
+    sections.add(
+      '# Tool Usage Guidance\n\n'
+      '## Interactive Web Tasks\n'
+      'When a task involves interacting with a website (posting to social media, '
+      'managing online accounts, filling forms, browsing authenticated pages, etc.), '
+      'use the `web_browse` tool with `request_user_action` so the user can log in '
+      'interactively through the app. Do NOT suggest manual API credentials or '
+      'developer portal setup unless the user explicitly asks for API-based access. '
+      'The browser supports persistent sessions — the user logs in once and the '
+      'session is saved for future use.',
+    );
 
     // Workspace files in OpenClaw injection order
     final bootstrapFiles = <String, String>{};

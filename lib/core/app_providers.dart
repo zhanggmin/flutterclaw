@@ -815,41 +815,65 @@ final channelRouterProvider = Provider<ChannelRouter>((ref) {
   router = ChannelRouter(
     transcriptionServiceFactory: () => _buildTranscriptionService(configManager),
     agentHandler: (IncomingMessage msg) async {
-      final response = await agentLoop.processMessage(
-        msg.sessionKey,
-        msg.text,
-        channelType: msg.channelType,
-        chatId: msg.chatId,
-        contentBlocks: msg.contentBlocks,
-        channelContext: msg.channelContext,
-      );
-
-      // If the user sent a voice message, reply with audio (voice-to-voice).
-      final wasVoice = msg.channelContext?['isVoiceMessage'] == true;
-      List<int>? voiceBytes;
-      if (wasVoice && msg.channelType != 'webchat') {
-        final audioPath = await tts.synthesizeToFile(response.content);
-        if (audioPath != null) {
-          try {
-            voiceBytes = await File(audioPath).readAsBytes();
-          } finally {
-            await File(audioPath).delete().catchError((_) => File(audioPath));
-          }
-        }
-      }
-
-      await router.sendMessage(
-        OutgoingMessage(
+      try {
+        final response = await agentLoop.processMessage(
+          msg.sessionKey,
+          msg.text,
           channelType: msg.channelType,
           chatId: msg.chatId,
-          text: response.content,
-          audioBytes: voiceBytes != null
-              ? Uint8List.fromList(voiceBytes)
-              : null,
-          audioMimeType: 'audio/wav',
-          isVoiceNote: true,
-        ),
-      );
+          contentBlocks: msg.contentBlocks,
+          channelContext: msg.channelContext,
+          onIntermediateMessage: (text) => router.sendMessage(
+            OutgoingMessage(
+              channelType: msg.channelType,
+              chatId: msg.chatId,
+              text: text,
+            ),
+          ),
+        );
+
+        // If the user sent a voice message, reply with audio (voice-to-voice).
+        final wasVoice = msg.channelContext?['isVoiceMessage'] == true;
+        List<int>? voiceBytes;
+        if (wasVoice && msg.channelType != 'webchat') {
+          final audioPath = await tts.synthesizeToFile(response.content);
+          if (audioPath != null) {
+            try {
+              voiceBytes = await File(audioPath).readAsBytes();
+            } finally {
+              await File(audioPath).delete().catchError((_) => File(audioPath));
+            }
+          }
+        }
+
+        await router.sendMessage(
+          OutgoingMessage(
+            channelType: msg.channelType,
+            chatId: msg.chatId,
+            text: response.content,
+            audioBytes: voiceBytes != null
+                ? Uint8List.fromList(voiceBytes)
+                : null,
+            audioMimeType: 'audio/wav',
+            isVoiceNote: true,
+          ),
+        );
+      } catch (e, st) {
+        Logger('agentHandler').severe(
+            'Failed processing ${msg.channelType} message', e, st);
+        try {
+          await router.sendMessage(
+            OutgoingMessage(
+              channelType: msg.channelType,
+              chatId: msg.chatId,
+              text: 'Sorry, something went wrong processing your message. '
+                  'Please try again.',
+            ),
+          );
+        } catch (_) {
+          // Best-effort — if sending the error also fails, already logged above.
+        }
+      }
     },
   );
 
@@ -1353,6 +1377,16 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
 
   /// Returns the session key currently being viewed in the chat screen.
   String _getSessionKey() => ref.read(activeSessionKeyProvider);
+
+  /// Parse a session key like "telegram:12345" into (channelType, chatId).
+  /// Falls back to ('webchat', 'default') for webchat sessions.
+  (String channelType, String chatId) _parseSessionKey(String key) {
+    final colonIdx = key.indexOf(':');
+    if (colonIdx < 0) return ('webchat', 'default');
+    final channelType = key.substring(0, colonIdx);
+    final chatId = key.substring(colonIdx + 1);
+    return (channelType, chatId);
+  }
 
   @override
   List<ChatMessage> build() {
@@ -2031,11 +2065,14 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
         lastFlush = DateTime.now();
       }
 
+      final sessionKey = _getSessionKey();
+      final (channelType, chatId) = _parseSessionKey(sessionKey);
+
       await for (final event in agentLoop.processMessageStream(
-        _getSessionKey(),
+        sessionKey,
         text,
-        channelType: 'webchat',
-        chatId: 'default',
+        channelType: channelType,
+        chatId: chatId,
       )) {
         if (_cancelled) break;
 
@@ -2121,6 +2158,26 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
             errorCtaLabel: resp?.errorCtaLabel,
           );
           state = updated;
+
+          // Route the response back to the originating channel (Telegram,
+          // Discord, etc.) so the user sees it there too — not just in the
+          // app UI. Webchat sessions don't need this because the UI *is*
+          // the channel.
+          if (channelType != 'webchat' && finalText.trim().isNotEmpty) {
+            try {
+              final router = ref.read(channelRouterProvider);
+              await router.sendMessage(
+                OutgoingMessage(
+                  channelType: channelType,
+                  chatId: chatId,
+                  text: finalText,
+                ),
+              );
+            } catch (e) {
+              Logger('ChatNotifier').warning(
+                  'Failed to route response to $channelType', e);
+            }
+          }
 
           if (_isAppInBackground && finalText.trim().isNotEmpty) {
             _sendBackgroundNotification(finalText);

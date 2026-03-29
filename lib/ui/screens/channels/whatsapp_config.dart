@@ -142,6 +142,13 @@ class _WhatsAppConfigScreenState extends ConsumerState<WhatsAppConfigScreen> {
         chatId: msg.chatId,
         contentBlocks: msg.contentBlocks,
         channelContext: msg.channelContext,
+        onIntermediateMessage: (text) => adapter.sendMessage(
+          OutgoingMessage(
+            channelType: msg.channelType,
+            chatId: msg.chatId,
+            text: text,
+          ),
+        ),
       );
       await adapter.sendMessage(
         OutgoingMessage(

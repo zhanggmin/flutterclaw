@@ -144,6 +144,13 @@ class _DiscordConfigScreenState extends ConsumerState<DiscordConfigScreen> {
             channelType: msg.channelType,
             chatId: msg.chatId,
             contentBlocks: msg.contentBlocks,
+            onIntermediateMessage: (text) => adapter.sendMessage(
+              OutgoingMessage(
+                channelType: msg.channelType,
+                chatId: msg.chatId,
+                text: text,
+              ),
+            ),
           );
           await adapter.sendMessage(
             OutgoingMessage(

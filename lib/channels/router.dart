@@ -160,6 +160,18 @@ class ChannelRouter {
       await handler(processed);
     } catch (e, st) {
       _log.severe('Agent handler error', e, st);
+      // Best-effort: notify the user that something went wrong.
+      try {
+        await sendMessage(
+          OutgoingMessage(
+            channelType: processed.channelType,
+            chatId: processed.chatId,
+            text: 'Sorry, I encountered an error. Please try again.',
+          ),
+        );
+      } catch (sendError) {
+        _log.warning('Failed to send error notification', sendError);
+      }
     }
   }
 
