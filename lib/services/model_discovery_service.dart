@@ -1,7 +1,7 @@
 /// Queries provider APIs to discover available models dynamically.
 ///
 /// Supported providers:
-/// - **Ollama** — GET /api/tags (local endpoint)
+/// - **Ollama** — GET /api/tags (cloud: with Bearer auth; local: no auth)
 /// - **OpenRouter** — GET /api/v1/models (public, no auth needed)
 /// - **OpenAI-compatible** — GET /v1/models (requires API key)
 ///
@@ -60,7 +60,10 @@ class ModelDiscoveryService {
     try {
       switch (providerId) {
         case 'ollama':
-          return await _discoverOllama(apiBase ?? 'http://localhost:11434');
+          return await _discoverOllama(
+            apiBase ?? 'https://ollama.com',
+            apiKey: apiKey,
+          );
         case 'openrouter':
           return await _discoverOpenRouter(apiKey);
         case 'openai':
@@ -87,14 +90,19 @@ class ModelDiscoveryService {
   }
 
   // -----------------------------------------------------------------------
-  // Ollama — GET /api/tags  (no auth)
+  // Ollama — GET /api/tags  (cloud: Bearer auth; local: no auth)
   // -----------------------------------------------------------------------
-  Future<List<DiscoveredModel>> _discoverOllama(String base) async {
-    final url = base.endsWith('/') ? '${base}api/tags' : '$base/api/tags';
+  Future<List<DiscoveredModel>> _discoverOllama(String base, {String apiKey = ''}) async {
+    // Strip /v1 suffix so the discovery URL always hits /api/tags correctly.
+    final cleanBase = base.replaceAll(RegExp(r'/v1/?$'), '');
+    final url = cleanBase.endsWith('/') ? '${cleanBase}api/tags' : '$cleanBase/api/tags';
+    final headers = <String, dynamic>{};
+    if (apiKey.isNotEmpty) headers['Authorization'] = 'Bearer $apiKey';
     final response = await _dio.get(
       url,
       options: Options(
-        receiveTimeout: const Duration(seconds: 5),
+        headers: headers,
+        receiveTimeout: const Duration(seconds: 10),
         sendTimeout: const Duration(seconds: 5),
         validateStatus: (_) => true,
       ),

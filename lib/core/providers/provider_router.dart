@@ -74,7 +74,7 @@ class ProviderRouter {
       ),
       'ollama': VendorConfig(
         provider: _openAiProvider,
-        defaultApiBase: 'http://localhost:11434/v1',
+        defaultApiBase: 'https://ollama.com/v1',
       ),
       // Alibaba DashScope OpenAI-compatible (help.aliyun.com/zh/model-studio/).
       'qwen': VendorConfig(

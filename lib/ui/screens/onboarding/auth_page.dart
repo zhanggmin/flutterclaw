@@ -120,7 +120,9 @@ class _AuthPageState extends State<AuthPage> {
     final effectiveModelId = _useCustomModel
         ? (_customModelController.text.trim().isNotEmpty ? _customModelController.text.trim() : null)
         : _selectedModelId;
-    if (_apiKeyController.text.isEmpty || effectiveModelId == null) return;
+    // For Ollama, allow empty API key (local instance needs no auth).
+    final requiresKey = widget.providerId != 'ollama';
+    if ((requiresKey && _apiKeyController.text.isEmpty) || effectiveModelId == null) return;
     final models = ModelCatalog.modelsForProvider(widget.providerId);
     final selectedModel = models.where((m) => m.id == effectiveModelId).firstOrNull;
 
@@ -494,7 +496,12 @@ class _AuthPageState extends State<AuthPage> {
               labelText: context.l10n.apiBaseUrl,
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.link),
-              hintText: 'http://localhost:11434/v1',
+              hintText: widget.providerId == 'ollama'
+                  ? 'https://ollama.com/v1'
+                  : 'http://localhost:11434/v1',
+              helperText: widget.providerId == 'ollama'
+                  ? 'For local: http://localhost:11434/v1'
+                  : null,
             ),
             onChanged: (_) => _emitChange(),
           ),

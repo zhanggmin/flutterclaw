@@ -957,6 +957,12 @@ class _AddProviderScreenState extends State<_AddProviderScreen> {
                   labelText: context.l10n.apiBaseUrl,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.link),
+                  hintText: _selectedProviderId == 'ollama'
+                      ? 'https://ollama.com/v1'
+                      : null,
+                  helperText: _selectedProviderId == 'ollama'
+                      ? 'For local: http://localhost:11434/v1'
+                      : null,
                 ),
               ),
             ],
@@ -1272,6 +1278,12 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                     labelText: context.l10n.apiBaseUrl,
                     border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.link),
+                    hintText: _selectedProviderId == 'ollama'
+                        ? 'https://ollama.com/v1'
+                        : null,
+                    helperText: _selectedProviderId == 'ollama'
+                        ? 'For local: http://localhost:11434/v1'
+                        : null,
                   ),
                 ),
               ],

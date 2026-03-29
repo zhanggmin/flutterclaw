@@ -43,9 +43,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       case 1:
         return _selectedProviderId != null;
       case 2:
-        return _authResult != null &&
-            _authResult!.apiKey.isNotEmpty &&
-            _keyValidated;
+        if (_authResult == null) return false;
+        // Ollama without a key = local instance; skip key validation.
+        if (_selectedProviderId == 'ollama' && _authResult!.apiKey.isEmpty) {
+          return true;
+        }
+        return _authResult!.apiKey.isNotEmpty && _keyValidated;
       default:
         return true;
     }
