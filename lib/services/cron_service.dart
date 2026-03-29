@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutterclaw/core/agent/subagent_registry.dart';
 import 'package:flutterclaw/data/models/config.dart';
+import 'package:flutterclaw/services/event_bus.dart';
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
 
@@ -113,6 +114,9 @@ class CronService {
   final List<CronJob> _jobs = [];
   Timer? _tickTimer;
   bool _running = false;
+
+  /// Optional event bus — when set, job executions also publish events.
+  EventBus? eventBus;
 
   CronService({required this.configManager});
 
@@ -231,6 +235,14 @@ class CronService {
     await _saveJobs();
 
     try {
+      // Publish event to bus (for automation rules and logging).
+      eventBus?.publish(AgentEvent(
+        type: EventType.cron,
+        source: 'cron:${job.id}',
+        summary: 'Cron job "${job.name}" fired',
+        payload: {'job_id': job.id, 'task': job.task},
+      ));
+
       // Use SubagentLoopProxy (bound in agentLoopProvider at startup).
       await SubagentLoopProxy.instance.processMessage(
         'cron:${job.id}',
