@@ -250,6 +250,9 @@ final mcpClientManagerProvider = Provider<McpClientManager>((ref) {
 
 /// Late-binder so MessageTool can send to channels without a circular provider dep.
 void Function(ChannelRouter)? _pendingChannelRouterBinder;
+// Late-bound channel router for the browser overlay callback.
+// Set by _pendingChannelRouterBinder to avoid a circular provider dependency.
+ChannelRouter? _browserOverlayChannelRouter;
 
 /// Shared hook runner — register built-in and user-defined hooks here.
 final hookRunnerProvider = Provider<HookRunner>((ref) {
@@ -281,19 +284,44 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
   registry.register(WebSearchTool(config: configManager.config));
   final headlessBrowser = HeadlessBrowserTool(
     config: configManager.config.tools.browser,
-    onRequestUserAction: (url, message) async {
-      final notifService = ref.read(notificationServiceProvider);
+    onRequestUserAction: (url, message, sessionKey) async {
       final agentName = configManager.config.activeAgent?.name ?? 'Agent';
 
-      // Notify the user — critical when they're on a remote channel (Telegram, etc.)
-      // and wouldn't otherwise know the app is waiting for their input.
-      await notifService.showMessageNotification(
-        'browser',
-        '🌐 $agentName — Action Required',
-        message,
-        payload: 'browser_overlay',
-      );
+      // 1. Send a message through the originating channel (Telegram, Discord, etc.)
+      //    so the user gets an actual channel notification — not just a push alert.
+      //    This is the GUARANTEED signal that fires before the overlay blocks.
+      //    Skip for webchat (user is already in the app).
+      if (sessionKey != null && !sessionKey.startsWith('webchat')) {
+        try {
+          final colonIdx = sessionKey.indexOf(':');
+          if (colonIdx > 0) {
+            final channelType = sessionKey.substring(0, colonIdx);
+            final chatId = sessionKey.substring(colonIdx + 1);
+            // Use the late-bound reference to avoid a circular provider dependency
+            // (toolRegistryProvider → channelRouterProvider → agentLoopProvider → toolRegistryProvider).
+            final router = _browserOverlayChannelRouter;
+            await router?.sendMessage(OutgoingMessage(
+              channelType: channelType,
+              chatId: chatId,
+              text: '🌐 $agentName needs your help in the app:\n\n$message',
+            ));
+          }
+        } catch (_) {}
+      }
 
+      // 2. Push notification as backup (works even if the channel message fails
+      //    or when sessionKey is null). Wrapped in try-catch for reliability.
+      try {
+        final notifService = ref.read(notificationServiceProvider);
+        await notifService.showMessageNotification(
+          'browser',
+          '🌐 $agentName — Action Required in App',
+          message,
+          payload: 'browser_overlay',
+        );
+      } catch (_) {}
+
+      // 3. Show the visible browser overlay — blocks until user taps Done.
       final nav = FlutterClawApp.navigatorKey.currentState;
       if (nav == null) return;
       await nav.push<void>(
@@ -302,9 +330,45 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
           builder: (_) => BrowserOverlay(url: url, message: message),
         ),
       );
+    },
+    onDescribeImage: (bytes, mimeType) async {
+      // Parallel vision call to describe the screenshot without polluting
+      // the main conversation context with base64 data.
+      try {
+        final router = ref.read(providerRouterProvider);
+        final config = configManager.config;
+        final modelName = config.agents.defaults.modelName;
+        final modelEntry = config.getModel(modelName);
+        if (modelEntry == null || !modelEntry.supportsVision) return null;
 
-      // Dismiss the notification after the user completes the action
-      await notifService.cancelNotification(NotificationIds.toolStatus);
+        final base64Data = base64.encode(bytes);
+        final request = LlmRequest(
+          model: modelEntry.model,
+          apiKey: config.resolveApiKey(modelEntry),
+          apiBase: config.resolveApiBase(modelEntry),
+          messages: [
+            LlmMessage(
+              role: 'user',
+              content: [
+                {'type': 'image', 'data': base64Data, 'mimeType': mimeType},
+                {
+                  'type': 'text',
+                  'text': 'Describe this screenshot concisely (2-4 sentences). '
+                      'Include: page type, main visible content, key UI elements, '
+                      'any text/buttons, and overall state (login form, feed, error, etc.).',
+                },
+              ],
+            ),
+          ],
+          maxTokens: 512,
+          temperature: 0.1,
+          supportsVision: true,
+        );
+        final response = await router.chatCompletion(request);
+        return response.content;
+      } catch (_) {
+        return null;
+      }
     },
   );
   registry.register(WebFetchTool(headlessBrowser: headlessBrowser));
@@ -422,7 +486,10 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
   );
   // Expose setter so channelStartupProvider can bind it after creation.
   ref.onDispose(() => channelRouter = null);
-  _pendingChannelRouterBinder = (r) => channelRouter = r;
+  _pendingChannelRouterBinder = (r) {
+    channelRouter = r;
+    _browserOverlayChannelRouter = r;
+  };
   registry.register(
     ChannelSessionsTool(
       sessionManager: ref.read(sessionManagerProvider),

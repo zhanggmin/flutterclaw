@@ -254,7 +254,13 @@ const _kUserAgents = {
 class HeadlessBrowserTool extends Tool {
   // --- Config & callbacks ---
   final BrowserConfig _config;
-  final Future<void> Function(String url, String message)? _onRequestUserAction;
+  /// Called just before blocking for user input. Receives the URL, the agent's
+  /// message, and the current session key (e.g. "telegram:123456789") so the
+  /// callback can send a message back through the originating channel.
+  final Future<void> Function(String url, String message, String? sessionKey)? _onRequestUserAction;
+  /// Optional callback to describe a screenshot via a parallel vision LLM call.
+  /// Receives the raw JPEG bytes; returns a text description or null on failure.
+  final Future<String?> Function(Uint8List bytes, String mimeType)? _onDescribeImage;
 
   // --- Tab state ---
   final Map<String, _BrowserTab> _tabs = {};
@@ -279,9 +285,11 @@ class HeadlessBrowserTool extends Tool {
 
   HeadlessBrowserTool({
     BrowserConfig config = const BrowserConfig(),
-    Future<void> Function(String url, String message)? onRequestUserAction,
+    Future<void> Function(String url, String message, String? sessionKey)? onRequestUserAction,
+    Future<String?> Function(Uint8List bytes, String mimeType)? onDescribeImage,
   })  : _config = config,
-        _onRequestUserAction = onRequestUserAction;
+        _onRequestUserAction = onRequestUserAction,
+        _onDescribeImage = onDescribeImage;
 
   // --- Convenience getters for active tab ---
   _BrowserTab? get _activeTab => _tabs[_activeTabId];
@@ -310,7 +318,14 @@ class HeadlessBrowserTool extends Tool {
       '(3) After the user taps Done, navigate back to the original URL to continue the task. '
       '(4) Use save_profile to persist the session for future use.'
       '\n\nCAPTCHA HANDLING: When "⚠️ CAPTCHA DETECTED" appears, call request_user_action '
-      'immediately so the user can solve it in the app.';
+      'immediately so the user can solve it in the app.'
+      '\n\nrequest_user_action PROTOCOL (CRITICAL): ALWAYS send a message to the user on their '
+      'current channel (Telegram, Discord, chat, etc.) BEFORE calling request_user_action. '
+      'Tell them explicitly: what you need them to do, and that they must open the FlutterClaw app. '
+      'Example: "I need you to log in to LinkedIn. Please open the FlutterClaw app — I\'ve opened '
+      'a browser there for you. Complete the login and tap Done to continue." '
+      'Only after sending that message should you call request_user_action. '
+      'A push notification will also fire, but the channel message is the primary alert.';
 
   @override
   Map<String, dynamic> get parameters => {
@@ -359,6 +374,7 @@ class HeadlessBrowserTool extends Tool {
           // Screenshot
           'full_page': {'type': 'boolean', 'description': 'Capture full page height (default: false).'},
           'quality': {'type': 'integer', 'description': 'JPEG quality 1-100 (default: 80).'},
+          'describe': {'type': 'boolean', 'description': 'If true, run a parallel vision LLM call to describe the screenshot and include the description in the result (default: false). Use this when you need to understand the page visually without adding the image to context.'},
           // wait_for
           'timeout_ms': {'type': 'integer', 'description': 'Wait timeout ms (default: 10000).'},
           'visible': {'type': 'boolean', 'description': 'Wait for element to be visible (default: false).'},
@@ -987,9 +1003,9 @@ class HeadlessBrowserTool extends Tool {
     if (_controller == null) return ToolResult.error('No browser session. Use navigate first.');
     final quality = (args['quality'] as int? ?? 80).clamp(1, 100);
     final fullPage = args['full_page'] as bool? ?? false;
+    final describe = args['describe'] as bool? ?? false;
 
     if (fullPage) {
-      // Expand viewport temporarily to full page height
       await _controller!.evaluateJavascript(
         source: 'document.body.style.overflow = "visible";',
       );
@@ -1008,8 +1024,29 @@ class HeadlessBrowserTool extends Tool {
     final url = (await _controller!.getUrl())?.toString() ?? '';
     final title = await _controller!.getTitle() ?? '';
 
+    // Optionally describe the image via a parallel vision LLM call.
+    // The description goes into content (visible to the LLM) while the raw
+    // image bytes stay in details (UI only) — so the context window is never
+    // flooded with base64 data.
+    String? description;
+    if (describe) {
+      final describeCallback = _onDescribeImage;
+      if (describeCallback != null) {
+        try {
+          description = await describeCallback(screenshot, 'image/jpeg');
+        } catch (_) {
+          description = null;
+        }
+      }
+    }
+
+    final contentText = description != null
+        ? 'Screenshot — URL: $url | Title: $title\n\nVisual description: $description'
+        : 'Screenshot captured: ${screenshot.length} bytes, JPEG q$quality. URL: $url. Title: $title.'
+          '${describe ? ' (vision not available — model may not support images)' : ''}';
+
     return ToolResult(
-      content: 'Screenshot captured: ${screenshot.length} bytes, JPEG quality $quality. URL: $url. Title: $title.\nImage data: data:image/jpeg;base64,$base64Data',
+      content: contentText,
       details: {
         'screenshot': {
           'mimeType': 'image/jpeg',
@@ -1054,7 +1091,8 @@ class HeadlessBrowserTool extends Tool {
 
     final base64Data = base64.encode(screenshot);
     return ToolResult(
-      content: 'Element screenshot captured for "$selector". Element bounds: $rectJson. Image data: data:image/jpeg;base64,$base64Data',
+      // base64 kept out of content — image is in details for UI only.
+      content: 'Element screenshot captured for "$selector". Bounds: $rectJson. (${screenshot.length} bytes)',
       details: {
         'screenshot': {
           'mimeType': 'image/jpeg',
@@ -1572,8 +1610,10 @@ class HeadlessBrowserTool extends Tool {
       return ToolResult.error('No active page. Navigate first.');
     }
 
-    // Show visible browser overlay — waits until user dismisses it
-    await overlayCallback(currentUrl, message);
+    // Show visible browser overlay — waits until user dismisses it.
+    // Pass the session key so the callback can notify the user via their channel.
+    final sessionKey = args['__session_key'] as String?;
+    await overlayCallback(currentUrl, message, sessionKey);
 
     // Reload headless page to pick up session changes (CAPTCHA solved, login completed, etc.)
     if (_controller != null) {
