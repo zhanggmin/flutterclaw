@@ -37,11 +37,13 @@ class MessageTool extends Tool {
 
   @override
   String get description =>
-      'Send a message or reaction to a channel (telegram, discord, webchat, whatsapp).\n\n'
+      'Send a message or reaction to a channel (telegram, discord, webchat, '
+      'whatsapp, slack, signal).\n\n'
       'If you don\'t know the target chat_id, call channel_sessions first to '
       'discover active sessions and paired devices, then use the chat_id from '
       'the results. For WhatsApp reactions, set action="react" and include '
-      'target_message_id plus emoji.';
+      'target_message_id plus emoji. Only use a channel type that is actually '
+      'configured for this device (see the capability snapshot in your system prompt).';
 
   @override
   Map<String, dynamic> get parameters => {
@@ -50,7 +52,8 @@ class MessageTool extends Tool {
       'channel': {
         'type': 'string',
         'description':
-            'Channel type: "telegram", "discord", "webchat", or "whatsapp".',
+            'Channel type: "telegram", "discord", "webchat", "whatsapp", '
+            '"slack", or "signal".',
       },
       'target': {
         'type': 'string',

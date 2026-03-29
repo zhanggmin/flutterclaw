@@ -4,6 +4,8 @@
 /// and OpenAI function calling format support.
 library;
 
+import 'dart:collection';
+
 import 'package:logging/logging.dart';
 
 import '../core/agent/token_budget_manager.dart';
@@ -127,6 +129,9 @@ class ToolRegistry {
   bool _persistentUnsafeMode = false;
 
   bool get persistentUnsafeMode => _persistentUnsafeMode;
+
+  /// Tool names blocked by user policy (read-only).
+  Set<String> get disabledToolNames => UnmodifiableSetView(_disabled);
 
   void setHookRunner(HookRunner runner) {
     _hookRunner = runner;

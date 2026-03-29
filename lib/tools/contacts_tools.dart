@@ -19,7 +19,10 @@ class ContactsSearchTool extends Tool {
       'phone number, or email address. '
       'Returns up to 20 matching contacts with their display name, '
       'phone numbers, and email addresses. '
-      'Requires contacts permission (will prompt the user if needed).';
+      'Requires contacts permission (will prompt the user if needed).\n\n'
+      '**Android — SMS to a contact:** resolve the number from results, call '
+      '`open_external_uri` with `smsto:<digits>` or `sms:<digits>?body=...`, then complete '
+      'send with `ui_*` (wait → type if needed → tap Send in the device language).';
 
   @override
   Map<String, dynamic> get parameters => {

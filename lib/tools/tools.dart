@@ -9,6 +9,7 @@ library;
 export 'registry.dart';
 export 'fs_tools.dart';
 export 'web_tools.dart';
+export 'workspace_pick_tools.dart';
 export 'http_tools.dart';
 export 'memory_tools.dart';
 export 'session_tools.dart';

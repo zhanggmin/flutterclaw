@@ -545,20 +545,35 @@ class GatewayConfig {
   /// Optional bearer token. When non-empty, clients must send it in the
   /// `connect` payload as `token`. Unauthenticated connections are rejected.
   /// Empty string means no authentication (open access — only safe on loopback).
+  /// Same token is required for `POST /v1/tasks` as `Authorization: Bearer …`
+  /// when non-empty.
   final String token;
+
+  /// Serves [webhookPath] for inbound automation HTTP triggers.
+  final bool webhookEnabled;
+
+  /// Default session for webhook requests that omit `session_key`.
+  final String webhookDefaultSessionKey;
 
   const GatewayConfig({
     this.host = '127.0.0.1',
     this.port = 18789,
     this.autoStart = true,
     this.token = '',
+    this.webhookEnabled = true,
+    this.webhookDefaultSessionKey = 'webhook:default',
   });
+
+  static const String webhookPath = '/v1/tasks';
 
   factory GatewayConfig.fromJson(Map<String, dynamic> json) => GatewayConfig(
     host: json['host'] as String? ?? '127.0.0.1',
     port: json['port'] as int? ?? 18789,
     autoStart: json['auto_start'] as bool? ?? true,
     token: json['token'] as String? ?? '',
+    webhookEnabled: json['webhook_enabled'] as bool? ?? true,
+    webhookDefaultSessionKey:
+        json['webhook_default_session_key'] as String? ?? 'webhook:default',
   );
 
   Map<String, dynamic> toJson() => {
@@ -566,6 +581,9 @@ class GatewayConfig {
     'port': port,
     'auto_start': autoStart,
     if (token.isNotEmpty) 'token': token,
+    'webhook_enabled': webhookEnabled,
+    if (webhookDefaultSessionKey != 'webhook:default')
+      'webhook_default_session_key': webhookDefaultSessionKey,
   };
 }
 

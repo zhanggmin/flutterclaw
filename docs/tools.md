@@ -56,7 +56,7 @@ Reference of all tools available to FlutterClaw agents. Categories: file system,
 
 | Tool | Description |
 |------|-------------|
-| `message` | Send message to a Telegram, Discord, or WebChat channel |
+| `message` | Send message to a configured channel (telegram, discord, webchat, whatsapp, slack, signal — depends on app settings) |
 | `channel_sessions` | Discover active channel sessions |
 
 ## Device (mobile)
@@ -72,6 +72,9 @@ Tools that use device hardware and OS APIs (GPS, health, camera, clipboard, noti
 | `clipboard_read` | Read system clipboard |
 | `clipboard_write` | Write to system clipboard |
 | `share_content` | Share content via system share sheet |
+| `open_external_uri` | Open allowed URIs in system apps. On **Android**, for SMS/email you can open the composer then **finish with `ui_*`** (tap Send in the device language) |
+| `pick_file_to_workspace` | System file picker; copy file into workspace `inbox/` |
+| `pick_image_to_workspace` | Gallery picker; save image into workspace `inbox/` |
 
 ## Camera & Media (mobile)
 
@@ -111,6 +114,10 @@ Health: HealthKit (iOS) / Health Connect (Android).
 | `ui_click_element` | Find element by text/id/description and click — Android |
 | `ui_screenshot` | Capture screen as PNG (base64) for vision models |
 | `ui_global_action` | Back, Home, Recents, Notifications, Quick Settings — Android |
+| `ui_launch_app` | Open installed app by package or label search — Android |
+| `ui_launch_intent` | Fire Android intent / deep link (VIEW, settings, tel, etc.) |
+| `ui_app_intents` | List exported intent filters for a package — Android |
+| `ui_batch_actions` | Run taps/swipes/clicks/types/globals plus optional `launch_app`, `launch_intent`, `wait` in one go — Android |
 | `run_shortcut` | Run an iOS Shortcut via deep link |
 | `list_shortcuts` | List installed iOS Shortcuts |
 
@@ -122,3 +129,7 @@ Health: HealthKit (iOS) / Health Connect (Android).
 | `cron_list` | List scheduled tasks |
 | `cron_update` | Update a scheduled task |
 | `cron_delete` | Delete a scheduled task |
+
+## Gateway HTTP webhook
+
+When the embedded gateway is running, external systems can enqueue work via HTTP. See [gateway-webhook.md](gateway-webhook.md).

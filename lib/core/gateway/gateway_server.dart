@@ -2,6 +2,7 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutterclaw/core/agent/agent_loop.dart';
@@ -11,6 +12,7 @@ import 'package:flutterclaw/data/models/config.dart';
 import 'package:flutterclaw/services/cron_service.dart';
 import 'package:flutterclaw/tools/registry.dart';
 import 'package:logging/logging.dart';
+import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:uuid/uuid.dart';
@@ -61,13 +63,26 @@ class GatewayServer {
     final host = config.host;
     final port = config.port;
 
-    final handler = webSocketHandler(_onConnection);
+    final wsHandler = webSocketHandler(_onConnection);
+
+    Future<Response> handler(Request request) async {
+      final gw = configManager.config.gateway;
+      if (gw.webhookEnabled &&
+          request.method == 'POST' &&
+          request.requestedUri.path == GatewayConfig.webhookPath) {
+        return _handleWebhook(request);
+      }
+      return await wsHandler(request);
+    }
 
     try {
       _server = await shelf_io
           .serve(handler, host, port)
           .timeout(const Duration(seconds: 5));
-      _log.info('Gateway server listening on ws://$host:${_server!.port}');
+      _log.info(
+        'Gateway listening: ws://$host:${_server!.port} | '
+        'HTTP webhook POST http://$host:${_server!.port}${GatewayConfig.webhookPath}',
+      );
     } on SocketException catch (e) {
       if (e.osError?.errorCode == 48 || e.osError?.errorCode == 98) {
         // Port already in use (macOS: 48, Linux: 98)
@@ -90,6 +105,86 @@ class GatewayServer {
     _server = null;
     _state = 'idle';
     _log.info('Gateway server stopped');
+  }
+
+  /// Inbound HTTP automation hook (Zapier, n8n, curl, …). Accepts JSON, returns 202
+  /// immediately; execution continues in the background on the agent loop.
+  Future<Response> _handleWebhook(Request request) async {
+    final gw = configManager.config.gateway;
+    if (!gw.webhookEnabled) {
+      return Response.notFound('not found');
+    }
+
+    if (gw.token.isNotEmpty) {
+      final auth = request.headers['authorization'] ?? '';
+      final q = request.requestedUri.queryParameters['token'] ?? '';
+      final bearerOk = auth == 'Bearer ${gw.token}';
+      final queryOk = q == gw.token;
+      if (!bearerOk && !queryOk) {
+        return Response(
+          401,
+          body: jsonEncode(const {'ok': false, 'error': 'unauthorized'}),
+          headers: {'content-type': 'application/json'},
+        );
+      }
+    }
+
+    final bodyStr = await request.readAsString();
+    Map<String, dynamic> data;
+    try {
+      final decoded = jsonDecode(bodyStr);
+      data = decoded is Map<String, dynamic> ? decoded : <String, dynamic>{};
+    } catch (_) {
+      return Response(
+        400,
+        body: jsonEncode(const {'ok': false, 'error': 'invalid_json'}),
+        headers: {'content-type': 'application/json'},
+      );
+    }
+
+    final text =
+        (data['message'] as String?)?.trim() ??
+            (data['text'] as String?)?.trim() ??
+            '';
+    if (text.isEmpty) {
+      return Response(
+        400,
+        body: jsonEncode(const {
+          'ok': false,
+          'error': 'message_or_text_required',
+        }),
+        headers: {'content-type': 'application/json'},
+      );
+    }
+
+    final sessionKey =
+        (data['session_key'] as String?)?.trim() ?? gw.webhookDefaultSessionKey;
+    final channelType =
+        (data['channel_type'] as String?)?.trim() ?? 'webhook';
+    final chatId = (data['chat_id'] as String?)?.trim() ?? 'default';
+
+    unawaited(() async {
+      try {
+        await agentLoop.processMessage(
+          sessionKey,
+          text,
+          channelType: channelType,
+          chatId: chatId,
+        );
+      } catch (e, st) {
+        _log.warning('Webhook task failed: $e', e, st);
+      }
+    }());
+
+    return Response(
+      202,
+      body: jsonEncode({
+        'ok': true,
+        'accepted': true,
+        'session_key': sessionKey,
+      }),
+      headers: {'content-type': 'application/json'},
+    );
   }
 
   /// Number of currently connected WebSocket clients.
@@ -489,6 +584,9 @@ class GatewayServer {
         'port': config.gateway.port,
         'auto_start': config.gateway.autoStart,
         'token_set': config.gateway.token.isNotEmpty,
+        'webhook_enabled': config.gateway.webhookEnabled,
+        'webhook_path': GatewayConfig.webhookPath,
+        'webhook_default_session_key': config.gateway.webhookDefaultSessionKey,
       },
       'agents': config.agentProfiles.map((a) => {
         'id': a.id,

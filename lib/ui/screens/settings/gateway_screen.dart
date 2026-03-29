@@ -55,6 +55,9 @@ class _GatewayScreenState extends ConsumerState<GatewayScreen> {
                         port: config.gateway.port,
                         autoStart: val,
                         token: config.gateway.token,
+                        webhookEnabled: config.gateway.webhookEnabled,
+                        webhookDefaultSessionKey:
+                            config.gateway.webhookDefaultSessionKey,
                       ),
                     ));
                     await configManager.save();
@@ -163,6 +166,8 @@ class _GatewayScreenState extends ConsumerState<GatewayScreen> {
         port: config.gateway.port,
         autoStart: config.gateway.autoStart,
         token: result,
+        webhookEnabled: config.gateway.webhookEnabled,
+        webhookDefaultSessionKey: config.gateway.webhookDefaultSessionKey,
       ),
     ));
     await configManager.save();

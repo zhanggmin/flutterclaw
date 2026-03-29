@@ -524,7 +524,13 @@ class UiLaunchIntentTool extends Tool {
       '- Location settings: {"action": "android.settings.LOCATION_SOURCE_SETTINGS"}\n'
       '- App details: {"action": "android.settings.APPLICATION_DETAILS_SETTINGS", "uri": "package:com.example.app"}\n'
       '- Share text: {"action": "android.intent.action.SEND", "type": "text/plain", "extras": {"android.intent.extra.TEXT": "Hello!"}}\n'
-      '- Maps search: {"uri": "geo:0,0?q=restaurants+nearby"}\n\n'
+      '- Maps search: {"uri": "geo:0,0?q=restaurants+nearby"}\n'
+      '- App deep links (examples; many apps document custom schemes): '
+      '{"uri": "https://instagram.com/..."} or custom schemes if the app exports them '
+      '(discover via ui_app_intents on the package).\n\n'
+      '**Workflow with UI automation:** after launching, wait (use ui_batch_actions with '
+      '{"action":"wait","ms":800} or a short pause) then call ui_find_elements or '
+      'ui_screenshot before tapping — avoids racing the transition animation.\n\n'
       'Android only.';
 
   @override
@@ -674,11 +680,14 @@ class UiBatchActionsTool extends Tool {
   String get description =>
       'Execute multiple UI actions rapidly in sequence WITHOUT screenshots in between.\n\n'
       'Use this when you need to perform several quick actions back-to-back, such as:\n'
+      '- Opening an app or deep link, then waiting, then tapping (e.g. launch_intent → wait → click)\n'
       '- Tapping the same spot repeatedly (e.g., Android Easter egg)\n'
       '- A quick sequence like: tap → type → tap submit\n'
       '- Multiple swipes in rapid succession\n'
-      '- Any combo of tap/swipe/click/type/global_action\n\n'
+      '- Any combo of tap/swipe/click/type/global/launch_*/wait\n\n'
       'Each action in the array is an object with "action" and its params:\n'
+      '- {"action":"launch_intent","uri":"https://example.com/path"} — or use intent_action + package for app deep links\n'
+      '- {"action":"launch_app","package":"com.android.chrome"} — or {"action":"launch_app","search":"Maps"}\n'
       '- {"action":"tap","x":540,"y":1200}\n'
       '- {"action":"swipe","x1":540,"y1":1800,"x2":540,"y2":600,"duration_ms":200}\n'
       '- {"action":"click","query":"OK","by":"text"}\n'
@@ -701,8 +710,30 @@ class UiBatchActionsTool extends Tool {
               'properties': {
                 'action': {
                   'type': 'string',
-                  'enum': ['tap', 'swipe', 'click', 'type', 'global', 'wait'],
+                  'enum': [
+                    'tap',
+                    'swipe',
+                    'click',
+                    'type',
+                    'global',
+                    'wait',
+                    'launch_intent',
+                    'launch_app',
+                  ],
                   'description': 'The action type.',
+                },
+                'intent_action': {
+                  'type': 'string',
+                  'description':
+                      'For launch_intent: Android intent action (e.g. android.intent.action.VIEW).',
+                },
+                'uri': {'type': 'string'},
+                'type': {'type': 'string'},
+                'package': {'type': 'string'},
+                'extras': {'type': 'object'},
+                'search': {
+                  'type': 'string',
+                  'description': 'For launch_app: find app by label.',
                 },
                 'x': {'type': 'number'},
                 'y': {'type': 'number'},
@@ -779,6 +810,34 @@ class UiBatchActionsTool extends Tool {
         case 'global':
           final gName = a['name'] as String? ?? '';
           r = await _svc.globalAction(gName);
+        case 'launch_intent':
+          final iAction = a['intent_action'] as String?;
+          final uri = a['uri'] as String?;
+          if (iAction == null && uri == null) {
+            results.add({
+              'action': 'launch_intent',
+              'error': 'intent_action or uri required',
+            });
+            continue;
+          }
+          r = await _svc.launchIntent(
+            action: iAction,
+            uri: uri,
+            type: a['type'] as String?,
+            package_: a['package'] as String?,
+            extras: a['extras'] as Map<String, dynamic>?,
+          );
+        case 'launch_app':
+          final pkg = a['package'] as String?;
+          final search = a['search'] as String?;
+          if (pkg == null && search == null) {
+            results.add({
+              'action': 'launch_app',
+              'error': 'package or search required',
+            });
+            continue;
+          }
+          r = await _svc.launchApp(package_: pkg, search: search);
         case 'wait':
           final ms = (a['ms'] as num?)?.toInt() ?? 500;
           await Future<void>.delayed(Duration(milliseconds: ms));

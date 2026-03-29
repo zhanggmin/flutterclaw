@@ -9,6 +9,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutterclaw/channels/whatsapp.dart';
 import 'package:flutterclaw/core/agent/link_understanding.dart';
 import 'package:flutterclaw/core/agent/provider_router.dart';
 import 'package:flutterclaw/services/battery_service.dart';
@@ -1730,6 +1731,111 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     return buf.toString();
   }
 
+  /// Short, factual snapshot so the model does not assume missing tools or channels.
+  Future<String> _buildCapabilitySnapshot() async {
+    final cfg = configManager.config;
+    final buf = StringBuffer('# Capability snapshot\n\n');
+    buf.writeln(
+      'Ground truth for this device/session. Prefer these facts over guessing.\n',
+    );
+
+    final messaging = <String>['webchat'];
+    final c = cfg.channels;
+    if (c.telegram.enabled && (c.telegram.token?.isNotEmpty ?? false)) {
+      messaging.add('telegram');
+    }
+    if (c.discord.enabled && (c.discord.token?.isNotEmpty ?? false)) {
+      messaging.add('discord');
+    }
+    if (c.slack.enabled &&
+        (c.slack.botToken?.isNotEmpty ?? false) &&
+        (c.slack.appToken?.isNotEmpty ?? false)) {
+      messaging.add('slack');
+    }
+    if (c.signal.enabled &&
+        (c.signal.apiUrl?.isNotEmpty ?? false) &&
+        (c.signal.account?.isNotEmpty ?? false)) {
+      messaging.add('signal');
+    }
+    if (c.whatsapp.enabled &&
+        c.whatsapp.authDir != null &&
+        c.whatsapp.authDir!.isNotEmpty) {
+      try {
+        if (await WhatsAppChannelAdapter.hasLinkedAuth(c.whatsapp.authDir)) {
+          messaging.add('whatsapp');
+        }
+      } catch (_) {}
+    }
+
+    buf.writeln(
+      '- **Message tool (`message`) channel types available**: '
+      '${messaging.join(', ')}.',
+    );
+    buf.writeln(
+      '  Use `channel_sessions` to resolve `chat_id`s. Do not send to a channel '
+      'type that is not listed here.',
+    );
+
+    final disabled = toolRegistry.disabledToolNames;
+    if (disabled.isEmpty) {
+      buf.writeln('- **User-disabled tools**: none.');
+    } else {
+      final names = disabled.toList()..sort();
+      buf.writeln(
+        '- **User-disabled tools (will fail if invoked)**: '
+        '${names.join(', ')}.',
+      );
+    }
+
+    if (cfg.mcpServers.isNotEmpty) {
+      var enabled = 0;
+      for (final e in cfg.mcpServers) {
+        if (e.enabled) enabled++;
+      }
+      buf.writeln(
+        '- **MCP servers in config**: ${cfg.mcpServers.length} total, '
+        '$enabled enabled (tools often named `mcp_<server>_<tool>`).',
+      );
+    } else {
+      buf.writeln('- **MCP servers**: none in config.');
+    }
+
+    buf.writeln(
+      '- **Sandbox** (`run_shell_command`): Alpine environment on-device; '
+      'Android is fast (PRoot), iOS is emulated and slower.',
+    );
+
+    if (Platform.isAndroid) {
+      buf.writeln(
+        '- **UI automation (Android)**: Full `ui_*` via Accessibility. '
+        'Reliable pattern: `ui_launch_intent` (or `ui_launch_app`) to open a '
+        'screen/deep link → wait (`ui_batch_actions` with `wait` or pause) → '
+        '`ui_find_elements` / `ui_screenshot` → tap/type. Use `ui_app_intents` '
+        'to discover exported schemes for a package. '
+        'For **SMS/email**, after `open_external_uri` opens the composer, **complete the flow** '
+        'with UI automation (tap Send / Enviar / etc.) unless the user asked only to draft.',
+      );
+    } else if (Platform.isIOS) {
+      buf.writeln(
+        '- **UI automation (iOS)**: No `ui_tap`/`ui_launch_intent`; use '
+        '`run_shortcut`, `camera_*`, `share_content`, `web_browse` for interactive web.',
+      );
+    }
+
+    final gw = cfg.gateway;
+    if (gw.webhookEnabled) {
+      buf.writeln(
+        '- **Inbound HTTP webhook**: POST `${GatewayConfig.webhookPath}` on '
+        'gateway port ${gw.port} (${gw.token.isNotEmpty ? 'requires Bearer token' : 'no token set — loopback only recommended'}). '
+        'Default session: `${gw.webhookDefaultSessionKey}`.',
+      );
+    } else {
+      buf.writeln('- **Inbound HTTP webhook**: disabled in settings.');
+    }
+
+    return buf.toString().trim();
+  }
+
   // -- System prompt --------------------------------------------------------
 
   Future<String> _buildSystemPrompt({
@@ -1799,6 +1905,8 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     );
 
     sections.add(runtimeSection.toString().trim());
+
+    sections.add(await _buildCapabilitySnapshot());
 
     // Android UI automation strategy guidance (includes device-specific tips)
     if (Platform.isAndroid) {

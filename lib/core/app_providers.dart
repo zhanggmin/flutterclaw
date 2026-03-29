@@ -60,6 +60,7 @@ import 'package:flutterclaw/tools/skill_tools.dart';
 import 'package:flutterclaw/tools/ui_automation_tools.dart';
 import 'package:flutterclaw/tools/http_tools.dart';
 import 'package:flutterclaw/tools/web_tools.dart';
+import 'package:flutterclaw/tools/workspace_pick_tools.dart';
 import 'package:flutterclaw/tools/headless_browser_tool.dart';
 import 'package:flutterclaw/ui/widgets/browser_overlay.dart';
 import 'package:flutterclaw/app.dart';
@@ -427,6 +428,9 @@ final toolRegistryProvider = Provider<ToolRegistry>((ref) {
   registry.register(ClipboardReadTool());
   registry.register(ClipboardWriteTool());
   registry.register(ShareContentTool());
+  registry.register(OpenExternalUriTool());
+  registry.register(PickFileToWorkspaceTool(wsPath));
+  registry.register(PickImageToWorkspaceTool(wsPath));
   registry.register(CameraTakePhotoTool());
   registry.register(CameraRecordVideoTool());
   registry.register(GetLocationTool());
