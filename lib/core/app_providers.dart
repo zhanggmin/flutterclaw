@@ -101,6 +101,13 @@ import 'package:flutterclaw/services/battery_service.dart';
 import 'package:flutterclaw/services/auth_profile_service.dart';
 import 'package:flutterclaw/services/secrets_resolver.dart';
 import 'package:flutterclaw/services/secure_key_store.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:flutterclaw/services/gemini_live/gemini_live_service.dart';
+import 'package:flutterclaw/services/gemini_live/live_event.dart';
+import 'package:flutterclaw/services/gemini_live/live_session_config.dart';
+import 'package:flutterclaw/services/gemini_live/gemini_tool_translator.dart';
+import 'package:flutterclaw/services/pcm_audio_stream_service.dart';
+import 'package:flutterclaw/core/agent/live_agent_loop.dart';
 
 final configManagerProvider = Provider<ConfigManager>((ref) {
   final mgr = ConfigManager();
@@ -191,6 +198,36 @@ final activeModelSupportsVisionProvider = Provider<bool>((ref) {
   if (catalogInput != null) return catalogInput.contains('image');
 
   return false;
+});
+
+/// Whether Live voice mode is available — true whenever a Google API key is
+/// configured (either at provider level or on any Google model entry).
+///
+/// Live mode is a call mode layered on top of any agent, not tied to the
+/// active model. The notifier picks the best available Live model automatically.
+final activeModelSupportsLiveProvider = Provider<bool>((ref) {
+  final agent = ref.watch(activeAgentProvider);
+  if (agent == null) return false;
+
+  final config = ref.watch(configManagerProvider).config;
+
+  // Active model entry must exist.
+  final modelEntry = config.modelList
+      .cast<ModelEntry?>()
+      .firstWhere((m) => m!.modelName == agent.modelName, orElse: () => null);
+  if (modelEntry == null) return false;
+
+  // Catalog must have at least one Live (call-mode) model for this provider.
+  final hasLiveModel = ModelCatalog.models
+      .any((m) => m.providerId == modelEntry.provider && m.isLiveModel);
+  if (!hasLiveModel) return false;
+
+  // An API key must be configured for this provider.
+  if (config.providerCredentials[modelEntry.provider]?.apiKey.isNotEmpty ==
+      true) {
+    return true;
+  }
+  return modelEntry.apiKey?.isNotEmpty == true;
 });
 
 final sessionManagerProvider = Provider<SessionManager>((ref) {
@@ -1642,6 +1679,12 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     }
   }
 
+  /// Force-reload history from storage (e.g. after a Live call adds transcripts).
+  Future<void> reloadHistory() async {
+    _historyLoadedForAgent = null;
+    await loadHistory();
+  }
+
   Future<void> loadHistory() async {
     final sessionKey = _getSessionKey();
     if (_historyLoadedForAgent == sessionKey) return;
@@ -2825,5 +2868,294 @@ class GatewayStateNotifier extends Notifier<GatewayState> {
         errorMessage: state.lastError,
       );
     }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Gemini Live API providers
+// ---------------------------------------------------------------------------
+
+/// Gemini Live WebSocket service (singleton per app lifecycle).
+final geminiLiveServiceProvider = Provider<GeminiLiveService>((ref) {
+  final svc = GeminiLiveService();
+  ref.onDispose(svc.dispose);
+  return svc;
+});
+
+/// PCM microphone stream service for Live API audio input.
+final pcmAudioStreamServiceProvider = Provider<PcmAudioStreamService>((ref) {
+  final svc = PcmAudioStreamService();
+  ref.onDispose(svc.dispose);
+  return svc;
+});
+
+/// State for the Live voice session.
+enum LiveSessionStatus { idle, connecting, ready, error }
+
+class LiveSessionState {
+  final LiveSessionStatus status;
+  final String? errorMessage;
+
+  const LiveSessionState({
+    this.status = LiveSessionStatus.idle,
+    this.errorMessage,
+  });
+
+  LiveSessionState copyWith({LiveSessionStatus? status, String? errorMessage}) =>
+      LiveSessionState(
+        status: status ?? this.status,
+        errorMessage: errorMessage,
+      );
+}
+
+/// Orchestrates the full Gemini Live session lifecycle.
+final liveSessionProvider =
+    NotifierProvider<LiveSessionNotifier, LiveSessionState>(
+  LiveSessionNotifier.new,
+);
+
+class LiveSessionNotifier extends Notifier<LiveSessionState> {
+  LiveAgentLoop? _agentLoop;
+  StreamSubscription? _audioInputSub;
+  StreamSubscription? _agentEventSub;
+
+  /// True while the model is generating audio output — mic is muted during
+  /// this window to prevent echo from triggering a false barge-in.
+  bool _modelSpeaking = false;
+
+  /// Permanent broadcast stream for the UI. Created once in build(), survives
+  /// across connect/disconnect cycles so the overlay can subscribe immediately
+  /// at status=connecting (before _agentLoop exists).
+  final _eventCtrl = StreamController<LiveAgentEvent>.broadcast();
+
+  /// Events for UI consumption (audio output, transcripts, tool status).
+  /// Always non-null — the overlay can subscribe at any time.
+  Stream<LiveAgentEvent> get agentEvents => _eventCtrl.stream;
+
+  @override
+  LiveSessionState build() {
+    // Clean up the stream controller when the provider is disposed.
+    ref.onDispose(() {
+      _agentEventSub?.cancel();
+      _eventCtrl.close();
+    });
+    return const LiveSessionState();
+  }
+
+  static final _liveLog = Logger('GeminiLive.session');
+
+  /// Start a Live voice session with the currently active agent.
+  Future<void> startSession() async {
+    if (state.status == LiveSessionStatus.connecting ||
+        state.status == LiveSessionStatus.ready) {
+      _liveLog.info('startSession: already connecting/ready, ignoring tap');
+      return;
+    }
+
+    _liveLog.info('startSession: initiated');
+    state = state.copyWith(status: LiveSessionStatus.connecting);
+
+    try {
+      final configManager = ref.read(configManagerProvider);
+      final sessionManager = ref.read(sessionManagerProvider);
+      final toolRegistry = ref.read(toolRegistryProvider);
+      final liveService = ref.read(geminiLiveServiceProvider);
+      final pcmService = ref.read(pcmAudioStreamServiceProvider);
+
+      // --- Resolve call-mode model and API key ---
+      // Live is a provider-agnostic call overlay. The Live model is looked up
+      // from the catalog by matching the active agent's provider — not from the
+      // user's model list (Live models are hidden from the picker).
+      final activeKey = ref.read(activeSessionKeyProvider);
+      _liveLog.info('startSession: activeKey=$activeKey');
+
+      final activeAgent = ref.read(activeAgentProvider);
+      final agentModelEntry = configManager.config.modelList
+          .cast<ModelEntry?>()
+          .firstWhere(
+            (m) => m!.modelName == activeAgent?.modelName,
+            orElse: () => null,
+          );
+      final provider = agentModelEntry?.provider ?? 'google';
+
+      // Find the Live model for this provider from the catalog.
+      const fallbackLiveModelId = 'gemini-2.5-flash-preview-native-audio-dialog';
+      final liveModelId = ModelCatalog.models
+              .cast<CatalogModel?>()
+              .firstWhere(
+                (m) => m!.providerId == provider && m.isLiveModel,
+                orElse: () => null,
+              )
+              ?.id ??
+          fallbackLiveModelId;
+
+      // Resolve API key for this provider.
+      final apiKey = configManager.config.providerCredentials[provider]?.apiKey
+                  .isNotEmpty ==
+              true
+          ? configManager.config.providerCredentials[provider]!.apiKey
+          : (agentModelEntry?.apiKey?.isNotEmpty == true
+              ? agentModelEntry!.apiKey!
+              : configManager.config.modelList
+                      .cast<ModelEntry?>()
+                      .firstWhere(
+                        (m) =>
+                            m!.provider == provider &&
+                            m.apiKey?.isNotEmpty == true,
+                        orElse: () => null,
+                      )
+                      ?.apiKey ??
+                  '');
+
+      _liveLog.info(
+        'startSession: liveModel=$liveModelId '
+        'apiKey=${apiKey.isEmpty ? "EMPTY" : "***${apiKey.substring(apiKey.length - 4)}"}',
+      );
+
+      if (apiKey.isEmpty) {
+        _liveLog.severe('startSession: no Google API key found');
+        state = state.copyWith(
+          status: LiveSessionStatus.error,
+          errorMessage: 'Configure a Google API key to use Live voice',
+        );
+        return;
+      }
+
+      // System instruction comes from the ACTIVE agent (not the Live model).
+      final baseInstruction = activeAgent?.systemPromptOverride ??
+          'You are a helpful assistant. Respond conversationally and concisely.';
+
+      // Inject recent conversation history so the Live session has context of
+      // what was discussed before entering call mode.
+      final recentMsgs = sessionManager
+          .getContextMessages(activeKey)
+          .where((m) => m.role == 'user' || m.role == 'assistant')
+          .where((m) => m.content != null && m.content.toString().isNotEmpty)
+          .toList();
+      final contextLines = recentMsgs
+          .take(20)
+          .map((m) => '${m.role == 'user' ? 'User' : 'Assistant'}: ${m.content}')
+          .join('\n');
+      final contextSnippet = recentMsgs.isNotEmpty
+          ? '\n\nRecent conversation context (for continuity — do not repeat):\n$contextLines'
+          : '';
+      final systemInstruction = '$baseInstruction$contextSnippet';
+
+      // Translate tools to Gemini format.
+      final geminiTools =
+          GeminiToolTranslator.toGeminiTools(toolRegistry.toProviderDefs());
+
+      // Build session config.
+      final config = LiveSessionConfig(
+        apiKey: apiKey,
+        model: 'models/$liveModelId',
+        systemInstruction: systemInstruction,
+        tools: geminiTools.isNotEmpty ? geminiTools : null,
+        responseModalities: const ['AUDIO'],
+      );
+
+      // Connect WebSocket.
+      await liveService.connect(config: config);
+
+      // Create and start the agent loop.
+      _agentLoop = LiveAgentLoop(
+        liveService: liveService,
+        toolRegistry: toolRegistry,
+        sessionManager: sessionManager,
+      );
+      _agentLoop!.start(activeKey);
+
+      // Pipe LiveAgentLoop events into the permanent broadcast controller
+      // so the overlay can receive them regardless of when it subscribed.
+      _agentEventSub = _agentLoop!.events.listen((e) {
+        if (!_eventCtrl.isClosed) _eventCtrl.add(e);
+        // Mute mic while model is producing audio to prevent echo from
+        // triggering a false barge-in / interrupted signal from Gemini.
+        if (e is LiveAudioOutput) {
+          _modelSpeaking = true;
+        } else if (e is LiveInterrupted) {
+          // Barge-in: user is already speaking, unmute immediately.
+          _modelSpeaking = false;
+        }
+        // LiveTurnComplete: mic stays muted until the player finishes the
+        // queued audio. onPlaybackComplete() (called by the overlay) unmutes.
+      });
+
+      // Wait for setup complete or error.
+      final firstEvent = await liveService.events.first;
+      if (firstEvent is! SetupComplete) {
+        final msg = firstEvent is LiveError ? firstEvent.message : 'Setup failed';
+        state = state.copyWith(
+          status: LiveSessionStatus.error,
+          errorMessage: msg,
+        );
+        await _cleanup();
+        return;
+      }
+
+      // Configure iOS audio session to playAndRecord so we can simultaneously
+      // record mic input and play back the model's audio output.
+      try {
+        final audioSession = await AudioSession.instance;
+        await audioSession.configure(AudioSessionConfiguration(
+          avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+          avAudioSessionCategoryOptions:
+              AVAudioSessionCategoryOptions.defaultToSpeaker |
+              AVAudioSessionCategoryOptions.allowBluetooth,
+          avAudioSessionMode: AVAudioSessionMode.voiceChat,
+          avAudioSessionSetActiveOptions:
+              AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
+        ));
+        await audioSession.setActive(true);
+        _liveLog.info('startSession: audio session configured (playAndRecord)');
+      } catch (e) {
+        _liveLog.warning('startSession: audio session config failed: $e');
+      }
+
+      // Start streaming microphone PCM to the service.
+      // Mic is gated: chunks are dropped while the model is speaking to
+      // prevent echo from triggering a false barge-in on the Gemini side.
+      final audioStream = await pcmService.startStreaming();
+      if (audioStream != null) {
+        _audioInputSub = audioStream.listen((chunk) {
+          if (!_modelSpeaking) liveService.sendAudio(chunk);
+        });
+      }
+
+      state = state.copyWith(status: LiveSessionStatus.ready);
+    } catch (e, st) {
+      _liveLog.severe('startSession: unexpected error', e, st);
+      state = state.copyWith(
+        status: LiveSessionStatus.error,
+        errorMessage: '$e',
+      );
+      await _cleanup();
+    }
+  }
+
+  /// Stop the Live session.
+  Future<void> stopSession() async {
+    await _cleanup();
+    state = const LiveSessionState();
+    // Reload chat history so transcripts persisted by LiveAgentLoop appear.
+    ref.read(chatProvider.notifier).reloadHistory();
+  }
+
+  /// Called by the overlay when the audio player finishes playing the queued
+  /// audio for a turn. Unmutes the microphone so user input is sent again.
+  void onPlaybackComplete() {
+    _modelSpeaking = false;
+  }
+
+  Future<void> _cleanup() async {
+    _modelSpeaking = false;
+    await _audioInputSub?.cancel();
+    _audioInputSub = null;
+    await _agentEventSub?.cancel();
+    _agentEventSub = null;
+    await ref.read(pcmAudioStreamServiceProvider).stopStreaming();
+    await _agentLoop?.stop();
+    _agentLoop = null;
+    await ref.read(geminiLiveServiceProvider).disconnect();
   }
 }
