@@ -13,6 +13,7 @@ import 'package:flutterclaw/ui/widgets/agent_switcher_chip.dart';
 import 'package:flutterclaw/ui/widgets/chat/message_bubble.dart';
 import 'package:flutterclaw/ui/widgets/chat/date_separator.dart';
 import 'package:flutterclaw/ui/widgets/chat/input_bar.dart';
+import 'package:flutterclaw/ui/widgets/chat/live_voice_overlay.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -236,12 +237,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     }
   }
 
+  void _toggleLiveSession() {
+    final notifier = ref.read(liveSessionProvider.notifier);
+    final status = ref.read(liveSessionProvider).status;
+    if (status == LiveSessionStatus.idle || status == LiveSessionStatus.error) {
+      notifier.startSession();
+    } else {
+      notifier.stopSession();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatProvider);
     final isProcessing = ref.read(chatProvider.notifier).isProcessing;
     final modelSupportsVision = ref.watch(activeModelSupportsVisionProvider);
     final activeAgent = ref.watch(activeAgentProvider);
+    final liveStatus = ref.watch(liveSessionProvider).status;
+    final showLiveOverlay = liveStatus == LiveSessionStatus.connecting ||
+        liveStatus == LiveSessionStatus.ready;
 
     return GestureDetector(
       onTap: () => _focusNode.unfocus(),
@@ -269,8 +283,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                           controller: _scrollController,
                           keyboardDismissBehavior:
                               ScrollViewKeyboardDismissBehavior.onDrag,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                           itemCount: messages.length,
                           itemBuilder: (context, index) {
                             final msg = messages[index];
@@ -317,6 +330,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         child: const Icon(Icons.keyboard_arrow_down),
                       ),
                     ),
+                  // Live voice overlay
+                  if (showLiveOverlay)
+                    const LiveVoiceOverlay(),
                 ],
               ),
             ),
@@ -329,6 +345,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   ref.read(chatProvider.notifier).cancelProcessing(),
               onAttach: modelSupportsVision ? _pickAndSendImage : null,
               onAttachDocument: _pickAndSendDocument,
+              onLiveVoice: _toggleLiveSession,
             ),
           ],
         ),

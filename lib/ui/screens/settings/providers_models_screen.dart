@@ -151,7 +151,12 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
               ),
             )
           else
-            ...config.modelList.asMap().entries.map((entry) {
+            ...config.modelList
+                .where((m) => !m.supportsLive)
+                .toList()
+                .asMap()
+                .entries
+                .map((entry) {
               final index = entry.key;
               final m = entry.value;
               final isDefault = m.modelName == config.agents.defaults.modelName;
@@ -196,6 +201,10 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                       if (m.isFree) ...[
                         const SizedBox(width: 8),
                         _FreeBadge(),
+                      ],
+                      if (m.supportsLive) ...[
+                        const SizedBox(width: 6),
+                        _LiveBadge(),
                       ],
                       if (isDefault) ...[
                         const SizedBox(width: 8),
@@ -1089,6 +1098,7 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                     ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             ...ModelCatalog.availableModelsForProvider(_selectedProviderId!)
+                .where((m) => !m.isLiveModel)
                 .map((m) => _ModelChip(
                       model: m,
                       isSelected:
@@ -1632,6 +1642,10 @@ class _ModelChip extends StatelessWidget {
                         const SizedBox(width: 8),
                         _FreeBadge(),
                       ],
+                      if (model.supportsLive) ...[
+                        const SizedBox(width: 6),
+                        _LiveBadge(),
+                      ],
                     ]),
                     const SizedBox(height: 3),
                     _ModelCapabilityIcons(model: model),
@@ -1649,6 +1663,35 @@ class _ModelChip extends StatelessWidget {
             ]),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LiveBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
+      decoration: BoxDecoration(
+        color: Colors.deepPurple.shade100,
+        borderRadius: BorderRadius.circular(AppTokens.radiusPill),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.spatial_audio, size: 9, color: Colors.deepPurple.shade800),
+          const SizedBox(width: 3),
+          Text(
+            'LIVE',
+            style: TextStyle(
+              color: Colors.deepPurple.shade800,
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1692,6 +1735,10 @@ class _ModelCapabilityIcons extends StatelessWidget {
       if (model.supportsAudio) ...[
         const SizedBox(width: 5),
         Icon(Icons.mic_outlined, size: 13, color: Colors.orange.shade400),
+      ],
+      if (model.supportsLive) ...[
+        const SizedBox(width: 5),
+        Icon(Icons.spatial_audio, size: 13, color: Colors.deepPurple.shade400),
       ],
     ]);
   }

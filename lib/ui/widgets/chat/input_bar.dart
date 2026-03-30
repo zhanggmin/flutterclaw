@@ -5,6 +5,7 @@ import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'slash_commands.dart';
 import 'slash_command_picker.dart';
 import 'voice_mic_button.dart';
+import 'live_voice_button.dart';
 
 /// The chat input bar — text field, attach button, send/stop/mic, slash command autocomplete.
 class ChatInputBar extends ConsumerStatefulWidget {
@@ -15,6 +16,8 @@ class ChatInputBar extends ConsumerStatefulWidget {
   final VoidCallback? onCancel;
   final VoidCallback? onAttach;
   final VoidCallback? onAttachDocument;
+  /// Called when the Live voice button is tapped. If null, no Live button shown.
+  final VoidCallback? onLiveVoice;
 
   const ChatInputBar({
     super.key,
@@ -25,6 +28,7 @@ class ChatInputBar extends ConsumerStatefulWidget {
     this.onCancel,
     this.onAttach,
     this.onAttachDocument,
+    this.onLiveVoice,
   });
 
   @override
@@ -68,6 +72,17 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     widget.controller.selection = const TextSelection.collapsed(offset: 1);
     widget.focusNode.requestFocus();
     setState(() {});
+  }
+
+  /// Whether the active model is a Live-only model.
+  bool _supportsLive(WidgetRef ref) =>
+      ref.watch(activeModelSupportsLiveProvider);
+
+  Widget _buildVoiceButton(WidgetRef ref) {
+    if (_supportsLive(ref) && widget.onLiveVoice != null) {
+      return LiveVoiceButton(onPressed: widget.onLiveVoice!);
+    }
+    return const VoiceMicButton();
   }
 
   List<SlashCommandDef> get _suggestions {
@@ -177,7 +192,11 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
                     icon: const Icon(Icons.stop_rounded),
                   )
                 else if (widget.controller.text.trim().isEmpty)
-                  const VoiceMicButton()
+                  _buildVoiceButton(ref)
+                else if (_supportsLive(ref))
+                  // Live models can't use the REST endpoint — show the Live
+                  // button even when there's text in the field.
+                  _buildVoiceButton(ref)
                 else
                   IconButton.filled(
                     onPressed: widget.onSend,
