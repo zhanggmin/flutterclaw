@@ -324,7 +324,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final notifier = ref.read(liveSessionProvider.notifier);
     final status = ref.read(liveSessionProvider).status;
     if (status == LiveSessionStatus.idle || status == LiveSessionStatus.error) {
-      notifier.startSession();
+      final locale = Localizations.maybeLocaleOf(context);
+      notifier.startSession(userLanguage: locale?.languageCode);
       return;
     }
     await notifier.stopSession();

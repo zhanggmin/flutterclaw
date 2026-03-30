@@ -32,6 +32,7 @@ import 'package:flutterclaw/data/models/model_catalog.dart';
 import 'package:flutterclaw/core/agent/agent_loop.dart';
 import 'package:flutterclaw/core/agent/token_budget_manager.dart';
 import 'package:flutterclaw/core/agent/provider_router.dart';
+import 'package:flutterclaw/core/agent/live_session_transcript.dart';
 import 'package:flutterclaw/core/agent/session_manager.dart';
 import 'package:flutterclaw/core/providers/openai_provider.dart';
 import 'package:flutterclaw/core/providers/provider_router.dart'
@@ -3208,8 +3209,9 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
 
   /// Start a Live voice session with the currently active agent.
   ///
-  /// [voiceBootstrap]: use full workspace system prompt (like REST hatch) and
-  /// nudge the model to begin bootstrap aloud after setup.
+  /// [voiceBootstrap]: after setup, send a one-shot text nudge so the model
+  /// begins the BOOTSTRAP / first-contact ritual aloud. System prompt and
+  /// transcript always match REST chat regardless of this flag.
   Future<void> startSession({
     bool voiceBootstrap = false,
     String? userLanguage,
@@ -3303,44 +3305,36 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
         return;
       }
 
-      // Inject recent conversation history so the Live session has context of
-      // what was discussed before entering call mode.
-      final recentMsgs = sessionManager
-          .getContextMessages(activeKey)
-          .where((m) => m.role == 'user' || m.role == 'assistant')
-          .where((m) => m.content != null && m.content.toString().isNotEmpty)
-          .toList();
-      final contextLines = recentMsgs
-          .take(20)
-          .map((m) => '${m.role == 'user' ? 'User' : 'Assistant'}: ${m.content}')
-          .join('\n');
-      final contextSnippet = recentMsgs.isNotEmpty
-          ? '\n\nRecent conversation context (for continuity — do not repeat):\n$contextLines'
+      // Same system prompt + transcript semantics as REST chat (AgentLoop).
+      final agentLoop = ref.read(agentLoopProvider);
+      final fullPrompt = await agentLoop.buildSystemPromptForAgent(
+        agentId: activeAgent?.id,
+        userLanguage: userLanguage,
+      );
+      const voiceNote = '\n\n# Voice session\n'
+          'You are in a real-time voice call. Animate naturally — speak in the '
+          'same manner as if you were in text chat. Follow workspace instructions, '
+          'BOOTSTRAP when it applies (e.g. first hatch), and use tools when the '
+          'user asks for something that tools can do.';
+      const liveSystemMaxChars = 150000;
+      var transcriptBudget =
+          liveSystemMaxChars - fullPrompt.length - voiceNote.length - 2;
+      if (transcriptBudget < 0) transcriptBudget = 0;
+      final contextMsgs = sessionManager.getContextMessages(activeKey);
+      final transcriptBlock = transcriptBudget > 0
+          ? formatContextMessagesForLiveSystemInstruction(
+              contextMsgs,
+              maxChars: transcriptBudget,
+            )
           : '';
-
-      // System instruction: full workspace prompt for voice hatch, else short override.
-      final String systemInstruction;
-      if (voiceBootstrap) {
-        final agentLoop = ref.read(agentLoopProvider);
-        final fullPrompt = await agentLoop.buildSystemPromptForAgent(
-          agentId: activeAgent?.id,
-          userLanguage: userLanguage,
-        );
-        const voiceNote = '\n\n# Voice session\n'
-            'You are in a real-time voice call. Speak naturally and follow your '
-            'workspace instructions (including BOOTSTRAP when applicable).';
-        var combined = '$fullPrompt$voiceNote$contextSnippet';
-        const liveSystemMaxChars = 150000;
-        if (combined.length > liveSystemMaxChars) {
-          combined =
-              '${combined.substring(0, liveSystemMaxChars)}\n\n[... truncated ...]';
-        }
-        systemInstruction = combined;
-      } else {
-        final baseInstruction = activeAgent?.systemPromptOverride ??
-            'You are a helpful assistant. Respond conversationally and concisely.';
-        systemInstruction = '$baseInstruction$contextSnippet';
+      var combined = transcriptBlock.isEmpty
+          ? '$fullPrompt$voiceNote'
+          : '$fullPrompt$voiceNote\n\n$transcriptBlock';
+      if (combined.length > liveSystemMaxChars) {
+        combined =
+            '${combined.substring(0, liveSystemMaxChars)}\n\n[... truncated ...]';
       }
+      final systemInstruction = combined;
 
       // Translate tools to Gemini format (omit agent CRUD — see
       // [_liveVoiceExcludedToolNames]).

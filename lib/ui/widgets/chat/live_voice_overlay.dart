@@ -78,11 +78,11 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
   /// Incremented in [_stopAndClearAudio] so in-flight queue steps exit without touching state.
   int _liveAudioGeneration = 0;
 
-  /// Flush interval: 24 kHz × 2 bytes/sample × 1 s = 48 000 bytes (fewer segment boundaries).
-  static const int _kFlushBytes = 48000;
+  /// Flush interval: 24 kHz × 2 B × 1.5 s = 72 000 bytes (fewer WAV handoffs at turn start).
+  static const int _kFlushBytes = 72000;
 
-  /// Preroll before first [play]: ~2.5 s at 24 kHz mono 16-bit (120 000 B) + platform load control.
-  static const int _kStartThreshold = 120000;
+  /// Preroll before first [play]: 3 s at 24 kHz mono 16-bit (144 000 B); extra headroom vs decoder/OS underrun.
+  static const int _kStartThreshold = 144000;
 
   final List<String> _tempFiles = [];
 
@@ -103,11 +103,11 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
       audioLoadConfiguration: AudioLoadConfiguration(
         darwinLoadControl: DarwinLoadControl(
           automaticallyWaitsToMinimizeStalling: true,
-          preferredForwardBufferDuration: Duration(seconds: 5),
+          preferredForwardBufferDuration: Duration(seconds: 7),
         ),
         androidLoadControl: AndroidLoadControl(
-          bufferForPlaybackDuration: Duration(milliseconds: 4500),
-          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 8),
+          bufferForPlaybackDuration: Duration(milliseconds: 5500),
+          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 10),
         ),
       ),
     );
