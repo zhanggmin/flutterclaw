@@ -230,6 +230,18 @@ final activeModelSupportsLiveProvider = Provider<bool>((ref) {
   return modelEntry.apiKey?.isNotEmpty == true;
 });
 
+/// True when the active agent's **chat** model is WebSocket/Live-only (no REST).
+/// Distinct from [activeModelSupportsLiveProvider] (whether voice call is available).
+final activeAgentChatModelIsLiveOnlyProvider = Provider<bool>((ref) {
+  final agent = ref.watch(activeAgentProvider);
+  if (agent == null) return false;
+  final config = ref.watch(configManagerProvider).config;
+  final modelEntry = config.modelList
+      .cast<ModelEntry?>()
+      .firstWhere((m) => m!.modelName == agent.modelName, orElse: () => null);
+  return modelEntry?.isLiveOnly ?? false;
+});
+
 final sessionManagerProvider = Provider<SessionManager>((ref) {
   final configManager = ref.watch(configManagerProvider);
   final sm = SessionManager(configManager);
@@ -1497,6 +1509,9 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
   bool get isProcessing => _processing;
   bool _cancelled = false;
   StreamSubscription<AgentStreamEvent>? _activeSubscription;
+  Timer? _liveTranscriptFlushTimer;
+  final StringBuffer _liveUserDeltaBuf = StringBuffer();
+  final StringBuffer _liveModelDeltaBuf = StringBuffer();
   bool _hatchTriggered = false;
   String? _historyLoadedForAgent; // agentId whose history is currently loaded
   bool _isAppInBackground = false;
@@ -1582,6 +1597,139 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     return (channelType, chatId);
   }
 
+  bool _liveVoiceChatActive() {
+    final s = ref.read(liveSessionProvider).status;
+    return s == LiveSessionStatus.connecting || s == LiveSessionStatus.ready;
+  }
+
+  void _cancelLiveTranscriptUi() {
+    _liveTranscriptFlushTimer?.cancel();
+    _liveTranscriptFlushTimer = null;
+    _liveUserDeltaBuf.clear();
+    _liveModelDeltaBuf.clear();
+  }
+
+  void _armLiveTranscriptFlushTimer() {
+    if (_liveTranscriptFlushTimer?.isActive == true) return;
+    _liveTranscriptFlushTimer = Timer(const Duration(milliseconds: 33), () {
+      _liveTranscriptFlushTimer = null;
+      if (!_liveVoiceChatActive()) return;
+      _flushLiveTranscriptDeltaBuffers();
+    });
+  }
+
+  /// Applies batched user/model transcript deltas to [state] (voice call UI).
+  void _flushLiveTranscriptDeltaBuffers() {
+    final userChunk = _liveUserDeltaBuf.toString();
+    final modelChunk = _liveModelDeltaBuf.toString();
+    _liveUserDeltaBuf.clear();
+    _liveModelDeltaBuf.clear();
+    if (userChunk.isEmpty && modelChunk.isEmpty) return;
+
+    var list = List<ChatMessage>.from(state);
+
+    if (userChunk.isNotEmpty) {
+      final i = list.lastIndexWhere(
+        (m) => m.isUser && !m.isToolStatus && m.isStreaming,
+      );
+      if (i < 0) {
+        list.add(
+          ChatMessage(
+            text: userChunk,
+            isUser: true,
+            timestamp: DateTime.now(),
+            isStreaming: true,
+          ),
+        );
+      } else {
+        final m = list[i];
+        list[i] = m.copyWith(text: m.text + userChunk);
+      }
+    }
+
+    if (modelChunk.isNotEmpty) {
+      var i = list.lastIndexWhere(
+        (m) => !m.isUser && !m.isToolStatus && m.isStreaming,
+      );
+      if (i < 0) {
+        final uIdx = list.lastIndexWhere(
+          (m) => m.isUser && !m.isToolStatus && m.isStreaming,
+        );
+        if (uIdx < 0) {
+          list.add(
+            ChatMessage(
+              text: '',
+              isUser: true,
+              timestamp: DateTime.now(),
+              isStreaming: true,
+            ),
+          );
+        }
+        list.add(
+          ChatMessage(
+            text: modelChunk,
+            isUser: false,
+            timestamp: DateTime.now(),
+            isStreaming: true,
+          ),
+        );
+      } else {
+        final m = list[i];
+        list[i] = m.copyWith(text: m.text + modelChunk);
+      }
+    }
+
+    state = list;
+  }
+
+  void _finalizeLiveStreamingBubbles({bool assistantsOnly = false}) {
+    final list = List<ChatMessage>.from(state);
+    var changed = false;
+    for (var i = 0; i < list.length; i++) {
+      final m = list[i];
+      if (!m.isStreaming || m.isToolStatus) continue;
+      if (assistantsOnly && m.isUser) continue;
+      list[i] = m.copyWith(isStreaming: false);
+      changed = true;
+    }
+    if (changed) state = list;
+  }
+
+  void _handleLiveAgentEvent(LiveAgentEvent event) {
+    switch (event) {
+      case LiveUserTranscript(:final text):
+        if (!_liveVoiceChatActive()) return;
+        _liveUserDeltaBuf.write(text);
+        _armLiveTranscriptFlushTimer();
+      case LiveModelTranscript(:final text):
+        if (!_liveVoiceChatActive()) return;
+        _liveModelDeltaBuf.write(text);
+        _armLiveTranscriptFlushTimer();
+      case LiveTurnComplete():
+        _liveTranscriptFlushTimer?.cancel();
+        _liveTranscriptFlushTimer = null;
+        if (_liveVoiceChatActive()) {
+          _flushLiveTranscriptDeltaBuffers();
+          _finalizeLiveStreamingBubbles();
+        }
+      case LiveInterrupted():
+        _liveTranscriptFlushTimer?.cancel();
+        _liveTranscriptFlushTimer = null;
+        if (_liveVoiceChatActive()) {
+          _flushLiveTranscriptDeltaBuffers();
+          _finalizeLiveStreamingBubbles(assistantsOnly: true);
+        }
+      case LiveSessionDisconnected():
+        _cancelLiveTranscriptUi();
+      case LiveAudioOutput():
+      case LiveToolStarted():
+      case LiveToolCompleted():
+      case LiveSessionReady():
+      case LiveAgentError():
+        break;
+    }
+  }
+
   @override
   List<ChatMessage> build() {
     // Subscribe to subagent completion events. When a subagent belonging to
@@ -1605,6 +1753,22 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     });
     ref.onDispose(subagentSub.cancel);
 
+    final liveEvSub =
+        ref.read(liveSessionProvider.notifier).agentEvents.listen(
+              _handleLiveAgentEvent,
+            );
+    ref.onDispose(() {
+      liveEvSub.cancel();
+      _cancelLiveTranscriptUi();
+    });
+
+    ref.listen(liveSessionProvider, (prev, next) {
+      if (next.status != LiveSessionStatus.idle) return;
+      if (prev == null) return;
+      if (prev.status == LiveSessionStatus.idle) return;
+      _cancelLiveTranscriptUi();
+    });
+
     // Subscribe to session manager message stream. When a foreign session
     // (Telegram, cron, heartbeat, subagent) receives a new message and the
     // user is watching it, append the message to the visible chat in real-time.
@@ -1612,16 +1776,80 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     final messageSub = sessionManager.messageStream.listen((event) {
       final (sessionKey, message) = event;
       if (sessionKey != _getSessionKey()) return;
-      if (_processing) return; // We are already managing state ourselves.
-      if (message.role == 'system' || message.role == 'tool') return;
-      final text = _extractTextFromContent(message.content);
-      if (text.trim().isEmpty) return;
-      // Skip pure tool-call assistant stubs (no visible text).
-      if (message.role == 'assistant' &&
-          (message.toolCalls?.isNotEmpty ?? false) &&
-          text.isEmpty) {
+      final liveOn = _liveVoiceChatActive();
+      if (_processing && !liveOn) return; // We are already managing state ourselves.
+      if (message.role == 'system') return;
+
+      // Tool result written by SessionManager (e.g. Gemini Live) — close the pill.
+      if (message.role == 'tool' && message.toolCallId != null) {
+        final toolName = message.name;
+        final result = message.content?.toString() ?? '';
+        final updated = List<ChatMessage>.from(state);
+        for (var i = updated.length - 1; i >= 0; i--) {
+          if (!updated[i].isToolStatus || updated[i].isStreaming != true) {
+            continue;
+          }
+          if (toolName != null && toolName.isNotEmpty) {
+            final label = updated[i].text;
+            if (label != toolName && !label.startsWith('$toolName:')) {
+              continue;
+            }
+          }
+          updated[i] = updated[i].copyWith(
+            isStreaming: false,
+            toolResultText: result,
+          );
+          state = updated;
+          return;
+        }
         return;
       }
+      if (message.role == 'tool') return;
+
+      // Assistant message with tool calls (Live / foreign injectors): mirror loadHistory pills.
+      if (message.role == 'assistant' &&
+          (message.toolCalls?.isNotEmpty ?? false)) {
+        final text = _extractTextFromContent(message.content);
+        final updated = List<ChatMessage>.from(state);
+        for (final tc in message.toolCalls!) {
+          Map<String, dynamic>? args;
+          try {
+            args = jsonDecode(tc.function.arguments) as Map<String, dynamic>?;
+          } catch (_) {}
+          updated.add(
+            ChatMessage(
+              text: _formatToolStatus(tc.function.name, args),
+              isUser: false,
+              timestamp: DateTime.now(),
+              isToolStatus: true,
+              isStreaming: true,
+            ),
+          );
+        }
+        if (text.trim().isNotEmpty) {
+          updated.add(
+            ChatMessage(
+              text: text,
+              isUser: false,
+              timestamp: DateTime.now(),
+            ),
+          );
+        }
+        state = updated;
+        return;
+      }
+
+      final text = _extractTextFromContent(message.content);
+      if (text.trim().isEmpty) return;
+
+      // During a voice call, plain user/assistant rows are streamed via
+      // [LiveUserTranscript]/[LiveModelTranscript]; session persist would duplicate.
+      final plainAssistant = message.role == 'assistant' &&
+          (message.toolCalls == null || message.toolCalls!.isEmpty);
+      if (liveOn && (message.role == 'user' || plainAssistant)) {
+        return;
+      }
+
       // Notify the user if the app is backgrounded and an assistant message arrives.
       if (_isAppInBackground &&
           message.role == 'assistant' &&
@@ -1791,6 +2019,17 @@ class ChatNotifier extends Notifier<List<ChatMessage>> {
     final configManager = ref.read(configManagerProvider);
     final hasBootstrap = await configManager.hasBootstrap();
     if (!hasBootstrap) return;
+
+    final preferLive =
+        configManager.config.agents.defaults.preferLiveVoiceBootstrap;
+    final liveOk = ref.read(activeModelSupportsLiveProvider);
+    if (preferLive && liveOk) {
+      await ref.read(liveSessionProvider.notifier).startSession(
+            voiceBootstrap: true,
+            userLanguage: userLanguage,
+          );
+      return;
+    }
 
     // Hatch: trigger the agent without persisting a visible user message.
     // The BOOTSTRAP.md in the system prompt tells the agent what to do.
@@ -2875,6 +3114,25 @@ class GatewayStateNotifier extends Notifier<GatewayState> {
 // Gemini Live API providers
 // ---------------------------------------------------------------------------
 
+/// Tools that mutate agent config / active agent. Excluded from the Live API
+/// tool list so the voice model cannot call `agent_update` on a casual reply
+/// (that invalidates Riverpod and was correlating with dead mic / disconnects).
+const _liveVoiceExcludedToolNames = <String>{
+  'agent_update',
+  'agent_create',
+  'agent_delete',
+  'agent_switch',
+};
+
+List<Map<String, dynamic>> _toolDefsForLiveVoiceSession(ToolRegistry registry) {
+  return registry.toProviderDefs().where((t) {
+    final fn = t['function'] as Map<String, dynamic>?;
+    final name = fn?['name'] as String?;
+    if (name == null) return true;
+    return !_liveVoiceExcludedToolNames.contains(name);
+  }).toList();
+}
+
 /// Gemini Live WebSocket service (singleton per app lifecycle).
 final geminiLiveServiceProvider = Provider<GeminiLiveService>((ref) {
   final svc = GeminiLiveService();
@@ -2919,9 +3177,11 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
   StreamSubscription? _audioInputSub;
   StreamSubscription? _agentEventSub;
 
-  /// True while the model is generating audio output — mic is muted during
-  /// this window to prevent echo from triggering a false barge-in.
-  bool _modelSpeaking = false;
+  /// While true, mic PCM is not sent — avoids speaker bleed being treated as
+  /// user speech (self-interrupt loop). Cleared after local playback ends.
+  bool _suppressMicForLocalPlayback = false;
+  Timer? _playbackUnsuppressTimer;
+  Timer? _micSuppressFailsafeTimer;
 
   /// Permanent broadcast stream for the UI. Created once in build(), survives
   /// across connect/disconnect cycles so the overlay can subscribe immediately
@@ -2936,6 +3196,8 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
   LiveSessionState build() {
     // Clean up the stream controller when the provider is disposed.
     ref.onDispose(() {
+      _playbackUnsuppressTimer?.cancel();
+      _micSuppressFailsafeTimer?.cancel();
       _agentEventSub?.cancel();
       _eventCtrl.close();
     });
@@ -2945,14 +3207,22 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
   static final _liveLog = Logger('GeminiLive.session');
 
   /// Start a Live voice session with the currently active agent.
-  Future<void> startSession() async {
+  ///
+  /// [voiceBootstrap]: use full workspace system prompt (like REST hatch) and
+  /// nudge the model to begin bootstrap aloud after setup.
+  Future<void> startSession({
+    bool voiceBootstrap = false,
+    String? userLanguage,
+  }) async {
     if (state.status == LiveSessionStatus.connecting ||
         state.status == LiveSessionStatus.ready) {
       _liveLog.info('startSession: already connecting/ready, ignoring tap');
       return;
     }
 
-    _liveLog.info('startSession: initiated');
+    _liveLog.info(
+      'startSession: initiated voiceBootstrap=$voiceBootstrap',
+    );
     state = state.copyWith(status: LiveSessionStatus.connecting);
 
     try {
@@ -2978,9 +3248,21 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
           );
       final provider = agentModelEntry?.provider ?? 'google';
 
-      // Find the Live model for this provider from the catalog.
+      // Find the Live model: optional user override, else first catalog Live for provider.
       const fallbackLiveModelId = 'gemini-2.5-flash-preview-native-audio-dialog';
-      final liveModelId = ModelCatalog.models
+      final overrideId =
+          configManager.config.agents.defaults.liveVoiceModelId;
+      CatalogModel? overrideCatalog;
+      if (overrideId != null && overrideId.isNotEmpty) {
+        final cm = ModelCatalog.tryGetModelFlexible(overrideId);
+        if (cm != null &&
+            cm.providerId == provider &&
+            cm.isLiveModel) {
+          overrideCatalog = cm;
+        }
+      }
+      final liveModelId = overrideCatalog?.id ??
+          ModelCatalog.models
               .cast<CatalogModel?>()
               .firstWhere(
                 (m) => m!.providerId == provider && m.isLiveModel,
@@ -3021,10 +3303,6 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
         return;
       }
 
-      // System instruction comes from the ACTIVE agent (not the Live model).
-      final baseInstruction = activeAgent?.systemPromptOverride ??
-          'You are a helpful assistant. Respond conversationally and concisely.';
-
       // Inject recent conversation history so the Live session has context of
       // what was discussed before entering call mode.
       final recentMsgs = sessionManager
@@ -3039,11 +3317,36 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
       final contextSnippet = recentMsgs.isNotEmpty
           ? '\n\nRecent conversation context (for continuity — do not repeat):\n$contextLines'
           : '';
-      final systemInstruction = '$baseInstruction$contextSnippet';
 
-      // Translate tools to Gemini format.
-      final geminiTools =
-          GeminiToolTranslator.toGeminiTools(toolRegistry.toProviderDefs());
+      // System instruction: full workspace prompt for voice hatch, else short override.
+      final String systemInstruction;
+      if (voiceBootstrap) {
+        final agentLoop = ref.read(agentLoopProvider);
+        final fullPrompt = await agentLoop.buildSystemPromptForAgent(
+          agentId: activeAgent?.id,
+          userLanguage: userLanguage,
+        );
+        const voiceNote = '\n\n# Voice session\n'
+            'You are in a real-time voice call. Speak naturally and follow your '
+            'workspace instructions (including BOOTSTRAP when applicable).';
+        var combined = '$fullPrompt$voiceNote$contextSnippet';
+        const liveSystemMaxChars = 150000;
+        if (combined.length > liveSystemMaxChars) {
+          combined =
+              '${combined.substring(0, liveSystemMaxChars)}\n\n[... truncated ...]';
+        }
+        systemInstruction = combined;
+      } else {
+        final baseInstruction = activeAgent?.systemPromptOverride ??
+            'You are a helpful assistant. Respond conversationally and concisely.';
+        systemInstruction = '$baseInstruction$contextSnippet';
+      }
+
+      // Translate tools to Gemini format (omit agent CRUD — see
+      // [_liveVoiceExcludedToolNames]).
+      final geminiTools = GeminiToolTranslator.toGeminiTools(
+        _toolDefsForLiveVoiceSession(toolRegistry),
+      );
 
       // Build session config.
       final config = LiveSessionConfig(
@@ -3069,16 +3372,6 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
       // so the overlay can receive them regardless of when it subscribed.
       _agentEventSub = _agentLoop!.events.listen((e) {
         if (!_eventCtrl.isClosed) _eventCtrl.add(e);
-        // Mute mic while model is producing audio to prevent echo from
-        // triggering a false barge-in / interrupted signal from Gemini.
-        if (e is LiveAudioOutput) {
-          _modelSpeaking = true;
-        } else if (e is LiveInterrupted) {
-          // Barge-in: user is already speaking, unmute immediately.
-          _modelSpeaking = false;
-        }
-        // LiveTurnComplete: mic stays muted until the player finishes the
-        // queued audio. onPlaybackComplete() (called by the overlay) unmutes.
       });
 
       // Wait for setup complete or error.
@@ -3091,6 +3384,13 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
         );
         await _cleanup();
         return;
+      }
+
+      if (voiceBootstrap) {
+        liveService.sendText(
+          'Begin your bootstrap / first-contact ritual per your workspace '
+          'instructions (for example BOOTSTRAP.md). Greet the user aloud.',
+        );
       }
 
       // Configure iOS audio session to playAndRecord so we can simultaneously
@@ -3112,13 +3412,16 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
         _liveLog.warning('startSession: audio session config failed: $e');
       }
 
-      // Start streaming microphone PCM to the service.
-      // Mic is gated: chunks are dropped while the model is speaking to
-      // prevent echo from triggering a false barge-in on the Gemini side.
+      // Stream mic whenever not suppressed. Suppression is tied to *local*
+      // speaker playback (see [setLivePlaybackSuppressMic]): sending mic while
+      // the assistant audio plays on-device causes Gemini to hear itself and
+      // fire spurious interruptions.
       final audioStream = await pcmService.startStreaming();
       if (audioStream != null) {
         _audioInputSub = audioStream.listen((chunk) {
-          if (!_modelSpeaking) liveService.sendAudio(chunk);
+          if (!_suppressMicForLocalPlayback) {
+            liveService.sendAudio(chunk);
+          }
         });
       }
 
@@ -3134,21 +3437,57 @@ class LiveSessionNotifier extends Notifier<LiveSessionState> {
   }
 
   /// Stop the Live session.
+  ///
+  /// Callers that need fresh transcript rows should run
+  /// [ChatNotifier.reloadHistory] from the widget layer (e.g. after `await
+  /// stopSession()`), not from here — that avoids Riverpod circular deps with
+  /// [ChatNotifier] which listens to [liveSessionProvider].
   Future<void> stopSession() async {
     await _cleanup();
     state = const LiveSessionState();
-    // Reload chat history so transcripts persisted by LiveAgentLoop appear.
-    ref.read(chatProvider.notifier).reloadHistory();
   }
 
-  /// Called by the overlay when the audio player finishes playing the queued
-  /// audio for a turn. Unmutes the microphone so user input is sent again.
-  void onPlaybackComplete() {
-    _modelSpeaking = false;
+  /// Called by [LiveVoiceOverlay] when local TTS playback starts/stops.
+  void setLivePlaybackSuppressMic(bool suppress) {
+    _playbackUnsuppressTimer?.cancel();
+    _playbackUnsuppressTimer = null;
+    _micSuppressFailsafeTimer?.cancel();
+    _micSuppressFailsafeTimer = null;
+    if (!suppress) {
+      _suppressMicForLocalPlayback = false;
+      return;
+    }
+    _suppressMicForLocalPlayback = true;
+    // If [processingState.completed] never fires, the mic would stay dead.
+    _micSuppressFailsafeTimer = Timer(const Duration(seconds: 45), () {
+      _micSuppressFailsafeTimer = null;
+      _suppressMicForLocalPlayback = false;
+      _liveLog.warning(
+        'live voice: mic suppress failsafe fired (playback completion missed?)',
+      );
+    });
+  }
+
+  /// After a concatenated turn finishes playing, wait for speaker tail before
+  /// sending mic again.
+  void scheduleMicUnsuppressAfterLocalPlayback({
+    Duration delay = const Duration(milliseconds: 400),
+  }) {
+    _playbackUnsuppressTimer?.cancel();
+    _playbackUnsuppressTimer = Timer(delay, () {
+      _playbackUnsuppressTimer = null;
+      _micSuppressFailsafeTimer?.cancel();
+      _micSuppressFailsafeTimer = null;
+      _suppressMicForLocalPlayback = false;
+    });
   }
 
   Future<void> _cleanup() async {
-    _modelSpeaking = false;
+    _playbackUnsuppressTimer?.cancel();
+    _playbackUnsuppressTimer = null;
+    _micSuppressFailsafeTimer?.cancel();
+    _micSuppressFailsafeTimer = null;
+    _suppressMicForLocalPlayback = false;
     await _audioInputSub?.cancel();
     _audioInputSub = null;
     await _agentEventSub?.cancel();

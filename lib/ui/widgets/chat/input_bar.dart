@@ -74,15 +74,40 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     setState(() {});
   }
 
-  /// Whether the active model is a Live-only model.
-  bool _supportsLive(WidgetRef ref) =>
+  bool _liveVoiceFeatureAvailable(WidgetRef ref) =>
       ref.watch(activeModelSupportsLiveProvider);
 
+  bool _chatModelIsLiveOnly(WidgetRef ref) =>
+      ref.watch(activeAgentChatModelIsLiveOnlyProvider);
+
   Widget _buildVoiceButton(WidgetRef ref) {
-    if (_supportsLive(ref) && widget.onLiveVoice != null) {
+    if (_liveVoiceFeatureAvailable(ref) && widget.onLiveVoice != null) {
       return LiveVoiceButton(onPressed: widget.onLiveVoice!);
     }
     return const VoiceMicButton();
+  }
+
+  /// Send + optional Live when chat supports REST and voice call is available.
+  Widget _buildSendAndOptionalLive(WidgetRef ref) {
+    final showLive =
+        _liveVoiceFeatureAvailable(ref) && widget.onLiveVoice != null;
+    if (!showLive) {
+      return IconButton.filled(
+        onPressed: widget.onSend,
+        icon: const Icon(Icons.send),
+      );
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        LiveVoiceButton(onPressed: widget.onLiveVoice!),
+        const SizedBox(width: 2),
+        IconButton.filled(
+          onPressed: widget.onSend,
+          icon: const Icon(Icons.send),
+        ),
+      ],
+    );
   }
 
   List<SlashCommandDef> get _suggestions {
@@ -193,15 +218,10 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
                   )
                 else if (widget.controller.text.trim().isEmpty)
                   _buildVoiceButton(ref)
-                else if (_supportsLive(ref))
-                  // Live models can't use the REST endpoint — show the Live
-                  // button even when there's text in the field.
+                else if (_chatModelIsLiveOnly(ref))
                   _buildVoiceButton(ref)
                 else
-                  IconButton.filled(
-                    onPressed: widget.onSend,
-                    icon: const Icon(Icons.send),
-                  ),
+                  _buildSendAndOptionalLive(ref),
               ],
             ),
           ),

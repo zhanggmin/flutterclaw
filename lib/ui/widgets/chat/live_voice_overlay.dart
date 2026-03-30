@@ -1,4 +1,7 @@
-/// Full-screen overlay for Gemini Live real-time voice conversation.
+/// Non-blocking overlay for Gemini Live voice: animated rings and status over the
+/// existing chat list. Transcript text streams into [chatProvider] via live agent
+/// events; tool pills still arrive from [SessionManager.messageStream]. Session
+/// persistence runs on [LiveTurnComplete] (and before tool rows when applicable).
 library;
 
 import 'dart:async';
@@ -9,26 +12,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/core/agent/live_agent_loop.dart';
-import 'package:flutterclaw/services/audio_player_service.dart';
+import 'package:flutterclaw/generated/app_localizations.dart';
 import 'package:flutterclaw/ui/theme/tokens.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// Live call chrome heights — keep in sync with [LiveVoiceOverlay.listTopPaddingWhenLive].
+const double _kLiveHeaderHeight = 52;
+const double _kLiveHudHeight = 80;
+
 class LiveVoiceOverlay extends ConsumerStatefulWidget {
   const LiveVoiceOverlay({super.key});
 
+  /// Extra top padding for the chat [ListView] so messages sit below the live header + HUD.
+  static const double listTopPaddingWhenLive =
+      _kLiveHeaderHeight + _kLiveHudHeight;
+
   @override
   ConsumerState<LiveVoiceOverlay> createState() => _LiveVoiceOverlayState();
-}
-
-class _TranscriptEntry {
-  final String role; // 'user' | 'model'
-  final StringBuffer buffer = StringBuffer();
-  bool finalized = false;
-
-  _TranscriptEntry(this.role);
-
-  String get text => buffer.toString();
 }
 
 class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
@@ -43,10 +44,6 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
   bool _isConnecting = true;
   String? _activeTool;
 
-  // Transcript
-  final List<_TranscriptEntry> _transcript = [];
-  final ScrollController _scrollController = ScrollController();
-
   // --- Audio ---
   final List<int> _pcmBuffer = [];
 
@@ -57,22 +54,63 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
   /// Resets [_livePlaylist] when the player finishes naturally.
   StreamSubscription? _playerCompleteSub;
 
+  /// True after [play] until local output is fully done (see [_armPlaybackEndListener]).
+  bool _awaitingLocalPlaybackEnd = false;
+  Timer? _playbackEndDebounce;
+
+  /// Mic is cut for the current assistant audio stream (first [LiveAudioOutput] → playback end).
+  bool _micHoldForAssistantPcm = false;
+
+  /// Playback must have reached [PlayerState.playing] before we trust idle/completed as "done"
+  /// (iOS often reports idle/!playing briefly right after [play]).
+  bool _sawPlayerAudibleThisArm = false;
+  StreamSubscription<PlayerState>? _playerStateSub;
+
   /// Bytes queued into [_livePlaylist] since the last [needsNew] reset.
   /// play() is deferred until this exceeds [_kStartThreshold] to avoid
   /// buffer-underrun glitches at the beginning of each turn.
   int _prerollBytes = 0;
   bool _playerStarted = false;
 
-  /// Flush to WAV every ~0.25 s: 24 kHz × 2 B × 0.25 s = 12 000 B.
-  static const int _kFlushBytes = 12000;
+  /// Serializes WAV write + [ConcatenatingAudioSource.add] so segment order matches PCM order.
+  Future<void> _wavQueueTail = Future.value();
 
-  /// Minimum bytes buffered before starting the player (1 s of 24 kHz audio).
-  static const int _kStartThreshold = 48000;
+  /// Incremented in [_stopAndClearAudio] so in-flight queue steps exit without touching state.
+  int _liveAudioGeneration = 0;
+
+  /// Flush interval: 24 kHz × 2 bytes/sample × 1 s = 48 000 bytes (fewer segment boundaries).
+  static const int _kFlushBytes = 48000;
+
+  /// Preroll before first [play]: ~2.5 s at 24 kHz mono 16-bit (120 000 B) + platform load control.
+  static const int _kStartThreshold = 120000;
+
   final List<String> _tempFiles = [];
+
+  /// Dedicated player: avoids audio_service main [AudioPlayer] contention and uses heavier OS buffering.
+  late final AudioPlayer _livePlayer;
+
+  Directory? _cachedTempDir;
 
   @override
   void initState() {
     super.initState();
+
+    // Do not let just_audio reconfigure the session: [LiveSessionNotifier]
+    // already sets playAndRecord + voiceChat for AEC; a second activation
+    // fight breaks echo cancellation and can leak speaker audio to the mic path.
+    _livePlayer = AudioPlayer(
+      handleAudioSessionActivation: false,
+      audioLoadConfiguration: AudioLoadConfiguration(
+        darwinLoadControl: DarwinLoadControl(
+          automaticallyWaitsToMinimizeStalling: true,
+          preferredForwardBufferDuration: Duration(seconds: 5),
+        ),
+        androidLoadControl: AndroidLoadControl(
+          bufferForPlaybackDuration: Duration(milliseconds: 4500),
+          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 8),
+        ),
+      ),
+    );
 
     _ring1Controller = AnimationController(
       vsync: this,
@@ -104,6 +142,13 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
       if (!mounted) return;
       switch (event) {
         case LiveAudioOutput(:final pcmData):
+          // Cut mic as soon as assistant PCM arrives — during preroll the speaker is
+          // still silent locally but the server is already in "model speaking"; sending
+          // mic here triggers spurious LiveInterrupted / cut-off on the first word.
+          if (!_micHoldForAssistantPcm && mounted) {
+            _micHoldForAssistantPcm = true;
+            ref.read(liveSessionProvider.notifier).setLivePlaybackSuppressMic(true);
+          }
           _pcmBuffer.addAll(pcmData);
           if (!_modelSpeaking) {
             setState(() {
@@ -113,31 +158,11 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
           }
           if (_pcmBuffer.length >= _kFlushBytes) _flushSegment();
 
-        case LiveUserTranscript(:final text):
-          setState(() {
-            _isConnecting = false;
-            final last = _transcript.isNotEmpty ? _transcript.last : null;
-            if (last != null && last.role == 'user' && !last.finalized) {
-              last.buffer.write(text);
-            } else {
-              _transcript.add(_TranscriptEntry('user')..buffer.write(text));
-              if (_transcript.length > 20) _transcript.removeAt(0);
-            }
-          });
-          _autoScroll();
+        case LiveUserTranscript():
+          setState(() => _isConnecting = false);
 
-        case LiveModelTranscript(:final text):
-          setState(() {
-            _isConnecting = false;
-            final last = _transcript.isNotEmpty ? _transcript.last : null;
-            if (last != null && last.role == 'model' && !last.finalized) {
-              last.buffer.write(text);
-            } else {
-              _transcript.add(_TranscriptEntry('model')..buffer.write(text));
-              if (_transcript.length > 20) _transcript.removeAt(0);
-            }
-          });
-          _autoScroll();
+        case LiveModelTranscript():
+          setState(() => _isConnecting = false);
 
         case LiveToolStarted(:final name):
           setState(() => _activeTool = name);
@@ -147,27 +172,16 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
 
         case LiveTurnComplete():
           _flushSegment();
-          setState(() {
-            _modelSpeaking = false;
-            for (final e in _transcript) {
-              e.finalized = true;
-            }
-          });
-          _autoScroll();
+          _enqueueEnsurePlaybackStarted();
+          setState(() => _modelSpeaking = false);
 
         case LiveInterrupted():
           _stopAndClearAudio();
           setState(() => _modelSpeaking = false);
 
         case LiveAgentError(:final message):
-          setState(() {
-            _transcript.add(
-              _TranscriptEntry('model')
-                ..buffer.write('⚠ $message')
-                ..finalized = true,
-            );
-          });
-          _autoScroll();
+          final messenger = ScaffoldMessenger.maybeOf(context);
+          messenger?.showSnackBar(SnackBar(content: Text(message)));
 
         case LiveSessionDisconnected():
           _stopAndClearAudio();
@@ -178,40 +192,51 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
     });
   }
 
-  void _autoScroll() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
-
   // --- Audio helpers ---
 
   void _flushSegment() {
     if (_pcmBuffer.isEmpty) return;
     final pcm = Uint8List.fromList(_pcmBuffer);
     _pcmBuffer.clear();
-    _writeAndQueueWav(pcm);
+    final gen = _liveAudioGeneration;
+    _wavQueueTail = _wavQueueTail.then((_) async {
+      if (gen != _liveAudioGeneration) return;
+      try {
+        await _writeAndQueueWavInternal(pcm, gen);
+      } catch (e) {
+        debugPrint('[LiveAudio] queue error: $e');
+      }
+    });
+  }
+
+  /// After [LiveTurnComplete], play any buffered audio even if below [_kStartThreshold] (short replies).
+  void _enqueueEnsurePlaybackStarted() {
+    final gen = _liveAudioGeneration;
+    _wavQueueTail = _wavQueueTail.then((_) async {
+      if (gen != _liveAudioGeneration) return;
+      try {
+        await _ensurePlaybackStartedIfNeeded(gen);
+      } catch (e) {
+        debugPrint('[LiveAudio] ensure play error: $e');
+      }
+    });
   }
 
   /// Write [pcm] as a WAV segment and append it to the gapless playlist.
   ///
   /// The first segment initialises the [ConcatenatingAudioSource] and starts
-  /// the player; subsequent segments are appended while playback is already
-  /// running, so there is no gap between chunks.
-  Future<void> _writeAndQueueWav(Uint8List pcm) async {
-    final player = audioHandler?.player;
-    if (player == null) return;
+  /// the player once preroll is met; subsequent segments are appended while
+  /// playback is already running.
+  Future<void> _writeAndQueueWavInternal(Uint8List pcm, int gen) async {
+    if (gen != _liveAudioGeneration) return;
 
-    // All synchronous decisions happen before any await to prevent races.
     final needsNew = _livePlaylist == null;
     if (needsNew) {
-      _livePlaylist = ConcatenatingAudioSource(children: []);
+      if (gen != _liveAudioGeneration) return;
+      _livePlaylist = ConcatenatingAudioSource(
+        children: [],
+        useLazyPreparation: false,
+      );
       _prerollBytes = 0;
       _playerStarted = false;
     }
@@ -219,35 +244,23 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
 
     try {
       final wav = _buildWav(pcm);
-      final dir = await getTemporaryDirectory();
+      _cachedTempDir ??= await getTemporaryDirectory();
+      final dir = _cachedTempDir!;
+      if (gen != _liveAudioGeneration) return;
       final path =
           '${dir.path}/live_${DateTime.now().microsecondsSinceEpoch}.wav';
       await File(path).writeAsBytes(wav);
+      if (gen != _liveAudioGeneration) return;
       _tempFiles.add(path);
 
       await playlist.add(AudioSource.file(path));
+      if (gen != _liveAudioGeneration) return;
       _prerollBytes += pcm.length;
 
-      // Defer play() until we have at least _kStartThreshold bytes buffered so
-      // the player never underruns at the start of a turn (avoids initial stutter).
-      final shouldStart = !_playerStarted && _prerollBytes >= _kStartThreshold;
-      if (shouldStart) _playerStarted = true; // guard against concurrent starts
-
-      if (shouldStart) {
-        await player.setAudioSource(playlist);
-        await player.play();
-        // Watch for natural completion so the next turn gets a fresh playlist.
-        _playerCompleteSub?.cancel();
-        _playerCompleteSub = player.processingStateStream
-            .where((s) => s == ProcessingState.completed)
-            .first
-            .asStream()
-            .listen((_) {
-          _livePlaylist = null;
-          if (mounted) {
-            ref.read(liveSessionProvider.notifier).onPlaybackComplete();
-          }
-        });
+      final shouldStartPreroll =
+          !_playerStarted && _prerollBytes >= _kStartThreshold;
+      if (shouldStartPreroll) {
+        await _startConcatenatedPlayback(_livePlayer, gen);
       }
     } catch (e) {
       debugPrint('[LiveAudio] write error: $e');
@@ -255,7 +268,98 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
     }
   }
 
+  Future<void> _ensurePlaybackStartedIfNeeded(int gen) async {
+    if (gen != _liveAudioGeneration) return;
+    if (_playerStarted) return;
+    final playlist = _livePlaylist;
+    if (playlist == null || playlist.children.isEmpty) return;
+    await _startConcatenatedPlayback(_livePlayer, gen);
+  }
+
+  Future<void> _startConcatenatedPlayback(AudioPlayer player, int gen) async {
+    if (gen != _liveAudioGeneration || _playerStarted) return;
+    final playlist = _livePlaylist;
+    if (playlist == null || playlist.children.isEmpty) return;
+    _playerStarted = true;
+    try {
+      if (gen != _liveAudioGeneration) {
+        _playerStarted = false;
+        return;
+      }
+      await player.setAudioSource(playlist);
+      if (gen != _liveAudioGeneration) {
+        _playerStarted = false;
+        return;
+      }
+      await player.play();
+      if (mounted) {
+        ref
+            .read(liveSessionProvider.notifier)
+            .setLivePlaybackSuppressMic(true);
+      }
+      _armPlaybackEndListener(gen);
+    } catch (e) {
+      debugPrint('[LiveAudio] playback start error: $e');
+      _playerStarted = false;
+      _awaitingLocalPlaybackEnd = false;
+      _playbackEndDebounce?.cancel();
+      if (mounted) {
+        ref.read(liveSessionProvider.notifier).setLivePlaybackSuppressMic(false);
+      }
+    }
+  }
+
+  /// Unsuppress mic after playback. Uses [completed] or [idle] when not playing
+  /// — `.first` on `completed` alone can fire too early on iOS or never after
+  /// [stop], leaving the mic dead for the whole call.
+  void _armPlaybackEndListener(int gen) {
+    _playerCompleteSub?.cancel();
+    _playerStateSub?.cancel();
+    _playbackEndDebounce?.cancel();
+    _awaitingLocalPlaybackEnd = true;
+    _sawPlayerAudibleThisArm = false;
+    _playerStateSub = _livePlayer.playerStateStream.listen((ps) {
+      if (!mounted || gen != _liveAudioGeneration) return;
+      if (ps.playing) _sawPlayerAudibleThisArm = true;
+    });
+    _playerCompleteSub = _livePlayer.processingStateStream.listen((state) {
+      if (!mounted || gen != _liveAudioGeneration || !_awaitingLocalPlaybackEnd) {
+        return;
+      }
+      // Ignore idle/complete until audio has actually started — avoids iOS firing
+      // idle+!playing in the gap between setSource and audible output.
+      if (!_sawPlayerAudibleThisArm) return;
+      final likelyDone = state == ProcessingState.completed ||
+          (state == ProcessingState.idle && !_livePlayer.playing);
+      if (!likelyDone) return;
+      _playbackEndDebounce?.cancel();
+      _playbackEndDebounce = Timer(const Duration(milliseconds: 180), () {
+        _playbackEndDebounce = null;
+        if (!mounted || gen != _liveAudioGeneration || !_awaitingLocalPlaybackEnd) {
+          return;
+        }
+        _awaitingLocalPlaybackEnd = false;
+        _playerStarted = false;
+        _micHoldForAssistantPcm = false;
+        _livePlaylist = null;
+        _playerStateSub?.cancel();
+        _playerStateSub = null;
+        ref
+            .read(liveSessionProvider.notifier)
+            .scheduleMicUnsuppressAfterLocalPlayback();
+      });
+    });
+  }
+
   void _stopAndClearAudio() {
+    _liveAudioGeneration++;
+    _wavQueueTail = Future.value();
+    _playbackEndDebounce?.cancel();
+    _playbackEndDebounce = null;
+    _awaitingLocalPlaybackEnd = false;
+    _micHoldForAssistantPcm = false;
+    _playerStateSub?.cancel();
+    _playerStateSub = null;
     _playerCompleteSub?.cancel();
     _playerCompleteSub = null;
     _pcmBuffer.clear();
@@ -266,25 +370,35 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
       File(f).delete().ignore();
     }
     _tempFiles.clear();
-    audioHandler?.stop();
+    unawaited(_livePlayer.stop().catchError((_) {}));
+    if (mounted) {
+      ref.read(liveSessionProvider.notifier).setLivePlaybackSuppressMic(false);
+    }
   }
 
   Future<void> _endSession() async {
     _stopAndClearAudio();
-    ref.read(liveSessionProvider.notifier).stopSession();
+    await ref.read(liveSessionProvider.notifier).stopSession();
+    if (mounted) {
+      await ref.read(chatProvider.notifier).reloadHistory();
+    }
   }
 
   @override
   void dispose() {
+    _liveAudioGeneration++;
+    _wavQueueTail = Future.value();
     _ring1Controller.dispose();
     _ring2Controller.dispose();
     _ring3Controller.dispose();
-    _scrollController.dispose();
     _eventSub?.cancel();
+    _playbackEndDebounce?.cancel();
+    _playerStateSub?.cancel();
     _playerCompleteSub?.cancel();
     for (final f in _tempFiles) {
       File(f).delete().ignore();
     }
+    unawaited(_livePlayer.dispose().catchError((_) {}));
     super.dispose();
   }
 
@@ -294,20 +408,37 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final agent = ref.watch(activeAgentProvider);
+    final topBarColor = theme.colorScheme.surface.withValues(alpha: 0.97);
 
-    return Positioned.fill(
+    // Only top chrome: chat list scrolls in the clear area below (with matching padding).
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
       child: Material(
-        color: theme.colorScheme.surface,
-        elevation: 0,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(theme, agent),
-              Expanded(child: _buildVisualization(theme, agent)),
-              _buildTranscript(theme),
-              _buildFooter(theme),
-            ],
-          ),
+        color: topBarColor,
+        elevation: 2,
+        shadowColor: Colors.black26,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: _kLiveHeaderHeight,
+              child: _buildHeader(theme, agent),
+            ),
+            SizedBox(
+              height: _kLiveHudHeight,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTokens.spacingMD,
+                  0,
+                  AppTokens.spacingMD,
+                  AppTokens.spacingSM,
+                ),
+                child: _buildCompactHud(theme, agent),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -317,10 +448,7 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
     final agentName =
         (agent != null && (agent.name as String).isNotEmpty) ? agent.name as String : 'Live';
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTokens.spacingMD,
-        vertical: AppTokens.spacingSM,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppTokens.spacingMD),
       child: Row(
         children: [
           Text(
@@ -346,7 +474,8 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
     );
   }
 
-  Widget _buildVisualization(ThemeData theme, dynamic agent) {
+  /// Compact row: small rings + status; fits in [_hudHeight] so it never overlaps bubbles.
+  Widget _buildCompactHud(ThemeData theme, dynamic agent) {
     final agentEmoji =
         (agent != null && (agent.emoji as String).isNotEmpty) ? agent.emoji as String : '🎙';
 
@@ -359,18 +488,24 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
 
     if (_isConnecting) {
       ringColor = theme.colorScheme.outline;
-      minScale = 0.95; maxScale = 1.05;
-      minOpacity = 0.1; maxOpacity = 0.3;
+      minScale = 0.95;
+      maxScale = 1.05;
+      minOpacity = 0.12;
+      maxOpacity = 0.32;
       pulseDuration = const Duration(milliseconds: 1200);
     } else if (_modelSpeaking) {
       ringColor = theme.colorScheme.tertiary;
-      minScale = 0.80; maxScale = 1.20;
-      minOpacity = 0.3; maxOpacity = 0.7;
+      minScale = 0.88;
+      maxScale = 1.12;
+      minOpacity = 0.28;
+      maxOpacity = 0.65;
       pulseDuration = const Duration(milliseconds: 700);
     } else {
       ringColor = theme.colorScheme.primary;
-      minScale = 0.95; maxScale = 1.05;
-      minOpacity = 0.15; maxOpacity = 0.35;
+      minScale = 0.95;
+      maxScale = 1.05;
+      minOpacity = 0.18;
+      maxOpacity = 0.38;
       pulseDuration = const Duration(milliseconds: 1400);
     }
 
@@ -386,146 +521,108 @@ class _LiveVoiceOverlayState extends ConsumerState<LiveVoiceOverlay>
             ? 'Speaking…'
             : 'Listening…';
 
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 160,
-            height: 160,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                _AnimatedRing(
-                  controller: _ring3Controller,
-                  size: 140,
-                  color: ringColor,
-                  minScale: minScale, maxScale: maxScale,
-                  minOpacity: minOpacity * 0.6, maxOpacity: maxOpacity * 0.6,
-                ),
-                _AnimatedRing(
-                  controller: _ring2Controller,
-                  size: 110,
-                  color: ringColor,
-                  minScale: minScale, maxScale: maxScale,
-                  minOpacity: minOpacity * 0.8, maxOpacity: maxOpacity * 0.8,
-                ),
-                _AnimatedRing(
-                  controller: _ring1Controller,
-                  size: 80,
-                  color: ringColor,
-                  minScale: minScale, maxScale: maxScale,
-                  minOpacity: minOpacity, maxOpacity: maxOpacity,
-                ),
-                // Center circle
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: ringColor.withValues(alpha: 0.15),
-                    border: Border.all(
-                      color: ringColor.withValues(alpha: 0.4),
-                      width: 1.5,
-                    ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 64,
+          height: 64,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              _AnimatedRing(
+                controller: _ring3Controller,
+                size: 56,
+                color: ringColor,
+                minScale: minScale,
+                maxScale: maxScale,
+                minOpacity: minOpacity * 0.6,
+                maxOpacity: maxOpacity * 0.6,
+              ),
+              _AnimatedRing(
+                controller: _ring2Controller,
+                size: 44,
+                color: ringColor,
+                minScale: minScale,
+                maxScale: maxScale,
+                minOpacity: minOpacity * 0.85,
+                maxOpacity: maxOpacity * 0.85,
+              ),
+              _AnimatedRing(
+                controller: _ring1Controller,
+                size: 32,
+                color: ringColor,
+                minScale: minScale,
+                maxScale: maxScale,
+                minOpacity: minOpacity,
+                maxOpacity: maxOpacity,
+              ),
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: ringColor.withValues(alpha: 0.18),
+                  border: Border.all(
+                    color: ringColor.withValues(alpha: 0.45),
+                    width: 1,
                   ),
-                  child: Center(
-                    child: Text(agentEmoji,
-                        style: const TextStyle(fontSize: 26)),
+                ),
+                child: Center(
+                  child: Text(
+                    agentEmoji,
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: AppTokens.spacingSM),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                statusText,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (_modelSpeaking && !_isConnecting) ...[
+                const SizedBox(height: 2),
+                Text(
+                  AppLocalizations.of(context)!.liveVoiceBargeInHint,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 10,
+                    height: 1.15,
                   ),
                 ),
               ],
-            ),
-          ),
-          const SizedBox(height: AppTokens.spacingMD),
-          Text(
-            statusText,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          if (_activeTool != null) ...[
-            const SizedBox(height: AppTokens.spacingSM),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppTokens.spacingMD, vertical: 4),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.secondaryContainer,
-                borderRadius: BorderRadius.circular(AppTokens.radiusPill),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                      color: theme.colorScheme.secondary,
-                    ),
+              if (_activeTool != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  _activeTool!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(width: AppTokens.spacingXS),
-                  Text(
-                    _activeTool!,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSecondaryContainer,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTranscript(ThemeData theme) {
-    if (_transcript.isEmpty) return const SizedBox.shrink();
-
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 200),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-              color: theme.colorScheme.outlineVariant, width: 0.5),
-        ),
-      ),
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppTokens.spacingMD, vertical: AppTokens.spacingSM),
-        shrinkWrap: true,
-        itemCount: _transcript.length,
-        itemBuilder: (context, i) =>
-            _TranscriptBubble(entry: _transcript[i], theme: theme),
-      ),
-    );
-  }
-
-  Widget _buildFooter(ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppTokens.spacingXL,
-        AppTokens.spacingMD,
-        AppTokens.spacingXL,
-        AppTokens.spacingXL,
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        child: FilledButton.icon(
-          onPressed: _endSession,
-          icon: const Icon(Icons.call_end),
-          label: const Text('End call'),
-          style: FilledButton.styleFrom(
-            backgroundColor: theme.colorScheme.error,
-            foregroundColor: theme.colorScheme.onError,
-            padding:
-                const EdgeInsets.symmetric(vertical: AppTokens.spacingMD),
+                ),
+              ],
+            ],
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -624,56 +721,6 @@ class _AnimatedRing extends AnimatedWidget {
           shape: BoxShape.circle,
           color: color.withValues(alpha: opacity),
         ),
-      ),
-    );
-  }
-}
-
-class _TranscriptBubble extends StatelessWidget {
-  final _TranscriptEntry entry;
-  final ThemeData theme;
-  const _TranscriptBubble({required this.entry, required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    final isUser = entry.role == 'user';
-    final bubbleColor = isUser
-        ? theme.colorScheme.primaryContainer
-        : theme.colorScheme.secondaryContainer;
-    final textColor = isUser
-        ? theme.colorScheme.onPrimaryContainer
-        : theme.colorScheme.onSecondaryContainer;
-
-    const radius = Radius.circular(12);
-    const smallRadius = Radius.circular(4);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppTokens.spacingXS),
-      child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppTokens.spacingSM, vertical: 6),
-              decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: isUser ? radius : smallRadius,
-                  topRight: isUser ? smallRadius : radius,
-                  bottomLeft: radius,
-                  bottomRight: radius,
-                ),
-              ),
-              child: Text(
-                entry.text,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: textColor),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

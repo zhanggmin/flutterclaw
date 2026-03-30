@@ -152,13 +152,14 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
             )
           else
             ...config.modelList
-                .where((m) => !m.supportsLive)
-                .toList()
-                .asMap()
-                .entries
-                .map((entry) {
-              final index = entry.key;
-              final m = entry.value;
+                .where((m) => !m.isLiveOnly)
+                .map((m) {
+              final index = config.modelList.indexWhere(
+                (e) =>
+                    e.modelName == m.modelName &&
+                    e.model == m.model &&
+                    e.provider == m.provider,
+              );
               final isDefault = m.modelName == config.agents.defaults.modelName;
               final provider = ModelCatalog.getProvider(m.provider);
               final isAuth = config.isProviderAuthenticated(m.provider) ||
@@ -201,10 +202,6 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                       if (m.isFree) ...[
                         const SizedBox(width: 8),
                         _FreeBadge(),
-                      ],
-                      if (m.supportsLive) ...[
-                        const SizedBox(width: 6),
-                        _LiveBadge(),
                       ],
                       if (isDefault) ...[
                         const SizedBox(width: 8),
@@ -281,6 +278,81 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
               );
             }),
 
+          if (_liveVoiceOptions(config).isNotEmpty) ...[
+            const SizedBox(height: 24),
+            _SectionLabel(title: context.l10n.voiceCallModelSection),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                context.l10n.voiceCallModelDescription,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            Card(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: DropdownButtonFormField<String?>(
+                  value: _resolvedLiveVoiceSelection(config),
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    labelText: context.l10n.voiceCallModelLabel,
+                  ),
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text(context.l10n.voiceCallModelAutomatic),
+                    ),
+                    ..._liveVoiceOptions(config).map(
+                      (cm) => DropdownMenuItem<String?>(
+                        value: cm.id,
+                        child: Text(
+                          '${ModelCatalog.getProvider(cm.providerId)?.displayName ?? cm.providerId} — ${cm.displayName}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ],
+                  onChanged: (v) async {
+                    final cm = ref.read(configManagerProvider);
+                    final d = cm.config.agents.defaults;
+                    final next = v == null
+                        ? d.copyWith(clearLiveVoiceModelId: true)
+                        : d.copyWith(liveVoiceModelId: v);
+                    cm.update(cm.config.copyWith(
+                      agents: cm.config.agents.copyWith(defaults: next),
+                    ));
+                    await cm.save();
+                    setState(() {});
+                  },
+                ),
+              ),
+            ),
+            SwitchListTile(
+              title: Text(context.l10n.preferLiveVoiceBootstrapTitle),
+              subtitle: Text(
+                context.l10n.preferLiveVoiceBootstrapSubtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              value: config.agents.defaults.preferLiveVoiceBootstrap,
+              onChanged: (v) async {
+                final cm = ref.read(configManagerProvider);
+                final next = cm.config.agents.defaults
+                    .copyWith(preferLiveVoiceBootstrap: v);
+                cm.update(cm.config.copyWith(
+                  agents: cm.config.agents.copyWith(defaults: next),
+                ));
+                await cm.save();
+                setState(() {});
+              },
+            ),
+          ],
+
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: OutlinedButton.icon(
@@ -297,6 +369,27 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
         ],
       ),
     );
+  }
+
+  /// Dropdown value: null, or stored id only if still among [ _liveVoiceOptions ].
+  String? _resolvedLiveVoiceSelection(FlutterClawConfig config) {
+    final cur = config.agents.defaults.liveVoiceModelId;
+    if (cur == null || cur.isEmpty) return null;
+    final ids = _liveVoiceOptions(config).map((m) => m.id).toSet();
+    return ids.contains(cur) ? cur : null;
+  }
+
+  /// Live catalog models for providers the user has authenticated (deduped by id).
+  List<CatalogModel> _liveVoiceOptions(FlutterClawConfig config) {
+    final seen = <String>{};
+    final out = <CatalogModel>[];
+    for (final pid in config.providerCredentials.keys) {
+      if (!config.isProviderAuthenticated(pid)) continue;
+      for (final m in ModelCatalog.liveCatalogModelsForProvider(pid)) {
+        if (seen.add(m.id)) out.add(m);
+      }
+    }
+    return out;
   }
 
   void _showAddProviderFlow(BuildContext context) {
@@ -719,8 +812,9 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
     }
 
     configManager.update(config.copyWith(
-      agents: AgentsConfig(
-          defaults: AgentsDefaults(modelName: modelName)),
+      agents: config.agents.copyWith(
+        defaults: config.agents.defaults.copyWith(modelName: modelName),
+      ),
     ));
 
     if (updateAgents && agentsToUpdate.isNotEmpty) {
@@ -1097,8 +1191,7 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            ...ModelCatalog.availableModelsForProvider(_selectedProviderId!)
-                .where((m) => !m.isLiveModel)
+            ...ModelCatalog.chatCatalogModelsForProvider(_selectedProviderId!)
                 .map((m) => _ModelChip(
                       model: m,
                       isSelected:
@@ -1331,10 +1424,18 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
   void _addModel() async {
     final configManager = ref.read(configManagerProvider);
     final provider = ModelCatalog.getProvider(_selectedProviderId!);
-    final catalogModel = ModelCatalog.models
-        .where((m) => m.id == _selectedModelId)
-        .firstOrNull;
+    final catalogModel =
+        ModelCatalog.tryGetModelFlexible(_selectedModelId ?? '');
     final config = configManager.config;
+
+    if (ModelCatalog.isLiveCatalogId(_selectedModelId ?? '')) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.cannotAddLiveModelAsChat)),
+        );
+      }
+      return;
+    }
 
     if (config.modelList.any((m) => m.model == _selectedModelId)) {
       if (mounted) {
@@ -1401,7 +1502,10 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
           .map((a) => a.copyWith(modelName: modelEntry.modelName))
           .toList();
       configManager.update(configManager.config.copyWith(
-        agents: AgentsConfig(defaults: AgentsDefaults(modelName: modelEntry.modelName)),
+        agents: configManager.config.agents.copyWith(
+          defaults: configManager.config.agents.defaults
+              .copyWith(modelName: modelEntry.modelName),
+        ),
         agentProfiles: profiles,
       ));
       await configManager.save();
@@ -1486,7 +1590,10 @@ class _AddModelScreenState extends ConsumerState<_AddModelScreen> {
       var cfg = configManager.config;
       if (result.setAsDefault) {
         cfg = cfg.copyWith(
-          agents: AgentsConfig(defaults: AgentsDefaults(modelName: modelEntry.modelName)),
+          agents: cfg.agents.copyWith(
+            defaults: cfg.agents.defaults
+                .copyWith(modelName: modelEntry.modelName),
+          ),
         );
       }
       if (result.updateAgents) {

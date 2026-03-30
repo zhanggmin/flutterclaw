@@ -6,6 +6,7 @@ class CatalogProvider {
   final String displayName;
   final String description;
   final IconData icon;
+
   /// Bundled brand mark (SVG under [assets/providers/]); null uses [icon].
   final String? logoAsset;
   final String signupUrl;
@@ -31,15 +32,19 @@ class CatalogModel {
   final bool isFree;
   final int contextWindow;
   final String? description;
+
   /// Input modalities: 'text', 'image', 'audio'.
   final List<String> input;
 
   /// Price per million INPUT tokens in USD (0 = free or unknown).
   final double inputPriceUsdPerMillion;
+
   /// Price per million OUTPUT tokens in USD (0 = free or unknown).
   final double outputPriceUsdPerMillion;
+
   /// Price per million cache-READ tokens in USD (Anthropic only).
   final double cacheReadPriceUsdPerMillion;
+
   /// Price per million cache-WRITE tokens in USD (Anthropic only).
   final double cacheWritePriceUsdPerMillion;
 
@@ -86,7 +91,8 @@ class CatalogModel {
 
   bool get supportsVision => input.contains('image');
   bool get supportsAudio => input.contains('audio');
-  bool get hasPricing => inputPriceUsdPerMillion > 0 || outputPriceUsdPerMillion > 0;
+  bool get hasPricing =>
+      inputPriceUsdPerMillion > 0 || outputPriceUsdPerMillion > 0;
   bool get isLiveModel => supportsLive;
 
   /// Compute USD cost for a set of token counts.
@@ -96,10 +102,10 @@ class CatalogModel {
     int cacheReadTokens = 0,
     int cacheWriteTokens = 0,
   }) {
-    return (inputTokens / 1e6) * inputPriceUsdPerMillion
-        + (outputTokens / 1e6) * outputPriceUsdPerMillion
-        + (cacheReadTokens / 1e6) * cacheReadPriceUsdPerMillion
-        + (cacheWriteTokens / 1e6) * cacheWritePriceUsdPerMillion;
+    return (inputTokens / 1e6) * inputPriceUsdPerMillion +
+        (outputTokens / 1e6) * outputPriceUsdPerMillion +
+        (cacheReadTokens / 1e6) * cacheReadPriceUsdPerMillion +
+        (cacheWriteTokens / 1e6) * cacheWritePriceUsdPerMillion;
   }
 }
 
@@ -108,7 +114,8 @@ class ModelCatalog {
     CatalogProvider(
       id: 'openrouter',
       displayName: 'OpenRouter',
-      description: 'Access 300+ models with one API key. Free models available.',
+      description:
+          'Access 300+ models with one API key. Free models available.',
       icon: Icons.route,
       logoAsset: 'assets/providers/openrouter.svg',
       signupUrl: 'https://openrouter.ai/keys',
@@ -145,7 +152,8 @@ class ModelCatalog {
     CatalogProvider(
       id: 'google',
       displayName: 'Google',
-      description: 'Gemini 3.x (preview) and 2.5 Flash/Pro — free tier on select models.',
+      description:
+          'Gemini 3.x (preview) and 2.5 Flash/Pro — free tier on select models.',
       icon: Icons.star_outline,
       logoAsset: 'assets/providers/google.svg',
       signupUrl: 'https://aistudio.google.com/app/apikey',
@@ -157,7 +165,8 @@ class ModelCatalog {
     CatalogProvider(
       id: 'deepseek',
       displayName: 'DeepSeek',
-      description: 'DeepSeek-V3.2 (chat + reasoner) — 128K context (api-docs.deepseek.com).',
+      description:
+          'DeepSeek-V3.2 (chat + reasoner) — 128K context (api-docs.deepseek.com).',
       icon: Icons.explore,
       logoAsset: 'assets/providers/deepseek.svg',
       signupUrl: 'https://platform.deepseek.com/api_keys',
@@ -176,7 +185,8 @@ class ModelCatalog {
     CatalogProvider(
       id: 'ollama',
       displayName: 'Ollama',
-      description: 'Ollama Cloud or a local instance. Change the URL to use local.',
+      description:
+          'Ollama Cloud or a local instance. Change the URL to use local.',
       icon: Icons.computer,
       logoAsset: 'assets/providers/ollama.svg',
       signupUrl: 'https://ollama.com/settings/keys',
@@ -382,7 +392,8 @@ class ModelCatalog {
       providerId: 'anthropic',
       isFree: false,
       contextWindow: 1000000,
-      description: 'Latest Sonnet — 1M context, balanced (Claude API ID per Anthropic docs)',
+      description:
+          'Latest Sonnet — 1M context, balanced (Claude API ID per Anthropic docs)',
       input: ['text', 'image'],
       inputPriceUsdPerMillion: 3.00,
       outputPriceUsdPerMillion: 15.00,
@@ -397,7 +408,8 @@ class ModelCatalog {
       providerId: 'anthropic',
       isFree: false,
       contextWindow: 1000000,
-      description: 'Most capable Claude — 1M context (Claude API ID per Anthropic docs)',
+      description:
+          'Most capable Claude — 1M context (Claude API ID per Anthropic docs)',
       input: ['text', 'image'],
       inputPriceUsdPerMillion: 15.00,
       outputPriceUsdPerMillion: 75.00,
@@ -536,7 +548,8 @@ class ModelCatalog {
       providerId: 'google',
       isFree: false,
       contextWindow: 1048576,
-      description: 'Gemini 3 — strong multimodal and agentic, lower cost than Pro',
+      description:
+          'Gemini 3 — strong multimodal and agentic, lower cost than Pro',
       input: ['text', 'image', 'audio'],
     ),
     CatalogModel(
@@ -554,7 +567,8 @@ class ModelCatalog {
       providerId: 'google',
       isFree: false,
       contextWindow: 128000,
-      description: 'Real-time voice — Live API (preview, may require allowlist)',
+      description:
+          'Real-time voice — Live API (preview, may require allowlist)',
       input: ['text', 'audio', 'image'],
       supportsLive: true,
     ),
@@ -576,7 +590,8 @@ class ModelCatalog {
       providerId: 'deepseek',
       isFree: false,
       contextWindow: 128000,
-      description: 'Flagship chat (DeepSeek-V3.2 non-thinking, api-docs.deepseek.com)',
+      description:
+          'Flagship chat (DeepSeek-V3.2 non-thinking, api-docs.deepseek.com)',
       input: ['text'],
     ),
     CatalogModel(
@@ -703,20 +718,67 @@ class ModelCatalog {
   /// Providers available in the current region (hides restricted ones in China).
   static List<CatalogProvider> get availableProviders => RegionService.isChina
       ? providers
-          .where((p) => !RegionService.isProviderRestricted(p.id))
-          .toList()
+            .where((p) => !RegionService.isProviderRestricted(p.id))
+            .toList()
       : providers;
 
   /// Models available in the current region (hides restricted ones in China).
   static List<CatalogModel> get availableModels => RegionService.isChina
       ? models
-          .where((m) => !RegionService.isProviderRestricted(m.providerId))
-          .toList()
+            .where((m) => !RegionService.isProviderRestricted(m.providerId))
+            .toList()
       : models;
 
   /// Models for a specific provider, filtered by region.
   static List<CatalogModel> availableModelsForProvider(String providerId) =>
       availableModels.where((m) => m.providerId == providerId).toList();
+
+  /// Catalog entry for a model API id (exact match on [CatalogModel.id]).
+  static CatalogModel? tryGetModel(String id) {
+    for (final m in models) {
+      if (m.id == id) return m;
+    }
+    return null;
+  }
+
+  /// Like [tryGetModel], but also tries the segment after `/` (OpenRouter-style ids).
+  static CatalogModel? tryGetModelFlexible(String id) {
+    final direct = tryGetModel(id);
+    if (direct != null) return direct;
+    final slash = id.indexOf('/');
+    if (slash >= 0) return tryGetModel(id.substring(slash + 1));
+    return null;
+  }
+
+  /// True when [modelId] is a known Live-only (WebSocket voice) model in the catalog.
+  ///
+  /// Handles `vendor/model` ids (e.g. OpenRouter) by also trying the suffix after `/`.
+  static bool isLiveCatalogId(String modelId) {
+    final direct = tryGetModel(modelId);
+    if (direct != null) return direct.isLiveModel;
+    final slash = modelId.indexOf('/');
+    if (slash >= 0) {
+      final suffix = modelId.substring(slash + 1);
+      return tryGetModel(suffix)?.isLiveModel ?? false;
+    }
+    return false;
+  }
+
+  /// Static catalog models suitable for REST chat — excludes Live-only models.
+  static List<CatalogModel> chatCatalogModelsForProvider(String providerId) =>
+      availableModelsForProvider(
+        providerId,
+      ).where((m) => !m.isLiveModel).toList();
+
+  /// Live-only catalog models for a provider (voice call / WebSocket).
+  static List<CatalogModel> liveCatalogModelsForProvider(String providerId) =>
+      availableModelsForProvider(
+        providerId,
+      ).where((m) => m.isLiveModel).toList();
+
+  /// True when the catalog lists at least one Live (voice call) model for [providerId].
+  static bool providerHasLiveVoiceModel(String providerId) =>
+      liveCatalogModelsForProvider(providerId).isNotEmpty;
 
   static CatalogProvider? getProvider(String id) {
     for (final p in providers) {

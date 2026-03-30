@@ -460,7 +460,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
 
     // Live API models (Gemini Live) require a WebSocket session — they cannot
     // be used for REST chat completions. Return a user-visible prompt.
-    if (modelEntry.supportsLive) {
+    if (modelEntry.isLiveOnly) {
       _log.info('Model "$modelName" is a Live API model — skipping REST call');
       return AgentResponse(
         content: 'Este modelo usa la API en tiempo real. '
@@ -923,7 +923,7 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     }
 
     // Live API models require a WebSocket session — reject REST attempts.
-    if (modelEntry.supportsLive) {
+    if (modelEntry.isLiveOnly) {
       _log.info('Model "$modelName" is a Live API model — skipping REST call');
       yield AgentStreamEvent(
         isDone: true,
@@ -1861,6 +1861,14 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     return buf.toString().trim();
   }
 
+  /// Full workspace system prompt (BOOTSTRAP, identity files, skills, etc.).
+  /// Used by Gemini Live voice bootstrap to mirror REST hatch context.
+  Future<String> buildSystemPromptForAgent({
+    String? agentId,
+    String? userLanguage,
+  }) =>
+      _buildSystemPrompt(userLanguage: userLanguage, agentId: agentId);
+
   // -- System prompt --------------------------------------------------------
 
   Future<String> _buildSystemPrompt({
@@ -2283,7 +2291,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
   /// Returns the model name considered "lightest" — prefers free/small models.
   /// Falls back to the first configured model if nothing specific is found.
   String? _findLowestCostModel() {
-    final models = configManager.config.modelList;
+    final models = configManager.config.modelList
+        .where((m) => !m.isLiveOnly)
+        .toList();
     if (models.isEmpty) return null;
     // Prefer explicitly free models
     final free = models.where((m) => m.isFree).toList();

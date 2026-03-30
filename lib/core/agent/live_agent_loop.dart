@@ -3,6 +3,7 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
@@ -161,6 +162,17 @@ class LiveAgentLoop {
     }
   }
 
+  /// Writes buffered user speech to the session if any (e.g. before tool rows).
+  Future<void> _flushUserTranscriptToSessionIfNonEmpty(String sessionKey) async {
+    final userText = _userTranscriptBuffer.toString();
+    if (userText.isEmpty) return;
+    await sessionManager.addMessage(
+      sessionKey,
+      LlmMessage(role: 'user', content: userText),
+    );
+    _userTranscriptBuffer.clear();
+  }
+
   /// Persist the current turn's transcripts to the session.
   void _persistTurn(String sessionKey) {
     final userText = _userTranscriptBuffer.toString();
@@ -197,6 +209,9 @@ class LiveAgentLoop {
     _pendingTools[callId] = pending;
 
     try {
+      // Persist the user's utterance before assistant+tool rows so the transcript
+      // order matches conversation (fixes UI list showing tools above the question).
+      await _flushUserTranscriptToSessionIfNonEmpty(sessionKey);
       // Inject session key for tools that need it.
       args['__session_key'] = sessionKey;
 
@@ -223,7 +238,12 @@ class LiveAgentLoop {
         {'result': result.content},
       );
 
-      // Persist tool call and result.
+      // Persist tool call and result (arguments for chat pills; strip internal keys).
+      final publicArgs = Map<String, dynamic>.from(args)
+        ..removeWhere((k, _) => k.startsWith('__'));
+      final argsJson =
+          publicArgs.isEmpty ? '{}' : jsonEncode(publicArgs);
+
       await sessionManager.addMessage(
         sessionKey,
         LlmMessage(
@@ -232,7 +252,7 @@ class LiveAgentLoop {
           toolCalls: [
             ToolCall(
               id: callId,
-              function: ToolCallFunction(name: name, arguments: '{}'),
+              function: ToolCallFunction(name: name, arguments: argsJson),
             ),
           ],
         ),
