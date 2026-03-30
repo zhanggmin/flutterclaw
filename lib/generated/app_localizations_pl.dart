@@ -700,27 +700,27 @@ class AppLocalizationsPl extends AppLocalizations {
       'Domyślny model jest używany przez agentów, którzy nie określają własnego.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Rozmowa głosowa (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Używane tylko, gdy naciśniesz przycisk połączenia. Czat, agenci i zadania w tle używają Twojego normalnego modelu.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Model Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Automatycznie';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap w rozmowie głosowej';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'W nowym pustym czacie z BOOTSTRAP.md uruchom rozmowę głosową zamiast cichego bootstrapu tekstowego (gdy Live jest dostępny).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Głos';
 
   @override
   String get firstHatchModeChoiceTitle => 'Jak chcesz zacząć?';
@@ -737,11 +737,11 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Mów, gdy asystent skończy (echo przerywało im wcześniej w trakcie mówienia).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Ten model jest tylko do rozmów głosowych. Wybierz model czatu z listy.';
 
   @override
   String get holdToSetAsDefault => 'Przytrzymaj, aby ustawić jako domyślny';
@@ -1144,13 +1144,13 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Utwórz aplikację Slack na api.slack.com/apps\n2. Włącz Socket Mode → wygeneruj App-Level Token (xapp-…)\n   z zakresem: connections:write\n3. Dodaj Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Zainstaluj aplikację w workspace → skopiuj Bot Token (xoxb-…)';
+      '1. Utwórz aplikację Slack na api.slack.com/apps\n2. Włącz Socket Mode → wygeneruj token na poziomie aplikacji (xapp-…)\n   z zakresem: connections:write\n3. Dodaj zakresy tokenu bota: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Zainstaluj aplikację w workspace → skopiuj token bota (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Token bota (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'Token na poziomie aplikacji (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'URL API i numer telefonu są wymagane';

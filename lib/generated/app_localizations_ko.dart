@@ -684,27 +684,27 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultModelHint => '기본 모델은 자체 모델을 지정하지 않는 에이전트에 사용됩니다.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => '음성 통화 (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      '통화 버튼을 탭할 때만 사용됩니다. 채팅, 에이전트, 백그라운드 작업은 일반 모델을 사용합니다.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Live 모델';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => '자동';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => '음성 통화에서 부트스트랩';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      '새로운 빈 채팅에서 BOOTSTRAP.md가 있을 때 (Live가 가능하면) 조용한 텍스트 부트스트랩 대신 음성 통화를 시작합니다.';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => '음성';
 
   @override
   String get firstHatchModeChoiceTitle => '어떻게 시작할까요?';
@@ -721,11 +721,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      '어시스턴트가 멈춘 뒤에 말하세요(에코 때문에 말하는 도중에 끊기던 문제가 있었어요).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      '이 모델은 음성 통화 전용입니다. 목록에서 채팅 모델을 선택하세요.';
 
   @override
   String get holdToSetAsDefault => '길게 눌러 기본값으로 설정';
@@ -1117,13 +1117,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. api.slack.com/apps에서 Slack 앱 생성\n2. Socket Mode 활성화 → App-Level Token (xapp-…) 생성\n   범위: connections:write\n3. Bot Token Scopes 추가: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 워크스페이스에 앱 설치 → Bot Token (xoxb-…) 복사';
+      '1. api.slack.com/apps에서 Slack 앱 생성\n2. Socket Mode 활성화 → 앱 레벨 토큰 (xapp-…) 생성\n   범위: connections:write\n3. 봇 토큰 범위 추가: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 워크스페이스에 앱 설치 → 봇 토큰 (xoxb-…) 복사';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => '봇 토큰 (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => '앱 레벨 토큰 (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'API URL과 전화번호가 필요합니다';
@@ -1142,7 +1142,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '서버에서 실행 중인 signal-cli-rest-api가 필요합니다:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nREST API를 통해 Signal 번호를 등록/연결한 다음 아래에 URL과 전화번호를 입력하세요.';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api URL 주소';
 
   @override
   String get signalPhoneNumber => '귀하의 Signal 전화번호';

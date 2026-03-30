@@ -683,27 +683,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get defaultModelHint => 'デフォルトモデルは独自のモデルを指定しないエージェントで使用されます。';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => '音声通話（Live）';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      '通話ボタンをタップしたときのみ使用されます。チャット、エージェント、バックグラウンドタスクは通常のモデルを使用します。';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Liveモデル';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => '自動';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => '音声通話でブートストラップ';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      '新しい空のチャットで BOOTSTRAP.md がある場合、（Live が利用可能なら）静かなテキスト起動ではなく音声通話を開始します。';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => '音声';
 
   @override
   String get firstHatchModeChoiceTitle => 'どのように始めますか？';
@@ -720,11 +720,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'アシスタントが話し終えてから話してください（エコーで途中で割り込んでしまっていました）。';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'このモデルは音声通話専用です。リストからチャット用モデルを選んでください。';
 
   @override
   String get holdToSetAsDefault => '長押しでデフォルトに設定';
@@ -1140,7 +1140,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'サーバー上でsignal-cli-rest-apiを実行する必要があります：\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nREST API経由でSignal番号を登録/リンクし、下記にURLと電話番号を入力してください。';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api のURL';
 
   @override
   String get signalPhoneNumber => 'あなたのSignal電話番号';

@@ -699,27 +699,27 @@ class AppLocalizationsVi extends AppLocalizations {
       'Mô hình mặc định được sử dụng bởi các tác nhân không chỉ định mô hình riêng.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Cuộc gọi thoại (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Chỉ dùng khi bạn chạm nút gọi. Trò chuyện, tác nhân và tác vụ nền sẽ dùng mô hình thông thường của bạn.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Mô hình Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Tự động';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap bằng cuộc gọi thoại';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'Trong một chat mới trống với BOOTSTRAP.md, hãy bắt đầu cuộc gọi thoại thay vì bootstrap văn bản im lặng (khi Live khả dụng).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Giọng nói';
 
   @override
   String get firstHatchModeChoiceTitle => 'Bạn muốn bắt đầu thế nào?';
@@ -736,11 +736,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Hãy nói sau khi trợ lý dừng lại (tiếng vọng từng làm ngắt họ giữa câu).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Mô hình này chỉ dành cho cuộc gọi thoại. Hãy chọn một mô hình chat từ danh sách.';
 
   @override
   String get holdToSetAsDefault => 'Giữ để đặt làm mặc định';
@@ -1142,13 +1142,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Tạo ứng dụng Slack tại api.slack.com/apps\n2. Bật Socket Mode → tạo App-Level Token (xapp-…)\n   với phạm vi: connections:write\n3. Thêm Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Cài đặt ứng dụng vào không gian làm việc → sao chép Bot Token (xoxb-…)';
+      '1. Tạo ứng dụng Slack tại api.slack.com/apps\n2. Bật Socket Mode → tạo token cấp ứng dụng (xapp-…)\n   với phạm vi: connections:write\n3. Thêm phạm vi token bot: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Cài đặt ứng dụng vào không gian làm việc → sao chép token bot (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Token bot (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'Token cấp ứng dụng (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'URL API và số điện thoại là bắt buộc';

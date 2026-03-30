@@ -703,27 +703,27 @@ class AppLocalizationsTr extends AppLocalizations {
       'Varsayılan model, kendi modelini belirtmeyen ajanlar tarafından kullanılır.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Sesli arama (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Yalnızca arama düğmesine dokunduğunuzda kullanılır. Sohbet, ajanlar ve arka plan görevleri normal modelinizi kullanır.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Live modeli';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Otomatik';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Sesli aramada bootstrap';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'BOOTSTRAP.md içeren yeni boş bir sohbette, (Live mevcutsa) sessiz metin bootstrap yerine sesli arama başlatın.';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Ses';
 
   @override
   String get firstHatchModeChoiceTitle => 'Nasıl başlamak istersiniz?';
@@ -740,11 +740,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Asistan durduktan sonra konuşun (eko, konuşmanın ortasında onları kesiyordu).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Bu model yalnızca sesli aramalar içindir. Listeden bir sohbet modeli seçin.';
 
   @override
   String get holdToSetAsDefault =>
@@ -1149,13 +1149,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. api.slack.com/apps adresinde bir Slack Uygulaması oluşturun\n2. Socket Mode\'u etkinleştirin → App-Level Token (xapp-…) oluşturun\n   kapsam ile: connections:write\n3. Bot Token Kapsamları ekleyin: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Uygulamayı workspace\'e yükleyin → Bot Token\'ı kopyalayın (xoxb-…)';
+      '1. api.slack.com/apps adresinde bir Slack uygulaması oluşturun\n2. Socket Mode\'u etkinleştirin → Uygulama düzeyi token (xapp-…) oluşturun\n   kapsam ile: connections:write\n3. Bot token kapsamlarını ekleyin: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Uygulamayı workspace\'e yükleyin → Bot tokenini kopyalayın (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Bot tokeni (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'Uygulama düzeyi token (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired =>
@@ -1562,7 +1562,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get browseLabel => 'Gözat';
 
   @override
-  String get apiTokenLabel => 'API Token';
+  String get apiTokenLabel => 'API belirteci';
 
   @override
   String get connectToClawHub => 'ClawHub\'a Bağlan';

@@ -704,27 +704,27 @@ class AppLocalizationsPt extends AppLocalizations {
       'O modelo padrão é usado por agentes que não especificam o seu próprio.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Chamada de voz (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Usado apenas quando você toca no botão de chamada. Chat, agentes e tarefas em segundo plano usam seu modelo normal.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Modelo Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Automático';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap na chamada de voz';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'Em um chat novo e vazio com BOOTSTRAP.md, inicie uma chamada de voz em vez de um bootstrap silencioso por texto (quando o Live estiver disponível).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Voz';
 
   @override
   String get firstHatchModeChoiceTitle => 'Como você quer começar?';
@@ -741,11 +741,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Fale depois que o assistente parar (o eco estava interrompendo eles no meio da fala).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Este modelo é apenas para chamadas de voz. Escolha um modelo de chat na lista.';
 
   @override
   String get holdToSetAsDefault =>

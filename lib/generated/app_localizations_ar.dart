@@ -690,27 +690,27 @@ class AppLocalizationsAr extends AppLocalizations {
       'يُستخدم النموذج الافتراضي للوكلاء الذين لا يحددون نموذجاً خاصاً بهم.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'مكالمة صوتية (مباشر)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'يُستخدم فقط عند النقر على زر المكالمة. الدردشة والوكلاء والمهام في الخلفية تستخدم نموذجك المعتاد.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'نموذج Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'تلقائي';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'البدء عبر مكالمة صوتية';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'في محادثة جديدة وفارغة مع BOOTSTRAP.md، ابدأ مكالمة صوتية بدلاً من بدء إعداد نصّي صامت (عندما يتوفر Live).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'الصوت';
 
   @override
   String get firstHatchModeChoiceTitle => 'كيف تود أن تبدأ؟';
@@ -727,11 +727,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'تحدث بعد أن يتوقف المساعد (كان الصدى يقاطعهم أثناء الكلام).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'هذا النموذج مخصص للمكالمات الصوتية فقط. اختر نموذج دردشة من القائمة.';
 
   @override
   String get holdToSetAsDefault => 'اضغط مطولاً للتعيين كافتراضي';

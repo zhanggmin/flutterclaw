@@ -698,27 +698,27 @@ class AppLocalizationsCs extends AppLocalizations {
       'Výchozí model je používán agenty, kteří neurčují svůj vlastní.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Hlasový hovor (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Použije se jen když klepnete na tlačítko hovoru. Chat, agenti i úlohy na pozadí používají váš běžný model.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Model Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Automaticky';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Spouštět bootstrap v hovoru';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'V nové prázdné konverzaci s BOOTSTRAP.md spustit hlasový hovor místo tichého textového bootstrappingu (když je Live k dispozici).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Hlas';
 
   @override
   String get firstHatchModeChoiceTitle => 'Jak chcete začít?';
@@ -735,11 +735,11 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Mluvte až když asistent domluví (ozvěna je dřív přerušovala uprostřed řeči).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Tento model je jen pro hlasové hovory. Vyberte chatovací model ze seznamu.';
 
   @override
   String get holdToSetAsDefault => 'Podržte pro nastavení jako výchozí';
@@ -1142,13 +1142,13 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Vytvořte aplikaci Slack na api.slack.com/apps\n2. Povolte Socket Mode → vygenerujte App-Level Token (xapp-…)\n   s rozsahem: connections:write\n3. Přidejte Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Nainstalujte aplikaci do workspace → zkopírujte Bot Token (xoxb-…)';
+      '1. Vytvořte aplikaci Slack na api.slack.com/apps\n2. Povolte Socket Mode → vygenerujte token na úrovni aplikace (xapp-…)\n   s rozsahem: connections:write\n3. Přidejte rozsahy tokenu bota: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Nainstalujte aplikaci do workspace → zkopírujte token bota (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Token bota (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'Token na úrovni aplikace (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'URL API a telefonní číslo jsou povinné';
@@ -1557,7 +1557,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get browseLabel => 'Procházet';
 
   @override
-  String get apiTokenLabel => 'API Token';
+  String get apiTokenLabel => 'API token';
 
   @override
   String get connectToClawHub => 'Připojit ke ClawHub';

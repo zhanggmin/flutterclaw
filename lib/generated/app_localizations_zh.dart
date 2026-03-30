@@ -682,27 +682,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get defaultModelHint => '默认模型用于未指定自身模型的代理。';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => '语音通话（Live）';
 
   @override
-  String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+  String get voiceCallModelDescription => '仅在你点击通话按钮时使用。聊天、代理和后台任务会使用你的常规模型。';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Live 模型';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => '自动';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => '在语音通话中引导';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      '在包含 BOOTSTRAP.md 的全新空聊天中，优先发起语音通话，而不是静默的文本引导（当 Live 可用时）。';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => '语音';
 
   @override
   String get firstHatchModeChoiceTitle => '你想怎么开始？';
@@ -718,12 +717,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get firstHatchModeChoiceVoiceButton => '语音对话';
 
   @override
-  String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+  String get liveVoiceBargeInHint => '请在助手说完后再开口（回声会让你在他们说话时打断他们）。';
 
   @override
-  String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+  String get cannotAddLiveModelAsChat => '此模型仅用于语音通话。请从列表中选择聊天模型。';
 
   @override
   String get holdToSetAsDefault => '长按设为默认';
@@ -1114,13 +1111,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. 在api.slack.com/apps创建Slack应用\n2. 启用Socket Mode → 生成App-Level Token (xapp-…)\n   作用域: connections:write\n3. 添加Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 将应用安装到工作区 → 复制Bot Token (xoxb-…)';
+      '1. 在 api.slack.com/apps 创建 Slack 应用\n2. 启用 Socket Mode → 生成应用级 Token（xapp-…）\n   作用域：connections:write\n3. 添加机器人 Token 作用域：chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 将应用安装到工作区 → 复制机器人 Token（xoxb-…）';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => '机器人 Token（xoxb-…）';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => '应用级 Token（xapp-…）';
 
   @override
   String get apiUrlPhoneRequired => '需要API URL和电话号码';
@@ -1139,7 +1136,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '需要在服务器上运行signal-cli-rest-api：\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\n通过REST API注册/链接您的Signal号码，然后在下方输入URL和电话号码。';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api 的 URL';
 
   @override
   String get signalPhoneNumber => '您的Signal电话号码';

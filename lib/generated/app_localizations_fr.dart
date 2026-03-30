@@ -587,7 +587,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get send => 'Envoyer';
 
   @override
-  String get liveActivityActive => 'Live Activity active';
+  String get liveActivityActive => 'Activité en direct active';
 
   @override
   String get restartGateway => 'Redémarrer Gateway';
@@ -708,27 +708,27 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le modèle par défaut est utilisé par les agents qui ne spécifient pas le leur.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Appel vocal (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Utilisé uniquement lorsque vous appuyez sur le bouton d’appel. Le chat, les agents et les tâches en arrière-plan utilisent votre modèle habituel.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Modèle Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Automatique';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Démarrer via appel vocal';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'Dans un nouveau chat vide avec BOOTSTRAP.md, démarrez un appel vocal plutôt qu’un bootstrap silencieux par texte (lorsque Live est disponible).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Voix';
 
   @override
   String get firstHatchModeChoiceTitle => 'Comment souhaitez-vous commencer ?';
@@ -745,11 +745,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Parlez quand l’assistant a terminé (l’écho les interrompait en plein discours).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Ce modèle est réservé aux appels vocaux. Choisissez un modèle de chat dans la liste.';
 
   @override
   String get holdToSetAsDefault => 'Maintenez pour définir par défaut';

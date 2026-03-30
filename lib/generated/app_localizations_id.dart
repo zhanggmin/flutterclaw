@@ -701,27 +701,27 @@ class AppLocalizationsId extends AppLocalizations {
       'Model default digunakan oleh agen yang tidak menentukan model sendiri.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Panggilan suara (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Hanya digunakan saat Anda mengetuk tombol panggilan. Obrolan, agen, dan tugas latar belakang menggunakan model normal Anda.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Model Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Otomatis';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap lewat panggilan suara';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'Di obrolan baru yang kosong dengan BOOTSTRAP.md, mulai panggilan suara alih-alih bootstrap teks yang senyap (saat Live tersedia).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Suara';
 
   @override
   String get firstHatchModeChoiceTitle => 'Bagaimana Anda ingin memulai?';
@@ -738,11 +738,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Bicaralah setelah asisten selesai (gema sempat memotong mereka di tengah bicara).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Model ini hanya untuk panggilan suara. Pilih model chat dari daftar.';
 
   @override
   String get holdToSetAsDefault => 'Tahan untuk mengatur sebagai default';
@@ -1146,13 +1146,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Buat Aplikasi Slack di api.slack.com/apps\n2. Aktifkan Socket Mode → buat App-Level Token (xapp-…)\n   dengan cakupan: connections:write\n3. Tambahkan Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Instal aplikasi ke workspace → salin Bot Token (xoxb-…)';
+      '1. Buat aplikasi Slack di api.slack.com/apps\n2. Aktifkan Socket Mode → buat token level aplikasi (xapp-…)\n   dengan cakupan: connections:write\n3. Tambahkan scope token bot: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Instal aplikasi ke workspace → salin token bot (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Token bot (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'Token level aplikasi (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'URL API dan nomor telepon diperlukan';

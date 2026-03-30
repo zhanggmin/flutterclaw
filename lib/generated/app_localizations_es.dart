@@ -718,14 +718,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get voiceCallModelAutomatic => 'Automático';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Arrancar en llamada de voz';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'En un chat nuevo y vacío con BOOTSTRAP.md, inicia una llamada de voz en lugar de un arranque silencioso por texto (cuando Live esté disponible).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Voz';
 
   @override
   String get firstHatchModeChoiceTitle => '¿Cómo te gustaría empezar?';
@@ -742,7 +742,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Habla cuando el asistente termine (el eco los interrumpía a mitad de frase).';
 
   @override
   String get cannotAddLiveModelAsChat =>

@@ -705,27 +705,27 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das Standardmodell wird von Agenten verwendet, die kein eigenes Modell angeben.';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'Sprachanruf (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'Wird nur verwendet, wenn Sie auf die Anruf-Schaltfläche tippen. Chat, Agenten und Hintergrundaufgaben verwenden Ihr normales Modell.';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'Live-Modell';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'Automatisch';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap im Sprachanruf';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'In einem neuen leeren Chat mit BOOTSTRAP.md einen Sprachanruf starten statt eines stillen Text-Bootstraps (wenn Live verfügbar ist).';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'Stimme';
 
   @override
   String get firstHatchModeChoiceTitle => 'Wie möchtest du starten?';
@@ -742,11 +742,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'Sprechen Sie, nachdem der Assistent fertig ist (Echo hat sie zuvor mitten im Sprechen unterbrochen).';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'Dieses Modell ist nur für Sprachanrufe. Wählen Sie ein Chat-Modell aus der Liste.';
 
   @override
   String get holdToSetAsDefault =>
@@ -1153,7 +1153,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Erstellen Sie eine Slack-App unter api.slack.com/apps\n2. Socket-Modus aktivieren → App-Level-Token generieren (xapp-…)\n   mit Scope: connections:write\n3. Bot-Token-Scopes hinzufügen: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. App im Workspace installieren → Bot-Token kopieren (xoxb-…)';
+      '1. Erstellen Sie eine Slack-App unter api.slack.com/apps\n2. Socket-Modus aktivieren → App-Level-Token (xapp-…) generieren\n   mit Scope: connections:write\n3. Bot-Token-Scopes hinzufügen: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. App im Workspace installieren → Bot-Token (xoxb-…) kopieren';
 
   @override
   String get botTokenXoxb => 'Bot-Token (xoxb-…)';
@@ -1180,7 +1180,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erfordert signal-cli-rest-api auf einem Server:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nRegistrieren/verknüpfen Sie Ihre Signal-Nummer über die REST-API und geben Sie dann unten die URL und Ihre Telefonnummer ein.';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api-URL';
 
   @override
   String get signalPhoneNumber => 'Ihre Signal-Telefonnummer';

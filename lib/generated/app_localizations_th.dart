@@ -691,27 +691,27 @@ class AppLocalizationsTh extends AppLocalizations {
       'โมเดลเริ่มต้นถูกใช้โดยตัวแทนที่ไม่ได้ระบุโมเดลของตัวเอง';
 
   @override
-  String get voiceCallModelSection => 'Voice call (Live)';
+  String get voiceCallModelSection => 'การโทรด้วยเสียง (Live)';
 
   @override
   String get voiceCallModelDescription =>
-      'Used only when you tap the call button. Chat, agents, and background tasks use your normal model.';
+      'ใช้เฉพาะเมื่อคุณแตะปุ่มโทร แชท ตัวแทน และงานเบื้องหลังจะใช้โมเดลปกติของคุณ';
 
   @override
-  String get voiceCallModelLabel => 'Live model';
+  String get voiceCallModelLabel => 'โมเดล Live';
 
   @override
-  String get voiceCallModelAutomatic => 'Automatic';
+  String get voiceCallModelAutomatic => 'อัตโนมัติ';
 
   @override
-  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in voice call';
+  String get preferLiveVoiceBootstrapTitle => 'บูตสแตรปผ่านการโทรด้วยเสียง';
 
   @override
   String get preferLiveVoiceBootstrapSubtitle =>
-      'On a new empty chat with BOOTSTRAP.md, start a voice call instead of a silent text hatch (when Live is available).';
+      'ในแชทใหม่ที่ว่างและมี BOOTSTRAP.md ให้เริ่มการโทรด้วยเสียงแทนการบูตสแตรปแบบเงียบด้วยข้อความ (เมื่อ Live พร้อมใช้งาน)';
 
   @override
-  String get liveVoiceNameLabel => 'Voice';
+  String get liveVoiceNameLabel => 'เสียง';
 
   @override
   String get firstHatchModeChoiceTitle => 'คุณอยากเริ่มแบบไหน?';
@@ -728,11 +728,11 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get liveVoiceBargeInHint =>
-      'Speak after the assistant stops (echo was interrupting them mid-speech).';
+      'พูดหลังจากผู้ช่วยหยุด (เสียงสะท้อนเคยทำให้ขัดจังหวะระหว่างพูด)';
 
   @override
   String get cannotAddLiveModelAsChat =>
-      'This model is for voice calls only. Choose a chat model from the list.';
+      'โมเดลนี้ใช้สำหรับการโทรด้วยเสียงเท่านั้น โปรดเลือกโมเดลแชทจากรายการ';
 
   @override
   String get holdToSetAsDefault => 'กดค้างเพื่อตั้งเป็นค่าเริ่มต้น';
@@ -1131,13 +1131,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. สร้างแอป Slack ที่ api.slack.com/apps\n2. เปิดใช้งาน Socket Mode → สร้าง App-Level Token (xapp-…)\n   ด้วยขอบเขต: connections:write\n3. เพิ่ม Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. ติดตั้งแอปในเวิร์กสเปซ → คัดลอก Bot Token (xoxb-…)';
+      '1. สร้างแอป Slack ที่ api.slack.com/apps\n2. เปิดใช้งาน Socket Mode → สร้างโทเค็นระดับแอป (xapp-…)\n   ด้วยขอบเขต: connections:write\n3. เพิ่มขอบเขตโทเค็นบอท: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. ติดตั้งแอปในเวิร์กสเปซ → คัดลอกโทเค็นบอท (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'โทเค็นบอท (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'โทเค็นระดับแอป (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'ต้องการ API URL และหมายเลขโทรศัพท์';
