@@ -53,6 +53,14 @@ class ProvidersModelsScreen extends ConsumerStatefulWidget {
 }
 
 class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
+  /// Invalidate providers that depend on config (model/credential) changes so
+  /// the UI reacts immediately without an app restart.
+  void _invalidateModelProviders() {
+    ref.invalidate(activeAgentProvider);
+    ref.invalidate(activeModelSupportsLiveProvider);
+    ref.invalidate(activeModelSupportsVisionProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     final configManager = ref.watch(configManagerProvider);
@@ -467,7 +475,10 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => _AddProviderScreen(onSaved: () => setState(() {})),
+        builder: (_) => _AddProviderScreen(onSaved: () {
+          _invalidateModelProviders();
+          setState(() {});
+        }),
       ),
     );
   }
@@ -615,6 +626,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                   configManager.update(configManager.config
                       .copyWith(providerCredentials: updated));
                   await configManager.save();
+                  _invalidateModelProviders();
                   if (ctx.mounted) Navigator.pop(ctx);
                   setState(() {});
                 },
@@ -645,6 +657,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                   configManager.update(configManager.config
                       .withProviderCredential(providerId, newCred));
                   await configManager.save();
+                  _invalidateModelProviders();
                   if (ctx.mounted) Navigator.pop(ctx);
                   setState(() {});
                 },
@@ -662,7 +675,10 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
       context,
       MaterialPageRoute(
           builder: (_) =>
-              _AddModelScreen(onModelAdded: () => setState(() {}))),
+              _AddModelScreen(onModelAdded: () {
+                _invalidateModelProviders();
+                setState(() {});
+              })),
     );
   }
 
@@ -765,6 +781,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                   configManager.update(
                       configManager.config.copyWith(modelList: updated));
                   await configManager.save();
+                  _invalidateModelProviders();
                   if (ctx.mounted) Navigator.pop(ctx);
                   setState(() {});
                 },
@@ -795,6 +812,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
                   configManager.update(
                       configManager.config.copyWith(modelList: updated));
                   await configManager.save();
+                  _invalidateModelProviders();
                   if (ctx.mounted) Navigator.pop(ctx);
                   setState(() {});
                 },
@@ -896,6 +914,7 @@ class _ProvidersModelsScreenState extends ConsumerState<ProvidersModelsScreen> {
     }
 
     await configManager.save();
+    _invalidateModelProviders();
 
     // Sync Live Activity model if gateway is running and agents were updated
     if (updateAgents) {
