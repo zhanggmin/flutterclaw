@@ -682,6 +682,157 @@ class AppLocalizationsZh extends AppLocalizations {
   String get defaultModelHint => '默认模型用于未指定自身模型的代理。';
 
   @override
+  String get voiceCallModelSection => '语音通话（Live）';
+
+  @override
+  String get voiceCallModelDescription => '仅在你点击通话按钮时使用。聊天、代理和后台任务会使用你的常规模型。';
+
+  @override
+  String get voiceCallModelLabel => 'Live 模型';
+
+  @override
+  String get voiceCallModelAutomatic => '自动';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => '在语音通话中引导';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      '在包含 BOOTSTRAP.md 的全新空聊天中，优先发起语音通话，而不是静默的文本引导（当 Live 可用时）。';
+
+  @override
+  String get liveVoiceNameLabel => '语音';
+
+  @override
+  String get firstHatchModeChoiceTitle => '你想怎么开始？';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      '你可以用文字和助手聊天，或开始语音对话，就像一通简短电话。选你觉得最轻松的方式就好。';
+
+  @override
+  String get firstHatchModeChoiceChatButton => '用文字聊天';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => '语音对话';
+
+  @override
+  String get liveVoiceBargeInHint => '请在助手说完后再开口（回声会让你在他们说话时打断他们）。';
+
+  @override
+  String get liveVoiceFallbackTitle => '直播';
+
+  @override
+  String get liveVoiceEndConversationTooltip => '结束通话';
+
+  @override
+  String get liveVoiceStatusConnecting => '正在连接…';
+
+  @override
+  String get liveVoiceStatusRunning => '运行中…';
+
+  @override
+  String get liveVoiceStatusSpeaking => '正在说话…';
+
+  @override
+  String get liveVoiceStatusListening => '正在聆听…';
+
+  @override
+  String get liveVoiceBadge => '直播';
+
+  @override
+  String get cannotAddLiveModelAsChat => '此模型仅用于语音通话。请从列表中选择聊天模型。';
+
+  @override
+  String get authBearerTokenLabel => 'Bearer 令牌';
+
+  @override
+  String get authAccessKeysLabel => '访问密钥';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '找到 $count 个模型';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '另有 $count 个 — 请手动输入 ID';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => '扫描二维码 / 条码';
+
+  @override
+  String get oauthSignInTitle => '登录';
+
+  @override
+  String get browserOverlayDone => '完成';
+
+  @override
+  String appInitializationError(String error) {
+    return '初始化错误：$error';
+  }
+
+  @override
+  String get credentialsScreenTitle => '凭据';
+
+  @override
+  String get credentialsIntroBody =>
+      '为每个提供商添加多个 API 密钥。FlutterClaw 会自动轮换，并对触发速率限制的密钥进行冷却。';
+
+  @override
+  String get credentialsNoProvidersBody => '尚未配置提供商。\n请前往「设置 → 提供商与模型」添加。';
+
+  @override
+  String get credentialsAddKeyTooltip => '添加密钥';
+
+  @override
+  String get credentialsNoExtraKeysMessage => '无额外密钥 — 使用「提供商与模型」中的密钥。';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return '添加 $provider 密钥';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => '标签（例如「工作密钥」）';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'API 密钥';
+
+  @override
+  String get securitySettingsTitle => '安全';
+
+  @override
+  String get securitySettingsIntro => '控制针对危险操作的安全检查。仅适用于当前会话。';
+
+  @override
+  String get securitySectionToolExecution => '工具执行';
+
+  @override
+  String get securityPatternDetectionTitle => '安全模式检测';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      '阻止危险模式：shell 注入、路径遍历、eval/exec、XSS、反序列化。';
+
+  @override
+  String get securityUnsafeModeBanner => '安全检查已关闭。工具调用将不经验证执行。用完后请重新开启。';
+
+  @override
+  String get securitySectionHowItWorks => '工作原理';
+
+  @override
+  String get securityHowItWorksBlocked => '当调用匹配危险模式时会被阻止，并告知智能体原因。';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      '在聊天中使用 /unsafe 可一次性放行被阻止的调用，随后检查会恢复。';
+
+  @override
+  String get securityHowItWorksToggleSession => '在此关闭「安全模式检测」可禁用整个会话的检查。';
+
+  @override
   String get holdToSetAsDefault => '长按设为默认';
 
   @override
@@ -1070,13 +1221,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. 在api.slack.com/apps创建Slack应用\n2. 启用Socket Mode → 生成App-Level Token (xapp-…)\n   作用域: connections:write\n3. 添加Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 将应用安装到工作区 → 复制Bot Token (xoxb-…)';
+      '1. 在 api.slack.com/apps 创建 Slack 应用\n2. 启用 Socket Mode → 生成应用级 Token（xapp-…）\n   作用域：connections:write\n3. 添加机器人 Token 作用域：chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 将应用安装到工作区 → 复制机器人 Token（xoxb-…）';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => '机器人 Token（xoxb-…）';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => '应用级 Token（xapp-…）';
 
   @override
   String get apiUrlPhoneRequired => '需要API URL和电话号码';
@@ -1095,7 +1246,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '需要在服务器上运行signal-cli-rest-api：\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\n通过REST API注册/链接您的Signal号码，然后在下方输入URL和电话号码。';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api 的 URL';
 
   @override
   String get signalPhoneNumber => '您的Signal电话号码';

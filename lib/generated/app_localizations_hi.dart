@@ -698,6 +698,166 @@ class AppLocalizationsHi extends AppLocalizations {
       'डिफ़ॉल्ट मॉडल उन एजेंटों द्वारा उपयोग किया जाता है जो अपना खुद का निर्दिष्ट नहीं करते।';
 
   @override
+  String get voiceCallModelSection => 'आवाज़ कॉल (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      'यह केवल तभी उपयोग होता है जब आप कॉल बटन टैप करते हैं। चैट, एजेंट और बैकग्राउंड टास्क आपका सामान्य मॉडल इस्तेमाल करते हैं।';
+
+  @override
+  String get voiceCallModelLabel => 'Live मॉडल';
+
+  @override
+  String get voiceCallModelAutomatic => 'स्वचालित';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => 'आवाज़ कॉल में बूटस्ट्रैप';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      'BOOTSTRAP.md के साथ नई खाली चैट में, (जब Live उपलब्ध हो) चुपचाप टेक्स्ट बूटस्ट्रैप की बजाय आवाज़ कॉल शुरू करें।';
+
+  @override
+  String get liveVoiceNameLabel => 'आवाज़';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'आप कैसे शुरू करना चाहेंगे?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'आप अपने सहायक से टेक्स्ट चैट कर सकते हैं या छोटी कॉल जैसी आवाज़ वाली बातचीत शुरू कर सकते हैं। जो आपको आसान लगे वह चुनें।';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'चैट में लिखें';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => 'आवाज़ से बात करें';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'सहायक के रुकने के बाद बोलें (इको की वजह से वे बीच में कट जाते थे)।';
+
+  @override
+  String get liveVoiceFallbackTitle => 'लाइव';
+
+  @override
+  String get liveVoiceEndConversationTooltip => 'बातचीत समाप्त करें';
+
+  @override
+  String get liveVoiceStatusConnecting => 'कनेक्ट हो रहा है…';
+
+  @override
+  String get liveVoiceStatusRunning => 'चल रहा है…';
+
+  @override
+  String get liveVoiceStatusSpeaking => 'बोल रहा है…';
+
+  @override
+  String get liveVoiceStatusListening => 'सुन रहा है…';
+
+  @override
+  String get liveVoiceBadge => 'लाइव';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'यह मॉडल केवल आवाज़ कॉल के लिए है। सूची से एक चैट मॉडल चुनें।';
+
+  @override
+  String get authBearerTokenLabel => 'Bearer टोकन';
+
+  @override
+  String get authAccessKeysLabel => 'एक्सेस कुंजियाँ';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count मॉडल मिले';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count और — ID मैन्युअल दर्ज करें';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'QR / बारकोड स्कैन करें';
+
+  @override
+  String get oauthSignInTitle => 'साइन इन';
+
+  @override
+  String get browserOverlayDone => 'हो गया';
+
+  @override
+  String appInitializationError(String error) {
+    return 'प्रारंभ त्रुटि: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => 'क्रेडेंशियल';
+
+  @override
+  String get credentialsIntroBody =>
+      'प्रति प्रदाता कई API कुंजियाँ जोड़ें। FlutterClaw उन्हें स्वचालित रूप से घुमाता है और दर सीमा पर ठंडा करता है।';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'कोई प्रदाता कॉन्फ़िगर नहीं।\nजोड़ने के लिए सेटिंग्स → प्रदाता और मॉडल पर जाएँ।';
+
+  @override
+  String get credentialsAddKeyTooltip => 'कुंजी जोड़ें';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      'कोई अतिरिक्त कुंजी नहीं — प्रदाता और मॉडल की कुंजी उपयोग हो रही है।';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return '$provider कुंजी जोड़ें';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => 'लेबल (जैसे \"कार्य कुंजी\")';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'API कुंजी';
+
+  @override
+  String get securitySettingsTitle => 'सुरक्षा';
+
+  @override
+  String get securitySettingsIntro =>
+      'खतरनाक कार्रवाइयों के खिलाफ सुरक्षा जाँच नियंत्रित करें। वे वर्तमान सत्र पर लागू होती हैं।';
+
+  @override
+  String get securitySectionToolExecution => 'टूल निष्पादन';
+
+  @override
+  String get securityPatternDetectionTitle => 'सुरक्षा पैटर्न पहचान';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      'खतरनाक पैटर्न अवरुद्ध: शेल इंजेक्शन, पथ ट्रैवर्सल, eval/exec, XSS, डिसीरियलाइज़ेशन।';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'सुरक्षा जाँच बंद। टूल कॉल बिना सत्यापन चलेंगे। समाप्त पर पुनः सक्षम करें।';
+
+  @override
+  String get securitySectionHowItWorks => 'यह कैसे काम करता है';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      'जब कॉल खतरनाक पैटर्न से मेल खाती है तो अवरुद्ध होती है और एजेंट को कारण बताया जाता है।';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'चैट में /unsafe से एक बार अवरुद्ध कॉल की अनुमति, फिर जाँच पुनः चालू।';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'पूरे सत्र के लिए जाँच बंद करने हेतु यहाँ \"सुरक्षा पैटर्न पहचान\" बंद करें।';
+
+  @override
   String get holdToSetAsDefault =>
       'डिफ़ॉल्ट के रूप में सेट करने के लिए दबाकर रखें';
 
@@ -1098,13 +1258,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. api.slack.com/apps पर एक Slack ऐप बनाएं\n2. Socket Mode सक्षम करें → App-Level Token (xapp-…) जनरेट करें\n   स्कोप के साथ: connections:write\n3. Bot Token Scopes जोड़ें: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. वर्कस्पेस में ऐप इंस्टॉल करें → Bot Token (xoxb-…) कॉपी करें';
+      '1. api.slack.com/apps पर एक Slack ऐप बनाएं\n2. Socket Mode सक्षम करें → ऐप-स्तरीय टोकन (xapp-…) जनरेट करें\n   स्कोप के साथ: connections:write\n3. बॉट टोकन स्कोप जोड़ें: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. वर्कस्पेस में ऐप इंस्टॉल करें → बॉट टोकन (xoxb-…) कॉपी करें';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'बॉट टोकन (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'ऐप-स्तरीय टोकन (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'API URL और फ़ोन नंबर आवश्यक हैं';
@@ -1124,7 +1284,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'सर्वर पर signal-cli-rest-api चलाना आवश्यक है:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nREST API के माध्यम से अपना Signal नंबर रजिस्टर/लिंक करें, फिर नीचे URL और अपना फ़ोन नंबर दर्ज करें।';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api का URL';
 
   @override
   String get signalPhoneNumber => 'आपका Signal फ़ोन नंबर';

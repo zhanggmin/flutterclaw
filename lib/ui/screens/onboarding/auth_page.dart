@@ -82,9 +82,18 @@ class _AuthPageState extends State<AuthPage> {
       text: widget.initialApiBase ?? provider?.apiBase ?? '',
     );
 
-    final models = ModelCatalog.availableModelsForProvider(widget.providerId);
+    final models =
+        ModelCatalog.chatCatalogModelsForProvider(widget.providerId);
     if (widget.initialModelId != null) {
-      _selectedModelId = widget.initialModelId;
+      final initial = widget.initialModelId!;
+      if (ModelCatalog.isLiveCatalogId(initial) ||
+          !models.any((m) => m.id == initial)) {
+        _selectedModelId = models.isNotEmpty
+            ? (models.where((m) => m.isFree).firstOrNull ?? models.first).id
+            : null;
+      } else {
+        _selectedModelId = initial;
+      }
     } else if (models.isNotEmpty) {
       final freeModel = models.where((m) => m.isFree).firstOrNull;
       _selectedModelId = freeModel?.id ?? models.first.id;
@@ -123,8 +132,8 @@ class _AuthPageState extends State<AuthPage> {
     // For Ollama, allow empty API key (local instance needs no auth).
     final requiresKey = widget.providerId != 'ollama';
     if ((requiresKey && _apiKeyController.text.isEmpty) || effectiveModelId == null) return;
-    final models = ModelCatalog.modelsForProvider(widget.providerId);
-    final selectedModel = models.where((m) => m.id == effectiveModelId).firstOrNull;
+    final modelId = effectiveModelId;
+    final selectedModel = ModelCatalog.tryGetModelFlexible(modelId);
 
     String? apiBase;
     if (_isBedrock) {
@@ -138,8 +147,8 @@ class _AuthPageState extends State<AuthPage> {
 
     widget.onChanged(AuthResult(
       apiKey: _apiKeyController.text.trim(),
-      modelId: effectiveModelId,
-      modelDisplayName: selectedModel?.displayName ?? effectiveModelId,
+      modelId: modelId,
+      modelDisplayName: selectedModel?.displayName ?? modelId,
       apiBase: apiBase,
       isFree: selectedModel?.isFree ?? false,
       awsSecretKey: _isBedrock && _awsAuthMode == 'sigv4'
@@ -323,7 +332,8 @@ class _AuthPageState extends State<AuthPage> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final provider = ModelCatalog.getProvider(widget.providerId);
-    final models = ModelCatalog.availableModelsForProvider(widget.providerId);
+    final models =
+        ModelCatalog.chatCatalogModelsForProvider(widget.providerId);
     final showBaseUrl = widget.providerId == 'ollama' ||
         widget.providerId == 'custom';
 
@@ -395,9 +405,15 @@ class _AuthPageState extends State<AuthPage> {
         // Bedrock: auth mode selector
         if (_isBedrock) ...[
           SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'bearer', label: Text('Bearer Token')),
-              ButtonSegment(value: 'sigv4', label: Text('Access Keys')),
+            segments: [
+              ButtonSegment(
+                value: 'bearer',
+                label: Text(context.l10n.authBearerTokenLabel),
+              ),
+              ButtonSegment(
+                value: 'sigv4',
+                label: Text(context.l10n.authAccessKeysLabel),
+              ),
             ],
             selected: {_awsAuthMode},
             onSelectionChanged: (v) {
@@ -421,7 +437,7 @@ class _AuthPageState extends State<AuthPage> {
           decoration: InputDecoration(
             labelText: _isBedrock
                 ? (_awsAuthMode == 'bearer'
-                    ? 'Bearer Token'
+                    ? context.l10n.authBearerTokenLabel
                     : 'AWS Access Key ID')
                 : context.l10n.apiKey,
             border: const OutlineInputBorder(),
@@ -588,7 +604,8 @@ class _AuthPageState extends State<AuthPage> {
           ),
           if (_discoveredModels.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text('${_discoveredModels.length} models found',
+            Text(
+                context.l10n.authModelsFoundCount(_discoveredModels.length),
                 style: theme.textTheme.labelSmall
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 4),
@@ -609,7 +626,8 @@ class _AuthPageState extends State<AuthPage> {
                 onPressed: () {
                   setState(() => _useCustomModel = true);
                 },
-                child: Text('+ ${_discoveredModels.length - 20} more — enter ID manually'),
+                child: Text(context.l10n
+                    .authModelsFoundMoreManual(_discoveredModels.length - 20)),
               ),
           ],
         ],
@@ -668,10 +686,13 @@ class _AuthPageState extends State<AuthPage> {
         apiBase: apiBase,
       );
       if (!mounted) return;
-      setState(() => _discoveredModels = found);
+      final filtered = found
+          .where((m) => !ModelCatalog.isLiveCatalogId(m.id))
+          .toList();
+      setState(() => _discoveredModels = filtered);
       // Auto-select the first discovered model if nothing is selected yet.
-      if (found.isNotEmpty && _selectedModelId == null) {
-        setState(() => _selectedModelId = found.first.id);
+      if (filtered.isNotEmpty && _selectedModelId == null) {
+        setState(() => _selectedModelId = filtered.first.id);
         _emitChange();
       }
     } catch (_) {

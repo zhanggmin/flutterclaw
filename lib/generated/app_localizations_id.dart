@@ -701,6 +701,166 @@ class AppLocalizationsId extends AppLocalizations {
       'Model default digunakan oleh agen yang tidak menentukan model sendiri.';
 
   @override
+  String get voiceCallModelSection => 'Panggilan suara (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      'Hanya digunakan saat Anda mengetuk tombol panggilan. Obrolan, agen, dan tugas latar belakang menggunakan model normal Anda.';
+
+  @override
+  String get voiceCallModelLabel => 'Model Live';
+
+  @override
+  String get voiceCallModelAutomatic => 'Otomatis';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap lewat panggilan suara';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      'Di obrolan baru yang kosong dengan BOOTSTRAP.md, mulai panggilan suara alih-alih bootstrap teks yang senyap (saat Live tersedia).';
+
+  @override
+  String get liveVoiceNameLabel => 'Suara';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'Bagaimana Anda ingin memulai?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'Anda bisa mengobrol lewat teks dengan asisten atau memulai percakapan suara seperti panggilan singkat. Pilih yang menurut Anda paling nyaman.';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'Mengetik di chat';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => 'Bicara dengan suara';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'Bicaralah setelah asisten selesai (gema sempat memotong mereka di tengah bicara).';
+
+  @override
+  String get liveVoiceFallbackTitle => 'Langsung';
+
+  @override
+  String get liveVoiceEndConversationTooltip => 'Akhiri percakapan';
+
+  @override
+  String get liveVoiceStatusConnecting => 'Menghubungkan…';
+
+  @override
+  String get liveVoiceStatusRunning => 'Berjalan…';
+
+  @override
+  String get liveVoiceStatusSpeaking => 'Berbicara…';
+
+  @override
+  String get liveVoiceStatusListening => 'Mendengarkan…';
+
+  @override
+  String get liveVoiceBadge => 'LIVE';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'Model ini hanya untuk panggilan suara. Pilih model chat dari daftar.';
+
+  @override
+  String get authBearerTokenLabel => 'Token Bearer';
+
+  @override
+  String get authAccessKeysLabel => 'Kunci akses';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count model ditemukan';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count lagi — masukkan ID secara manual';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'Pindai QR / barcode';
+
+  @override
+  String get oauthSignInTitle => 'Masuk';
+
+  @override
+  String get browserOverlayDone => 'Selesai';
+
+  @override
+  String appInitializationError(String error) {
+    return 'Kesalahan inisialisasi: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => 'Kredensial';
+
+  @override
+  String get credentialsIntroBody =>
+      'Tambahkan beberapa kunci API per penyedia. FlutterClaw merotasi otomatis dan menenangkan kunci yang kena batas.';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'Belum ada penyedia yang dikonfigurasi.\nBuka Pengaturan → Penyedia & model untuk menambah.';
+
+  @override
+  String get credentialsAddKeyTooltip => 'Tambah kunci';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      'Tidak ada kunci tambahan — memakai kunci dari Penyedia & model.';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return 'Tambah kunci $provider';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => 'Label (mis. \"Kunci kerja\")';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'Kunci API';
+
+  @override
+  String get securitySettingsTitle => 'Keamanan';
+
+  @override
+  String get securitySettingsIntro =>
+      'Kendalikan pemeriksaan keamanan terhadap operasi berbahaya. Berlaku untuk sesi saat ini.';
+
+  @override
+  String get securitySectionToolExecution => 'EKSEKUSI ALAT';
+
+  @override
+  String get securityPatternDetectionTitle => 'Deteksi pola keamanan';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      'Memblokir pola berbahaya: injeksi shell, path traversal, eval/exec, XSS, deserialisasi.';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'Pemeriksaan keamanan nonaktif. Panggilan alat tanpa validasi. Aktifkan lagi setelah selesai.';
+
+  @override
+  String get securitySectionHowItWorks => 'CARA KERJA';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      'Jika panggilan cocok dengan pola berbahaya, diblokir dan agen diberi tahu alasannya.';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'Gunakan /unsafe di obrolan untuk pengecualian sekali yang mengizinkan panggilan terblokir, lalu pemeriksaan aktif lagi.';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'Nonaktifkan \"Deteksi pola keamanan\" di sini untuk menonaktifkan pemeriksaan seluruh sesi.';
+
+  @override
   String get holdToSetAsDefault => 'Tahan untuk mengatur sebagai default';
 
   @override
@@ -1102,13 +1262,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Buat Aplikasi Slack di api.slack.com/apps\n2. Aktifkan Socket Mode → buat App-Level Token (xapp-…)\n   dengan cakupan: connections:write\n3. Tambahkan Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Instal aplikasi ke workspace → salin Bot Token (xoxb-…)';
+      '1. Buat aplikasi Slack di api.slack.com/apps\n2. Aktifkan Socket Mode → buat token level aplikasi (xapp-…)\n   dengan cakupan: connections:write\n3. Tambahkan scope token bot: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Instal aplikasi ke workspace → salin token bot (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Token bot (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'Token level aplikasi (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'URL API dan nomor telepon diperlukan';

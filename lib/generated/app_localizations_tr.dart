@@ -703,6 +703,166 @@ class AppLocalizationsTr extends AppLocalizations {
       'Varsayılan model, kendi modelini belirtmeyen ajanlar tarafından kullanılır.';
 
   @override
+  String get voiceCallModelSection => 'Sesli arama (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      'Yalnızca arama düğmesine dokunduğunuzda kullanılır. Sohbet, ajanlar ve arka plan görevleri normal modelinizi kullanır.';
+
+  @override
+  String get voiceCallModelLabel => 'Live modeli';
+
+  @override
+  String get voiceCallModelAutomatic => 'Otomatik';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => 'Sesli aramada bootstrap';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      'BOOTSTRAP.md içeren yeni boş bir sohbette, (Live mevcutsa) sessiz metin bootstrap yerine sesli arama başlatın.';
+
+  @override
+  String get liveVoiceNameLabel => 'Ses';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'Nasıl başlamak istersiniz?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'Asistanınızla yazılı sohbet edebilir veya kısa bir arama gibi sesli konuşmaya başlayabilirsiniz. Size en kolay geleni seçin.';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'Sohbette yaz';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => 'Sesle konuş';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'Asistan durduktan sonra konuşun (eko, konuşmanın ortasında onları kesiyordu).';
+
+  @override
+  String get liveVoiceFallbackTitle => 'Canlı';
+
+  @override
+  String get liveVoiceEndConversationTooltip => 'Görüşmeyi bitir';
+
+  @override
+  String get liveVoiceStatusConnecting => 'Bağlanıyor…';
+
+  @override
+  String get liveVoiceStatusRunning => 'Çalışıyor…';
+
+  @override
+  String get liveVoiceStatusSpeaking => 'Konuşuyor…';
+
+  @override
+  String get liveVoiceStatusListening => 'Dinliyor…';
+
+  @override
+  String get liveVoiceBadge => 'CANLI';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'Bu model yalnızca sesli aramalar içindir. Listeden bir sohbet modeli seçin.';
+
+  @override
+  String get authBearerTokenLabel => 'Bearer jetonu';
+
+  @override
+  String get authAccessKeysLabel => 'Erişim anahtarları';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count model bulundu';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count tane daha — kimliği elle girin';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'QR / barkod tara';
+
+  @override
+  String get oauthSignInTitle => 'Giriş yap';
+
+  @override
+  String get browserOverlayDone => 'Bitti';
+
+  @override
+  String appInitializationError(String error) {
+    return 'Başlatma hatası: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => 'Kimlik bilgileri';
+
+  @override
+  String get credentialsIntroBody =>
+      'Sağlayıcı başına birden çok API anahtarı ekleyin. FlutterClaw bunları döndürür, limitte olanları soğutur.';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'Yapılandırılmış sağlayıcı yok.\nEklemek için Ayarlar → Sağlayıcılar ve modellere gidin.';
+
+  @override
+  String get credentialsAddKeyTooltip => 'Anahtar ekle';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      'Ek anahtar yok — Sağlayıcılar ve modellerdeki anahtar kullanılıyor.';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return '$provider anahtarı ekle';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => 'Etiket (ör. \"İş anahtarı\")';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'API anahtarı';
+
+  @override
+  String get securitySettingsTitle => 'Güvenlik';
+
+  @override
+  String get securitySettingsIntro =>
+      'Tehlikeli işlemlere karşı güvenlik kontrollerini yönetin. Geçerli oturum için geçerlidir.';
+
+  @override
+  String get securitySectionToolExecution => 'ARAÇ YÜRÜTME';
+
+  @override
+  String get securityPatternDetectionTitle => 'Güvenlik deseni algılama';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      'Tehlikeli desenleri engeller: shell enjeksiyonu, path traversal, eval/exec, XSS, serileştirme.';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'Güvenlik kontrolleri kapalı. Araç çağrıları doğrulama olmadan çalışır. Bitince yeniden açın.';
+
+  @override
+  String get securitySectionHowItWorks => 'NASIL ÇALIŞIR';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      'Bir çağrı tehlikeli bir desenle eşleşirse engellenir ve aracıya neden bildirilir.';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'Sohbette /unsafe ile tek seferlik istisna tanıyın, sonra kontroller yeniden açılır.';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'Tüm oturum için kontrolleri kapatmak için burada \"Güvenlik deseni algılama\"yı kapatın.';
+
+  @override
   String get holdToSetAsDefault =>
       'Varsayılan olarak ayarlamak için basılı tutun';
 
@@ -1105,13 +1265,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. api.slack.com/apps adresinde bir Slack Uygulaması oluşturun\n2. Socket Mode\'u etkinleştirin → App-Level Token (xapp-…) oluşturun\n   kapsam ile: connections:write\n3. Bot Token Kapsamları ekleyin: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Uygulamayı workspace\'e yükleyin → Bot Token\'ı kopyalayın (xoxb-…)';
+      '1. api.slack.com/apps adresinde bir Slack uygulaması oluşturun\n2. Socket Mode\'u etkinleştirin → Uygulama düzeyi token (xapp-…) oluşturun\n   kapsam ile: connections:write\n3. Bot token kapsamlarını ekleyin: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Uygulamayı workspace\'e yükleyin → Bot tokenini kopyalayın (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Bot tokeni (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'Uygulama düzeyi token (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired =>
@@ -1518,7 +1678,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get browseLabel => 'Gözat';
 
   @override
-  String get apiTokenLabel => 'API Token';
+  String get apiTokenLabel => 'API belirteci';
 
   @override
   String get connectToClawHub => 'ClawHub\'a Bağlan';

@@ -703,6 +703,166 @@ class AppLocalizationsNl extends AppLocalizations {
       'Het standaardmodel wordt gebruikt door agenten die geen eigen model opgeven.';
 
   @override
+  String get voiceCallModelSection => 'Spraakoproep (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      'Wordt alleen gebruikt wanneer u op de belknop tikt. Chat, agenten en achtergrondtaken gebruiken uw normale model.';
+
+  @override
+  String get voiceCallModelLabel => 'Live-model';
+
+  @override
+  String get voiceCallModelAutomatic => 'Automatisch';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap in spraakoproep';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      'Start in een nieuwe lege chat met BOOTSTRAP.md een spraakoproep in plaats van een stille tekst-bootstrap (wanneer Live beschikbaar is).';
+
+  @override
+  String get liveVoiceNameLabel => 'Stem';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'Hoe wil je beginnen?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'Je kunt met je assistent chatten via tekst of een gesprek starten met je stem, als een kort telefoongesprek. Kies wat het makkelijkst voor je voelt.';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'Typen in de chat';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => 'Praten met stem';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'Spreek nadat de assistent klaar is (echo onderbrak hen eerder midden in hun zin).';
+
+  @override
+  String get liveVoiceFallbackTitle => 'Live';
+
+  @override
+  String get liveVoiceEndConversationTooltip => 'Gesprek beëindigen';
+
+  @override
+  String get liveVoiceStatusConnecting => 'Verbinden…';
+
+  @override
+  String get liveVoiceStatusRunning => 'Bezig…';
+
+  @override
+  String get liveVoiceStatusSpeaking => 'Spreekt…';
+
+  @override
+  String get liveVoiceStatusListening => 'Luistert…';
+
+  @override
+  String get liveVoiceBadge => 'LIVE';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'Dit model is alleen voor spraakoproepen. Kies een chatmodel uit de lijst.';
+
+  @override
+  String get authBearerTokenLabel => 'Bearer-token';
+
+  @override
+  String get authAccessKeysLabel => 'Toegangssleutels';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count modellen gevonden';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count meer — voer ID handmatig in';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'QR / streepjescode scannen';
+
+  @override
+  String get oauthSignInTitle => 'Inloggen';
+
+  @override
+  String get browserOverlayDone => 'Gereed';
+
+  @override
+  String appInitializationError(String error) {
+    return 'Initialisatiefout: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => 'Inloggegevens';
+
+  @override
+  String get credentialsIntroBody =>
+      'Voeg meerdere API-sleutels per provider toe. FlutterClaw wisselt automatisch en koelt sleutels af bij ratelimits.';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'Geen providers geconfigureerd.\nGa naar Instellingen → Providers en modellen om er een toe te voegen.';
+
+  @override
+  String get credentialsAddKeyTooltip => 'Sleutel toevoegen';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      'Geen extra sleutels — de sleutel uit Providers en modellen wordt gebruikt.';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return '$provider-sleutel toevoegen';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => 'Label (bijv. \"Werksleutel\")';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'API-sleutel';
+
+  @override
+  String get securitySettingsTitle => 'Beveiliging';
+
+  @override
+  String get securitySettingsIntro =>
+      'Beheer beveiligingscontroles tegen gevaarlijke acties. Ze gelden voor de huidige sessie.';
+
+  @override
+  String get securitySectionToolExecution => 'TOOL-UITVOERING';
+
+  @override
+  String get securityPatternDetectionTitle => 'Detectie van onveilige patronen';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      'Blokkeert gevaarlijke patronen: shell-injectie, path traversal, eval/exec, XSS, deserialisatie.';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'Beveiligingscontroles uit. Toolaanroepen worden zonder validatie uitgevoerd. Schakel ze daarna weer in.';
+
+  @override
+  String get securitySectionHowItWorks => 'HOE HET WERKT';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      'Als een aanroep overeenkomt met een gevaarlijk patroon, wordt deze geblokkeerd en krijgt de agent de reden.';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'Gebruik /unsafe in de chat voor een eenmalige uitzondering voor een geblokkeerde aanroep; daarna zijn controles weer actief.';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'Schakel hier \"Detectie van onveilige patronen\" uit om controles voor de hele sessie uit te zetten.';
+
+  @override
   String get holdToSetAsDefault =>
       'Houd ingedrukt om als standaard in te stellen';
 
@@ -1106,13 +1266,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Maak een Slack App aan op api.slack.com/apps\n2. Schakel Socket Mode in → genereer App-Level Token (xapp-…)\n   met scope: connections:write\n3. Voeg Bot Token Scopes toe: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Installeer app in workspace → kopieer Bot Token (xoxb-…)';
+      '1. Maak een Slack-app aan op api.slack.com/apps\n2. Schakel Socket Mode in → genereer app-level token (xapp-…)\n   met scope: connections:write\n3. Voeg bot-token scopes toe: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Installeer de app in de workspace → kopieer bot-token (xoxb-…)';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => 'Bot-token (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => 'App-level token (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'API-URL en telefoonnummer zijn verplicht';
@@ -1132,7 +1292,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Vereist signal-cli-rest-api draaiend op een server:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nRegistreer/koppel uw Signal-nummer via de REST API, voer dan de URL en uw telefoonnummer hieronder in.';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api-URL';
 
   @override
   String get signalPhoneNumber => 'Uw Signal-telefoonnummer';

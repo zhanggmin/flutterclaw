@@ -133,14 +133,16 @@ class RunShellCommandTool extends Tool {
       if (type == 'stdout') {
         final data = event['data'] as String? ?? '';
         chunkCount++;
-        debugPrint('[SandboxTool] stdout chunk #$chunkCount len=${data.length}');
-        stdoutBuf.write(_stripAnsi(data)); // Strip ANSI for LLM
+        final stripped = _stripAnsi(data);
+        debugPrint('[SandboxTool] stdout chunk #$chunkCount rawLen=${data.length} strippedLen=${stripped.length}');
+        stdoutBuf.write(stripped); // Strip ANSI for LLM
         yield _stripStreamNoise(data); // Noise-filtered for xterm
       } else if (type == 'stderr') {
         final data = event['data'] as String? ?? '';
         chunkCount++;
-        debugPrint('[SandboxTool] stderr chunk #$chunkCount len=${data.length}');
-        stderrBuf.write(_stripAnsi(data));
+        final stripped = _stripAnsi(data);
+        debugPrint('[SandboxTool] stderr chunk #$chunkCount rawLen=${data.length} strippedLen=${stripped.length}');
+        stderrBuf.write(stripped);
         yield _stripStreamNoise(data);
       } else if (type == 'exit') {
         exitCode = (event['exit_code'] as int?) ?? 0;
@@ -149,12 +151,15 @@ class RunShellCommandTool extends Tool {
       }
     }
 
-    debugPrint('[SandboxTool] stream done, $chunkCount chunks, stdout=${stdoutBuf.length} stderr=${stderrBuf.length}');
+    final stdoutStr = stdoutBuf.toString().trim();
+    final stderrStr = stderrBuf.toString().trim();
+    debugPrint('[SandboxTool] stream done, $chunkCount chunks, stdoutRaw=${stdoutBuf.length} stderrRaw=${stderrBuf.length} stdoutTrimmed=${stdoutStr.length}');
+    debugPrint('[SandboxTool] stdout preview: "${stdoutStr.substring(0, stdoutStr.length.clamp(0, 120))}"');
     // Final authoritative JSON (replaces accumulated text for the LLM)
     yield '\x00CLEAR\x00${jsonEncode({
       "exit_code": exitCode,
-      "stdout": stdoutBuf.toString(),
-      "stderr": stderrBuf.toString(),
+      "stdout": stdoutStr,
+      "stderr": stderrStr,
       "timed_out": timedOut,
     })}';
   }
@@ -180,14 +185,16 @@ class RunShellCommandTool extends Tool {
   );
   // TinyEMU ash prompt pattern: "~ # " or "/path # " (no spaces in path).
   static final _promptRe = RegExp(r'^[~/][^ ]*? # .*', multiLine: true);
+  // NOTE: No .trim() here — called per-chunk; trimming each chunk removes
+  // inter-chunk newlines and can produce empty stdoutBuf. Trim the final
+  // accumulated string instead (done in executeStream before yielding CLEAR).
   static String _stripAnsi(String s) => s
       .replaceAll(_ansiRe, '')
       .replaceAll(_promptRe, '')
       .replaceAll(_sentinelRe, '')
       .replaceAll(_cdWrapperRe, '')
       .replaceAll('\r', '')
-      .replaceAll(RegExp(r'\n{3,}'), '\n\n')
-      .trim();
+      .replaceAll(RegExp(r'\n{3,}'), '\n\n');
 
   @override
   Future<ToolResult> execute(Map<String, dynamic> args) async {

@@ -684,6 +684,164 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultModelHint => '기본 모델은 자체 모델을 지정하지 않는 에이전트에 사용됩니다.';
 
   @override
+  String get voiceCallModelSection => '음성 통화 (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      '통화 버튼을 탭할 때만 사용됩니다. 채팅, 에이전트, 백그라운드 작업은 일반 모델을 사용합니다.';
+
+  @override
+  String get voiceCallModelLabel => 'Live 모델';
+
+  @override
+  String get voiceCallModelAutomatic => '자동';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => '음성 통화에서 부트스트랩';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      '새로운 빈 채팅에서 BOOTSTRAP.md가 있을 때 (Live가 가능하면) 조용한 텍스트 부트스트랩 대신 음성 통화를 시작합니다.';
+
+  @override
+  String get liveVoiceNameLabel => '음성';
+
+  @override
+  String get firstHatchModeChoiceTitle => '어떻게 시작할까요?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      '텍스트로 채팅하거나 짧은 통화처럼 음성 대화를 시작할 수 있어요. 편한 방법을 고르세요.';
+
+  @override
+  String get firstHatchModeChoiceChatButton => '채팅으로 입력';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => '음성으로 말하기';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      '어시스턴트가 멈춘 뒤에 말하세요(에코 때문에 말하는 도중에 끊기던 문제가 있었어요).';
+
+  @override
+  String get liveVoiceFallbackTitle => '라이브';
+
+  @override
+  String get liveVoiceEndConversationTooltip => '통화 종료';
+
+  @override
+  String get liveVoiceStatusConnecting => '연결 중…';
+
+  @override
+  String get liveVoiceStatusRunning => '실행 중…';
+
+  @override
+  String get liveVoiceStatusSpeaking => '말하는 중…';
+
+  @override
+  String get liveVoiceStatusListening => '듣는 중…';
+
+  @override
+  String get liveVoiceBadge => 'LIVE';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      '이 모델은 음성 통화 전용입니다. 목록에서 채팅 모델을 선택하세요.';
+
+  @override
+  String get authBearerTokenLabel => 'Bearer 토큰';
+
+  @override
+  String get authAccessKeysLabel => '액세스 키';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '모델 $count개 발견';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count개 더 — ID를 직접 입력하세요';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'QR / 바코드 스캔';
+
+  @override
+  String get oauthSignInTitle => '로그인';
+
+  @override
+  String get browserOverlayDone => '완료';
+
+  @override
+  String appInitializationError(String error) {
+    return '초기화 오류: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => '자격 증명';
+
+  @override
+  String get credentialsIntroBody =>
+      '공급자마다 여러 API 키를 추가하세요. FlutterClaw가 자동으로 순환하고 한도에 걸린 키는 쿨다운합니다.';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      '구성된 공급자가 없습니다.\n설정 → 공급자 및 모델에서 추가하세요.';
+
+  @override
+  String get credentialsAddKeyTooltip => '키 추가';
+
+  @override
+  String get credentialsNoExtraKeysMessage => '추가 키 없음 — 공급자 및 모델의 키를 사용 중입니다.';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return '$provider 키 추가';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => '라벨(예: \"업무용 키\")';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'API 키';
+
+  @override
+  String get securitySettingsTitle => '보안';
+
+  @override
+  String get securitySettingsIntro => '위험한 작업에 대한 보안 검사를 제어합니다. 현재 세션에 적용됩니다.';
+
+  @override
+  String get securitySectionToolExecution => '도구 실행';
+
+  @override
+  String get securityPatternDetectionTitle => '보안 패턴 감지';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      '위험한 패턴 차단: 셸 인젝션, 경로 순회, eval/exec, XSS, 역직렬화.';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      '보안 검사가 꺼져 있습니다. 도구 호출이 검증 없이 실행됩니다. 끝나면 다시 켜세요.';
+
+  @override
+  String get securitySectionHowItWorks => '작동 방식';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      '도구 호출이 위험한 패턴과 일치하면 차단되고 에이전트에게 이유가 전달됩니다.';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      '채팅에서 /unsafe로 차단된 호출을 한 번 허용한 뒤 검사가 다시 켜집니다.';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      '여기서 \"보안 패턴 감지\"를 끄면 세션 전체에서 검사가 비활성화됩니다.';
+
+  @override
   String get holdToSetAsDefault => '길게 눌러 기본값으로 설정';
 
   @override
@@ -1073,13 +1231,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. api.slack.com/apps에서 Slack 앱 생성\n2. Socket Mode 활성화 → App-Level Token (xapp-…) 생성\n   범위: connections:write\n3. Bot Token Scopes 추가: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 워크스페이스에 앱 설치 → Bot Token (xoxb-…) 복사';
+      '1. api.slack.com/apps에서 Slack 앱 생성\n2. Socket Mode 활성화 → 앱 레벨 토큰 (xapp-…) 생성\n   범위: connections:write\n3. 봇 토큰 범위 추가: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. 워크스페이스에 앱 설치 → 봇 토큰 (xoxb-…) 복사';
 
   @override
-  String get botTokenXoxb => 'Bot Token (xoxb-…)';
+  String get botTokenXoxb => '봇 토큰 (xoxb-…)';
 
   @override
-  String get appLevelToken => 'App-Level Token (xapp-…)';
+  String get appLevelToken => '앱 레벨 토큰 (xapp-…)';
 
   @override
   String get apiUrlPhoneRequired => 'API URL과 전화번호가 필요합니다';
@@ -1098,7 +1256,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '서버에서 실행 중인 signal-cli-rest-api가 필요합니다:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nREST API를 통해 Signal 번호를 등록/연결한 다음 아래에 URL과 전화번호를 입력하세요.';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api URL 주소';
 
   @override
   String get signalPhoneNumber => '귀하의 Signal 전화번호';

@@ -704,6 +704,166 @@ class AppLocalizationsPt extends AppLocalizations {
       'O modelo padrão é usado por agentes que não especificam o seu próprio.';
 
   @override
+  String get voiceCallModelSection => 'Chamada de voz (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      'Usado apenas quando você toca no botão de chamada. Chat, agentes e tarefas em segundo plano usam seu modelo normal.';
+
+  @override
+  String get voiceCallModelLabel => 'Modelo Live';
+
+  @override
+  String get voiceCallModelAutomatic => 'Automático';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap na chamada de voz';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      'Em um chat novo e vazio com BOOTSTRAP.md, inicie uma chamada de voz em vez de um bootstrap silencioso por texto (quando o Live estiver disponível).';
+
+  @override
+  String get liveVoiceNameLabel => 'Voz';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'Como você quer começar?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'Você pode conversar por texto com seu assistente ou começar uma conversa por voz, como uma ligação rápida. Escolha o que for mais fácil para você.';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'Escrever no chat';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => 'Falar por voz';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'Fale depois que o assistente parar (o eco estava interrompendo eles no meio da fala).';
+
+  @override
+  String get liveVoiceFallbackTitle => 'Ao vivo';
+
+  @override
+  String get liveVoiceEndConversationTooltip => 'Encerrar conversa';
+
+  @override
+  String get liveVoiceStatusConnecting => 'A conectar…';
+
+  @override
+  String get liveVoiceStatusRunning => 'A executar…';
+
+  @override
+  String get liveVoiceStatusSpeaking => 'A falar…';
+
+  @override
+  String get liveVoiceStatusListening => 'A ouvir…';
+
+  @override
+  String get liveVoiceBadge => 'AO VIVO';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'Este modelo é apenas para chamadas de voz. Escolha um modelo de chat na lista.';
+
+  @override
+  String get authBearerTokenLabel => 'Token Bearer';
+
+  @override
+  String get authAccessKeysLabel => 'Chaves de acesso';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count modelos encontrados';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count a mais — insira o ID manualmente';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'Ler QR / código de barras';
+
+  @override
+  String get oauthSignInTitle => 'Entrar';
+
+  @override
+  String get browserOverlayDone => 'Concluído';
+
+  @override
+  String appInitializationError(String error) {
+    return 'Erro de inicialização: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => 'Credenciais';
+
+  @override
+  String get credentialsIntroBody =>
+      'Adicione várias chaves de API por provedor. O FlutterClaw alterna entre elas automaticamente e pausa as que atingem limites.';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'Nenhum provedor configurado.\nVá em Configurações → Provedores e modelos para adicionar um.';
+
+  @override
+  String get credentialsAddKeyTooltip => 'Adicionar chave';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      'Sem chaves extras — usando a chave de Provedores e modelos.';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return 'Adicionar chave $provider';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => 'Rótulo (ex.: \"Chave do trabalho\")';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'Chave de API';
+
+  @override
+  String get securitySettingsTitle => 'Segurança';
+
+  @override
+  String get securitySettingsIntro =>
+      'Controle verificações de segurança contra operações perigosas. Valem para a sessão atual.';
+
+  @override
+  String get securitySectionToolExecution => 'EXECUÇÃO DE FERRAMENTAS';
+
+  @override
+  String get securityPatternDetectionTitle => 'Deteção de padrões de segurança';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      'Bloqueia padrões perigosos: injeção de shell, path traversal, eval/exec, XSS, desserialização.';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'Verificações de segurança desativadas. Chamadas de ferramenta rodarão sem validação. Reative ao terminar.';
+
+  @override
+  String get securitySectionHowItWorks => 'COMO FUNCIONA';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      'Quando uma chamada corresponde a um padrão perigoso, ela é bloqueada e o agente é informado do motivo.';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'Use /unsafe no chat para uma exceção única que permite uma chamada bloqueada; depois as verificações voltam.';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'Desative aqui \"Deteção de padrões de segurança\" para desligar verificações na sessão inteira.';
+
+  @override
   String get holdToSetAsDefault =>
       'Mantenha pressionado para definir como padrão';
 

@@ -458,6 +458,17 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
       );
     }
 
+    // Live API models (Gemini Live) require a WebSocket session — they cannot
+    // be used for REST chat completions. Return a user-visible prompt.
+    if (modelEntry.isLiveOnly) {
+      _log.info('Model "$modelName" is a Live API model — skipping REST call');
+      return AgentResponse(
+        content: 'Este modelo usa la API en tiempo real. '
+            'Toca el botón de voz para iniciar una conversación en vivo.',
+        sessionKey: sessionKey,
+      );
+    }
+
     // Pre-request token validation: check if context approaching limit
     final totalTokens = _estimateContextTokens(context, systemPrompt);
     final contextWindow =
@@ -905,6 +916,20 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
         isDone: true,
         finalResponse: AgentResponse(
           content: 'Error: Model "$modelName" is not configured.',
+          sessionKey: sessionKey,
+        ),
+      );
+      return;
+    }
+
+    // Live API models require a WebSocket session — reject REST attempts.
+    if (modelEntry.isLiveOnly) {
+      _log.info('Model "$modelName" is a Live API model — skipping REST call');
+      yield AgentStreamEvent(
+        isDone: true,
+        finalResponse: AgentResponse(
+          content: 'Este modelo usa la API en tiempo real. '
+              'Toca el botón de voz para iniciar una conversación en vivo.',
           sessionKey: sessionKey,
         ),
       );
@@ -1836,6 +1861,14 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
     return buf.toString().trim();
   }
 
+  /// Full workspace system prompt (BOOTSTRAP, identity files, skills, etc.).
+  /// Used by Gemini Live voice bootstrap to mirror REST hatch context.
+  Future<String> buildSystemPromptForAgent({
+    String? agentId,
+    String? userLanguage,
+  }) =>
+      _buildSystemPrompt(userLanguage: userLanguage, agentId: agentId);
+
   // -- System prompt --------------------------------------------------------
 
   Future<String> _buildSystemPrompt({
@@ -1923,7 +1956,15 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
       'interactively through the app. Do NOT suggest manual API credentials or '
       'developer portal setup unless the user explicitly asks for API-based access. '
       'The browser supports persistent sessions — the user logs in once and the '
-      'session is saved for future use.',
+      'session is saved for future use.\n\n'
+      '## Image Search\n'
+      'When the user asks to find, search for, or show images or photos '
+      '(e.g. "busca imagenes de gatitos", "show me pictures of mountains", '
+      '"mostrame fotos de..."), use the `web_image_search` tool. '
+      'It returns image URLs ready to embed — include them inline in your '
+      'response using markdown: `![description](url)`.\n'
+      'Do NOT use `image_generate` for finding real photos — that tool creates '
+      'AI-generated art from a prompt, not real images from the web.',
     );
 
     // Workspace files in OpenClaw injection order
@@ -2012,6 +2053,8 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
       promptTokens: a.promptTokens + b.promptTokens,
       completionTokens: a.completionTokens + b.completionTokens,
       totalTokens: a.totalTokens + b.totalTokens,
+      cacheReadTokens: a.cacheReadTokens + b.cacheReadTokens,
+      cacheWriteTokens: a.cacheWriteTokens + b.cacheWriteTokens,
     );
   }
 
@@ -2258,7 +2301,9 @@ If you have exhausted ALL approaches above (minimum 8-10 different attempts) and
   /// Returns the model name considered "lightest" — prefers free/small models.
   /// Falls back to the first configured model if nothing specific is found.
   String? _findLowestCostModel() {
-    final models = configManager.config.modelList;
+    final models = configManager.config.modelList
+        .where((m) => !m.isLiveOnly)
+        .toList();
     if (models.isEmpty) return null;
     // Prefer explicitly free models
     final free = models.where((m) => m.isFree).toList();

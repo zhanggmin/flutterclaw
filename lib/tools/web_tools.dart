@@ -4,6 +4,8 @@
 /// WebFetchTool: Fetches URL content and converts to markdown.
 library;
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutterclaw/data/models/config.dart';
 import 'package:flutterclaw/services/ssrf_guard.dart';
@@ -377,6 +379,15 @@ class WebFetchTool extends Tool {
               buffer.write(text);
             }
             return;
+          case 'img':
+            final src = node.attributes['src'];
+            if (src != null && src.isNotEmpty) {
+              final alt = (node.attributes['alt']?.trim() ?? '')
+                  .replaceAll('[', r'\[')
+                  .replaceAll(']', r'\]');
+              buffer.write('![$alt]($src)');
+            }
+            return;
           case 'li':
             buffer.write('- ');
             for (final child in node.nodes) visit(child);
@@ -403,5 +414,206 @@ class WebFetchTool extends Tool {
 
   String _textContent(dom.Element el) {
     return el.text.trim();
+  }
+}
+
+/// Searches the web for images using the headless browser.
+/// Falls back to Brave API when browser is unavailable and Brave is configured.
+class WebImageSearchTool extends Tool {
+  final FlutterClawConfig? config;
+  final Dio _dio = Dio();
+
+  /// Headless browser for rendering image search results.
+  Tool? headlessBrowser;
+
+  WebImageSearchTool({this.config, this.headlessBrowser});
+
+  @override
+  String get name => 'web_image_search';
+
+  @override
+  String get description =>
+      'Search the web for images. Returns image URLs with titles, ready to '
+      'embed in your response as markdown: ![title](url). '
+      'Use this when the user asks to find, show, or search for images or photos.';
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'type': 'object',
+        'properties': {
+          'query': {
+            'type': 'string',
+            'description': 'Image search query.',
+          },
+          'count': {
+            'type': 'integer',
+            'description': 'Number of images to return (default 5, max 10).',
+          },
+        },
+        'required': ['query'],
+      };
+
+  @override
+  Future<ToolResult> execute(Map<String, dynamic> args) async {
+    final query = args['query'] as String?;
+    if (query == null || query.isEmpty) {
+      return ToolResult.error('query is required');
+    }
+    final count = (args['count'] as int? ?? 5).clamp(1, 10);
+
+    // Prefer headless browser — renders JS and handles anti-bot measures.
+    if (headlessBrowser != null) {
+      return _searchWithBrowser(query, count);
+    }
+
+    // Fallback: Brave image search API (if configured).
+    final web = config?.tools.web ?? const WebToolsConfig();
+    if (web.brave.enabled && web.brave.apiKey != null) {
+      return _searchBraveImages(query, count, web.brave);
+    }
+
+    return ToolResult.error(
+      'Image search requires a browser session or Brave API key.',
+    );
+  }
+
+  Future<ToolResult> _searchWithBrowser(String query, int count) async {
+    try {
+      final encoded = Uri.encodeComponent(query);
+      final url = 'https://duckduckgo.com/?q=$encoded&iax=images&ia=images';
+
+      await headlessBrowser!.execute({
+        'action': 'navigate',
+        'url': url,
+        'wait_ms': 8000,
+      });
+
+      // Extract image URLs via JS. Tries DDG tile selectors first,
+      // then falls back to any sufficiently large <img> on the page.
+      final jsResult = await headlessBrowser!.execute({
+        'action': 'js',
+        'script': '''
+          (function() {
+            var count = $count;
+            var results = [];
+
+            // Strategy 1: DuckDuckGo image tile containers
+            var tiles = document.querySelectorAll('.tile--img');
+            for (var i = 0; i < tiles.length && results.length < count; i++) {
+              var img = tiles[i].querySelector('img');
+              if (!img) continue;
+              var src = img.src || img.getAttribute('data-src') || '';
+              if (!src.startsWith('http')) continue;
+              var title = tiles[i].getAttribute('data-title') || img.alt || '';
+              results.push({src: src, title: title.trim()});
+            }
+
+            // Strategy 2: Any <img> wider than 50px with an http src
+            if (results.length < count) {
+              var imgs = document.querySelectorAll('img');
+              for (var j = 0; j < imgs.length && results.length < count; j++) {
+                var img = imgs[j];
+                var src = img.src || img.getAttribute('data-src') || '';
+                if (!src.startsWith('http')) continue;
+                if ((img.naturalWidth || img.width || 0) < 50) continue;
+                var alreadyAdded = false;
+                for (var k = 0; k < results.length; k++) {
+                  if (results[k].src === src) { alreadyAdded = true; break; }
+                }
+                if (!alreadyAdded) {
+                  results.push({src: src, title: (img.alt || '').trim()});
+                }
+              }
+            }
+
+            return JSON.stringify(results);
+          })()
+        ''',
+      });
+
+      if (jsResult.isError) {
+        return ToolResult.error('Could not extract images: ${jsResult.content}');
+      }
+
+      final raw = jsResult.content.trim();
+      if (raw.isEmpty || raw == 'null' || raw == '[]') {
+        return ToolResult.success('No images found for: $query');
+      }
+
+      final List<dynamic> items = jsonDecode(raw) as List<dynamic>;
+      if (items.isEmpty) {
+        return ToolResult.success('No images found for: $query');
+      }
+
+      final lines = <String>['Found images for "$query":\n'];
+      var i = 1;
+      for (final item in items) {
+        final m = item as Map<String, dynamic>;
+        final src = m['src'] as String? ?? '';
+        if (src.isEmpty) continue;
+        final title = (m['title'] as String? ?? '').isNotEmpty
+            ? m['title'] as String
+            : 'Image $i';
+        final safeTitle = title.replaceAll('[', r'\[').replaceAll(']', r'\]');
+        lines.add('$i. $title');
+        lines.add('   ![$safeTitle]($src)');
+        lines.add('');
+        i++;
+      }
+      if (i == 1) return ToolResult.success('No images found for: $query');
+      return ToolResult.success(lines.join('\n'));
+    } catch (e) {
+      return ToolResult.error('Image search failed: $e');
+    }
+  }
+
+  Future<ToolResult> _searchBraveImages(
+    String query,
+    int count,
+    WebSearchProviderConfig cfg,
+  ) async {
+    try {
+      final response = await _dio.get<String>(
+        'https://api.search.brave.com/res/v1/images/search',
+        queryParameters: {'q': query, 'count': count},
+        options: Options(
+          headers: {'X-Subscription-Token': cfg.apiKey!},
+          responseType: ResponseType.plain,
+          validateStatus: (s) => s != null && s < 400,
+          receiveTimeout: const Duration(seconds: 15),
+        ),
+      );
+
+      if (response.data == null || response.data!.isEmpty) {
+        return ToolResult.error('Brave image search API failed');
+      }
+
+      final parsed = jsonDecode(response.data!) as Map<String, dynamic>;
+      final results = (parsed['results'] as List<dynamic>?) ?? [];
+      if (results.isEmpty) {
+        return ToolResult.success('No images found for: $query');
+      }
+
+      final lines = <String>['Found images for "$query":\n'];
+      var i = 1;
+      for (final item in results.take(count)) {
+        final m = item as Map<String, dynamic>;
+        final props = m['properties'] as Map<String, dynamic>? ?? {};
+        final src = props['url'] as String? ?? '';
+        if (src.isEmpty) continue;
+        final title = (m['title'] as String? ?? '').isNotEmpty
+            ? m['title'] as String
+            : 'Image $i';
+        final safeTitle = title.replaceAll('[', r'\[').replaceAll(']', r'\]');
+        lines.add('$i. $title');
+        lines.add('   ![$safeTitle]($src)');
+        lines.add('');
+        i++;
+      }
+      if (i == 1) return ToolResult.success('No images found for: $query');
+      return ToolResult.success(lines.join('\n'));
+    } catch (e) {
+      return ToolResult.error('Brave image search failed: $e');
+    }
   }
 }

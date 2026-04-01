@@ -683,6 +683,166 @@ class AppLocalizationsJa extends AppLocalizations {
   String get defaultModelHint => 'デフォルトモデルは独自のモデルを指定しないエージェントで使用されます。';
 
   @override
+  String get voiceCallModelSection => '音声通話（Live）';
+
+  @override
+  String get voiceCallModelDescription =>
+      '通話ボタンをタップしたときのみ使用されます。チャット、エージェント、バックグラウンドタスクは通常のモデルを使用します。';
+
+  @override
+  String get voiceCallModelLabel => 'Liveモデル';
+
+  @override
+  String get voiceCallModelAutomatic => '自動';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => '音声通話でブートストラップ';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      '新しい空のチャットで BOOTSTRAP.md がある場合、（Live が利用可能なら）静かなテキスト起動ではなく音声通話を開始します。';
+
+  @override
+  String get liveVoiceNameLabel => '音声';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'どのように始めますか？';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'テキストでチャットするか、短い通話のような音声会話を始められます。よい方を選んでください。';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'チャットで入力';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => '音声で話す';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'アシスタントが話し終えてから話してください（エコーで途中で割り込んでしまっていました）。';
+
+  @override
+  String get liveVoiceFallbackTitle => 'ライブ';
+
+  @override
+  String get liveVoiceEndConversationTooltip => '通話を終了';
+
+  @override
+  String get liveVoiceStatusConnecting => '接続中…';
+
+  @override
+  String get liveVoiceStatusRunning => '実行中…';
+
+  @override
+  String get liveVoiceStatusSpeaking => '話しています…';
+
+  @override
+  String get liveVoiceStatusListening => '聞いています…';
+
+  @override
+  String get liveVoiceBadge => 'LIVE';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'このモデルは音声通話専用です。リストからチャット用モデルを選んでください。';
+
+  @override
+  String get authBearerTokenLabel => 'Bearer トークン';
+
+  @override
+  String get authAccessKeysLabel => 'アクセスキー';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count 件のモデルが見つかりました';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return 'あと $count 件 — ID を手入力してください';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'QR / バーコードをスキャン';
+
+  @override
+  String get oauthSignInTitle => 'サインイン';
+
+  @override
+  String get browserOverlayDone => '完了';
+
+  @override
+  String appInitializationError(String error) {
+    return '初期化エラー: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => '認証情報';
+
+  @override
+  String get credentialsIntroBody =>
+      'プロバイダーごとに複数の API キーを追加できます。FlutterClaw が自動でローテし、レート制限に達したキーをクールダウンします。';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'プロバイダーが設定されていません。\n設定 → プロバイダーとモデルから追加してください。';
+
+  @override
+  String get credentialsAddKeyTooltip => 'キーを追加';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      '追加キーはありません — プロバイダーとモデルのキーを使用しています。';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return '$provider のキーを追加';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => 'ラベル（例:「仕事用キー」）';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'API キー';
+
+  @override
+  String get securitySettingsTitle => 'セキュリティ';
+
+  @override
+  String get securitySettingsIntro =>
+      '危険な操作に対するセキュリティチェックを制御します。現在のセッションに適用されます。';
+
+  @override
+  String get securitySectionToolExecution => 'ツール実行';
+
+  @override
+  String get securityPatternDetectionTitle => 'セキュリティパターン検出';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      '危険なパターンをブロック: シェル注入、パストラバーサル、eval/exec、XSS、デシリアライゼーション。';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'セキュリティチェックがオフです。ツール呼び出しは検証なしで実行されます。終わったら再度オンにしてください。';
+
+  @override
+  String get securitySectionHowItWorks => '仕組み';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      '危険なパターンに一致する呼び出しはブロックされ、エージェントに理由が伝わります。';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'チャットで /unsafe を使うと、ブロックされた呼び出しを1回だけ許可し、その後チェックが復帰します。';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'ここで「セキュリティパターン検出」をオフにすると、セッション全体でチェックが無効になります。';
+
+  @override
   String get holdToSetAsDefault => '長押しでデフォルトに設定';
 
   @override
@@ -1096,7 +1256,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'サーバー上でsignal-cli-rest-apiを実行する必要があります：\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nREST API経由でSignal番号を登録/リンクし、下記にURLと電話番号を入力してください。';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api のURL';
 
   @override
   String get signalPhoneNumber => 'あなたのSignal電話番号';

@@ -42,7 +42,8 @@ class SessionStatusTool extends Tool {
 
   @override
   Future<ToolResult> execute(Map<String, dynamic> args) async {
-    final sessionKey = args['session_key'] as String?;
+    final sessionKey = args['session_key'] as String? ??
+        args['__session_key'] as String?;
     try {
       final info = await getSessionInfo(sessionKey);
       if (info == null) {

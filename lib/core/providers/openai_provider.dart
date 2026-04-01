@@ -298,6 +298,11 @@ class OpenAiProvider implements LlmProvider {
       'stream': stream,
     };
 
+    // Ask the server to include usage stats in the final streamed chunk.
+    if (stream) {
+      body['stream_options'] = {'include_usage': true};
+    }
+
     // o-series reasoning models use max_completion_tokens and don't support temperature.
     if (reasoning) {
       body['max_completion_tokens'] = request.maxTokens;

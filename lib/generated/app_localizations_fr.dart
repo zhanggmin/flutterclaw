@@ -587,7 +587,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get send => 'Envoyer';
 
   @override
-  String get liveActivityActive => 'Live Activity active';
+  String get liveActivityActive => 'Activité en direct active';
 
   @override
   String get restartGateway => 'Redémarrer Gateway';
@@ -706,6 +706,166 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get defaultModelHint =>
       'Le modèle par défaut est utilisé par les agents qui ne spécifient pas le leur.';
+
+  @override
+  String get voiceCallModelSection => 'Appel vocal (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      'Utilisé uniquement lorsque vous appuyez sur le bouton d’appel. Le chat, les agents et les tâches en arrière-plan utilisent votre modèle habituel.';
+
+  @override
+  String get voiceCallModelLabel => 'Modèle Live';
+
+  @override
+  String get voiceCallModelAutomatic => 'Automatique';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => 'Démarrer via appel vocal';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      'Dans un nouveau chat vide avec BOOTSTRAP.md, démarrez un appel vocal plutôt qu’un bootstrap silencieux par texte (lorsque Live est disponible).';
+
+  @override
+  String get liveVoiceNameLabel => 'Voix';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'Comment souhaitez-vous commencer ?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'Vous pouvez discuter par écrit avec votre assistant ou lancer une conversation vocale, comme un appel rapide. Choisissez ce qui vous semble le plus simple.';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'Écrire dans le chat';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => 'Parler à voix haute';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'Parlez quand l’assistant a terminé (l’écho les interrompait en plein discours).';
+
+  @override
+  String get liveVoiceFallbackTitle => 'En direct';
+
+  @override
+  String get liveVoiceEndConversationTooltip => 'Terminer la conversation';
+
+  @override
+  String get liveVoiceStatusConnecting => 'Connexion…';
+
+  @override
+  String get liveVoiceStatusRunning => 'Exécution…';
+
+  @override
+  String get liveVoiceStatusSpeaking => 'Parle…';
+
+  @override
+  String get liveVoiceStatusListening => 'Écoute…';
+
+  @override
+  String get liveVoiceBadge => 'DIRECT';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'Ce modèle est réservé aux appels vocaux. Choisissez un modèle de chat dans la liste.';
+
+  @override
+  String get authBearerTokenLabel => 'Jeton Bearer';
+
+  @override
+  String get authAccessKeysLabel => 'Clés d’accès';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count modèles trouvés';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count de plus — saisissez l’ID manuellement';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'Scanner QR / code-barres';
+
+  @override
+  String get oauthSignInTitle => 'Connexion';
+
+  @override
+  String get browserOverlayDone => 'Terminé';
+
+  @override
+  String appInitializationError(String error) {
+    return 'Erreur d’initialisation : $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => 'Identifiants';
+
+  @override
+  String get credentialsIntroBody =>
+      'Ajoutez plusieurs clés API par fournisseur. FlutterClaw les fait tourner automatiquement et met en pause celles qui atteignent les limites.';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'Aucun fournisseur configuré.\nAllez dans Réglages → Fournisseurs et modèles pour en ajouter un.';
+
+  @override
+  String get credentialsAddKeyTooltip => 'Ajouter une clé';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      'Pas de clés supplémentaires — utilisation de la clé définie dans Fournisseurs et modèles.';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return 'Ajouter une clé $provider';
+  }
+
+  @override
+  String get credentialsKeyLabelHint => 'Libellé (ex. « Clé pro »)';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'Clé API';
+
+  @override
+  String get securitySettingsTitle => 'Sécurité';
+
+  @override
+  String get securitySettingsIntro =>
+      'Contrôlez les vérifications de sécurité contre les opérations dangereuses. Elles s’appliquent à la session en cours.';
+
+  @override
+  String get securitySectionToolExecution => 'EXÉCUTION DES OUTILS';
+
+  @override
+  String get securityPatternDetectionTitle => 'Détection de motifs de sécurité';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      'Bloque les motifs dangereux : injection shell, traversée de chemins, eval/exec, XSS, désérialisation.';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'Les vérifications de sécurité sont désactivées. Les appels d’outils s’exécuteront sans validation. Réactivez-les ensuite.';
+
+  @override
+  String get securitySectionHowItWorks => 'FONCTIONNEMENT';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      'Lorsqu’un appel correspond à un motif dangereux, il est bloqué et l’agent en est informé.';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'Utilisez /unsafe dans le chat pour une exception ponctuelle autorisant un appel bloqué, puis les vérifications reprennent.';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'Désactivez ici « Détection de motifs de sécurité » pour désactiver les vérifications pour toute la session.';
 
   @override
   String get holdToSetAsDefault => 'Maintenez pour définir par défaut';

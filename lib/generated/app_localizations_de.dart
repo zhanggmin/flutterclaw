@@ -705,6 +705,167 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das Standardmodell wird von Agenten verwendet, die kein eigenes Modell angeben.';
 
   @override
+  String get voiceCallModelSection => 'Sprachanruf (Live)';
+
+  @override
+  String get voiceCallModelDescription =>
+      'Wird nur verwendet, wenn Sie auf die Anruf-Schaltfläche tippen. Chat, Agenten und Hintergrundaufgaben verwenden Ihr normales Modell.';
+
+  @override
+  String get voiceCallModelLabel => 'Live-Modell';
+
+  @override
+  String get voiceCallModelAutomatic => 'Automatisch';
+
+  @override
+  String get preferLiveVoiceBootstrapTitle => 'Bootstrap im Sprachanruf';
+
+  @override
+  String get preferLiveVoiceBootstrapSubtitle =>
+      'In einem neuen leeren Chat mit BOOTSTRAP.md einen Sprachanruf starten statt eines stillen Text-Bootstraps (wenn Live verfügbar ist).';
+
+  @override
+  String get liveVoiceNameLabel => 'Stimme';
+
+  @override
+  String get firstHatchModeChoiceTitle => 'Wie möchtest du starten?';
+
+  @override
+  String get firstHatchModeChoiceBody =>
+      'Du kannst mit deinem Assistenten schreiben oder eine Sprachunterhaltung beginnen – wie ein kurzes Telefonat. Wähle, was dir lieber ist.';
+
+  @override
+  String get firstHatchModeChoiceChatButton => 'Per Text chatten';
+
+  @override
+  String get firstHatchModeChoiceVoiceButton => 'Per Sprache sprechen';
+
+  @override
+  String get liveVoiceBargeInHint =>
+      'Sprechen Sie, nachdem der Assistent fertig ist (Echo hat sie zuvor mitten im Sprechen unterbrochen).';
+
+  @override
+  String get liveVoiceFallbackTitle => 'Live';
+
+  @override
+  String get liveVoiceEndConversationTooltip => 'Gespräch beenden';
+
+  @override
+  String get liveVoiceStatusConnecting => 'Verbinden…';
+
+  @override
+  String get liveVoiceStatusRunning => 'Läuft…';
+
+  @override
+  String get liveVoiceStatusSpeaking => 'Spricht…';
+
+  @override
+  String get liveVoiceStatusListening => 'Hört zu…';
+
+  @override
+  String get liveVoiceBadge => 'LIVE';
+
+  @override
+  String get cannotAddLiveModelAsChat =>
+      'Dieses Modell ist nur für Sprachanrufe. Wählen Sie ein Chat-Modell aus der Liste.';
+
+  @override
+  String get authBearerTokenLabel => 'Bearer-Token';
+
+  @override
+  String get authAccessKeysLabel => 'Zugriffsschlüssel';
+
+  @override
+  String authModelsFoundCount(int count) {
+    return '$count Modelle gefunden';
+  }
+
+  @override
+  String authModelsFoundMoreManual(int count) {
+    return '+ $count weitere — ID manuell eingeben';
+  }
+
+  @override
+  String get scanQrBarcodeTitle => 'QR / Barcode scannen';
+
+  @override
+  String get oauthSignInTitle => 'Anmelden';
+
+  @override
+  String get browserOverlayDone => 'Fertig';
+
+  @override
+  String appInitializationError(String error) {
+    return 'Initialisierungsfehler: $error';
+  }
+
+  @override
+  String get credentialsScreenTitle => 'Zugangsdaten';
+
+  @override
+  String get credentialsIntroBody =>
+      'Fügen Sie mehrere API-Schlüssel pro Anbieter hinzu. FlutterClaw wechselt automatisch und kühlt Schlüssel bei Ratenlimits ab.';
+
+  @override
+  String get credentialsNoProvidersBody =>
+      'Keine Anbieter konfiguriert.\nGehen Sie zu Einstellungen → Anbieter & Modelle, um einen hinzuzufügen.';
+
+  @override
+  String get credentialsAddKeyTooltip => 'Schlüssel hinzufügen';
+
+  @override
+  String get credentialsNoExtraKeysMessage =>
+      'Keine zusätzlichen Schlüssel — es wird der Schlüssel aus Anbieter & Modelle verwendet.';
+
+  @override
+  String credentialsAddProviderKeyTitle(String provider) {
+    return '$provider-Schlüssel hinzufügen';
+  }
+
+  @override
+  String get credentialsKeyLabelHint =>
+      'Bezeichnung (z. B. „Arbeitsschlüssel“)';
+
+  @override
+  String get credentialsApiKeyFieldLabel => 'API-Schlüssel';
+
+  @override
+  String get securitySettingsTitle => 'Sicherheit';
+
+  @override
+  String get securitySettingsIntro =>
+      'Steuern Sie Sicherheitsprüfungen gegen gefährliche Vorgänge. Sie gelten für die aktuelle Sitzung.';
+
+  @override
+  String get securitySectionToolExecution => 'TOOL-AUSFÜHRUNG';
+
+  @override
+  String get securityPatternDetectionTitle => 'Erkennung gefährlicher Muster';
+
+  @override
+  String get securityPatternDetectionSubtitle =>
+      'Blockiert gefährliche Muster: Shell-Injection, Pfad-Traversal, eval/exec, XSS, Deserialisierung.';
+
+  @override
+  String get securityUnsafeModeBanner =>
+      'Sicherheitsprüfungen sind aus. Tool-Aufrufe laufen ohne Validierung. Bitte danach wieder aktivieren.';
+
+  @override
+  String get securitySectionHowItWorks => 'SO FUNKTIONIERT ES';
+
+  @override
+  String get securityHowItWorksBlocked =>
+      'Passt ein Tool-Aufruf zu einem gefährlichen Muster, wird er blockiert und dem Agenten der Grund mitgeteilt.';
+
+  @override
+  String get securityHowItWorksUnsafeCmd =>
+      'Nutzen Sie /unsafe im Chat für eine einmalige Ausnahme für einen blockierten Aufruf; danach gelten die Prüfungen wieder.';
+
+  @override
+  String get securityHowItWorksToggleSession =>
+      'Schalten Sie hier „Erkennung gefährlicher Muster“ aus, um Prüfungen für die ganze Sitzung zu deaktivieren.';
+
+  @override
   String get holdToSetAsDefault =>
       'Halten Sie gedrückt, um als Standard festzulegen';
 
@@ -1109,7 +1270,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get slackSetupInstructions =>
-      '1. Erstellen Sie eine Slack-App unter api.slack.com/apps\n2. Socket-Modus aktivieren → App-Level-Token generieren (xapp-…)\n   mit Scope: connections:write\n3. Bot-Token-Scopes hinzufügen: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. App im Workspace installieren → Bot-Token kopieren (xoxb-…)';
+      '1. Erstellen Sie eine Slack-App unter api.slack.com/apps\n2. Socket-Modus aktivieren → App-Level-Token (xapp-…) generieren\n   mit Scope: connections:write\n3. Bot-Token-Scopes hinzufügen: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. App im Workspace installieren → Bot-Token (xoxb-…) kopieren';
 
   @override
   String get botTokenXoxb => 'Bot-Token (xoxb-…)';
@@ -1136,7 +1297,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erfordert signal-cli-rest-api auf einem Server:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nRegistrieren/verknüpfen Sie Ihre Signal-Nummer über die REST-API und geben Sie dann unten die URL und Ihre Telefonnummer ein.';
 
   @override
-  String get signalApiUrl => 'signal-cli-rest-api URL';
+  String get signalApiUrl => 'signal-cli-rest-api-URL';
 
   @override
   String get signalPhoneNumber => 'Ihre Signal-Telefonnummer';
