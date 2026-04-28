@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Jika panggilan cocok dengan pola berbahaya, diblokir dan agen diberi tahu alasannya.",
   "securityHowItWorksUnsafeCmd": "Gunakan /unsafe di obrolan untuk pengecualian sekali yang mengizinkan panggilan terblokir, lalu pemeriksaan aktif lagi.",
   "securityHowItWorksToggleSession": "Nonaktifkan \"Deteksi pola keamanan\" di sini untuk menonaktifkan pemeriksaan seluruh sesi.",
-
   "firstHatchModeChoiceTitle": "Bagaimana Anda ingin memulai?",
   "firstHatchModeChoiceBody": "Anda bisa mengobrol lewat teks dengan asisten atau memulai percakapan suara seperti panggilan singkat. Pilih yang menurut Anda paling nyaman.",
   "firstHatchModeChoiceChatButton": "Mengetik di chat",
   "firstHatchModeChoiceVoiceButton": "Bicara dengan suara",
-
   "holdToSetAsDefault": "Tahan untuk mengatur sebagai default",
   "integrations": "Integrasi",
   "shortcutsIntegrations": "Integrasi Shortcuts",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Pemasangan bersifat opsional. Anda dapat menyelesaikan onboarding sekarang dan menyelesaikan tautan nanti.",
   "whatsAppEnableToLink": "Aktifkan WhatsApp untuk mulai menautkan perangkat ini.",
   "whatsAppLinkedOnboarding": "WhatsApp telah ditautkan. FlutterClaw dapat merespons setelah onboarding.",
-  "cancelLink": "Batalkan tautan"
+  "cancelLink": "Batalkan tautan",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

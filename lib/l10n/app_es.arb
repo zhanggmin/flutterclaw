@@ -237,7 +237,6 @@
   "securityHowItWorksBlocked": "Si una llamada coincide con un patrón peligroso, se bloquea y se informa al agente del motivo.",
   "securityHowItWorksUnsafeCmd": "Usa /unsafe en el chat para una excepción puntual que permite una llamada bloqueada y luego reactiva las comprobaciones.",
   "securityHowItWorksToggleSession": "Desactiva aquí «Detección de patrones de seguridad» para deshabilitar las comprobaciones en toda la sesión.",
-
   "preferLiveVoiceBootstrapTitle": "Arrancar en llamada de voz",
   "preferLiveVoiceBootstrapSubtitle": "En un chat nuevo y vacío con BOOTSTRAP.md, inicia una llamada de voz en lugar de un arranque silencioso por texto (cuando Live esté disponible).",
   "liveVoiceNameLabel": "Voz",
@@ -575,5 +574,8 @@
   "whatsAppPairingOptional": "La vinculación es opcional. Puedes terminar el proceso ahora y completar el enlace más tarde.",
   "whatsAppEnableToLink": "Activa WhatsApp para comenzar a vincular este dispositivo.",
   "whatsAppLinkedOnboarding": "WhatsApp está vinculado. FlutterClaw podrá responder después del proceso inicial.",
-  "cancelLink": "Cancelar enlace"
+  "cancelLink": "Cancelar enlace",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

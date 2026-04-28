@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "危険なパターンに一致する呼び出しはブロックされ、エージェントに理由が伝わります。",
   "securityHowItWorksUnsafeCmd": "チャットで /unsafe を使うと、ブロックされた呼び出しを1回だけ許可し、その後チェックが復帰します。",
   "securityHowItWorksToggleSession": "ここで「セキュリティパターン検出」をオフにすると、セッション全体でチェックが無効になります。",
-
   "firstHatchModeChoiceTitle": "どのように始めますか？",
   "firstHatchModeChoiceBody": "テキストでチャットするか、短い通話のような音声会話を始められます。よい方を選んでください。",
   "firstHatchModeChoiceChatButton": "チャットで入力",
   "firstHatchModeChoiceVoiceButton": "音声で話す",
-
   "holdToSetAsDefault": "長押しでデフォルトに設定",
   "integrations": "統合",
   "shortcutsIntegrations": "ショートカット統合",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "連携はオプションです。今すぐ初期設定を終えて、後でリンクを完了できます。",
   "whatsAppEnableToLink": "WhatsAppを有効にしてこのデバイスの連携を開始。",
   "whatsAppLinkedOnboarding": "WhatsAppが連携されました。初期設定後にFlutterClawが応答できます。",
-  "cancelLink": "リンクをキャンセル"
+  "cancelLink": "リンクをキャンセル",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "도구 호출이 위험한 패턴과 일치하면 차단되고 에이전트에게 이유가 전달됩니다.",
   "securityHowItWorksUnsafeCmd": "채팅에서 /unsafe로 차단된 호출을 한 번 허용한 뒤 검사가 다시 켜집니다.",
   "securityHowItWorksToggleSession": "여기서 \"보안 패턴 감지\"를 끄면 세션 전체에서 검사가 비활성화됩니다.",
-
   "firstHatchModeChoiceTitle": "어떻게 시작할까요?",
   "firstHatchModeChoiceBody": "텍스트로 채팅하거나 짧은 통화처럼 음성 대화를 시작할 수 있어요. 편한 방법을 고르세요.",
   "firstHatchModeChoiceChatButton": "채팅으로 입력",
   "firstHatchModeChoiceVoiceButton": "음성으로 말하기",
-
   "holdToSetAsDefault": "길게 눌러 기본값으로 설정",
   "integrations": "통합",
   "shortcutsIntegrations": "단축어 통합",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "연결은 선택사항입니다. 지금 온보딩을 완료하고 나중에 연결할 수 있습니다.",
   "whatsAppEnableToLink": "WhatsApp을 활성화하여 이 기기 연결을 시작하세요.",
   "whatsAppLinkedOnboarding": "WhatsApp이 연결되었습니다. 온보딩 후 FlutterClaw가 응답할 수 있습니다.",
-  "cancelLink": "연결 취소"
+  "cancelLink": "연결 취소",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

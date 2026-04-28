@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Если вызов совпадает с опасным шаблоном, он блокируется, агенту сообщается причина.",
   "securityHowItWorksUnsafeCmd": "Команда /unsafe в чате — разовое разрешение заблокированного вызова, затем проверки снова включаются.",
   "securityHowItWorksToggleSession": "Отключите здесь «Обнаружение опасных шаблонов», чтобы выключить проверки на всю сессию.",
-
   "firstHatchModeChoiceTitle": "Как вы хотите начать?",
   "firstHatchModeChoiceBody": "Можно общаться с ассистентом текстом или начать голосовой разговор — как короткий звонок. Выберите то, что вам удобнее.",
   "firstHatchModeChoiceChatButton": "Писать в чате",
   "firstHatchModeChoiceVoiceButton": "Говорить голосом",
-
   "holdToSetAsDefault": "Удерживайте для установки по умолчанию",
   "integrations": "Интеграции",
   "shortcutsIntegrations": "Интеграция Быстрых Команд",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Привязка необязательна. Вы можете завершить настройку сейчас и добавить привязку позже.",
   "whatsAppEnableToLink": "Включите WhatsApp, чтобы начать привязку устройства.",
   "whatsAppLinkedOnboarding": "WhatsApp привязан. FlutterClaw сможет отвечать после завершения настройки.",
-  "cancelLink": "Отменить привязку"
+  "cancelLink": "Отменить привязку",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

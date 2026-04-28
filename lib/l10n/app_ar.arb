@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "عندما يطابق الاستدعاء نمطًا خطيرًا يُحظر ويُعلَم الوكيل بالسبب.",
   "securityHowItWorksUnsafeCmd": "استخدم /unsafe في الدردشة لاستثناء لمرة واحدة لاستدعاء محظور، ثم تُعاد الفحوص.",
   "securityHowItWorksToggleSession": "عطّل هنا \"اكتشاف أنماط أمنية\" لتعطيل الفحوص للجلسة بأكملها.",
-
   "firstHatchModeChoiceTitle": "كيف تود أن تبدأ؟",
   "firstHatchModeChoiceBody": "يمكنك الدردشة نصياً مع مساعدك أو بدء محادثة صوتية مثل مكالمة قصيرة. اختر ما يناسبك.",
   "firstHatchModeChoiceChatButton": "الكتابة في الدردشة",
   "firstHatchModeChoiceVoiceButton": "التحدث بالصوت",
-
   "holdToSetAsDefault": "اضغط مطولاً للتعيين كافتراضي",
   "integrations": "التكاملات",
   "shortcutsIntegrations": "تكامل الاختصارات",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "الربط اختياري. يمكنك إتمام الإعداد الآن وإكمال الربط لاحقاً.",
   "whatsAppEnableToLink": "فعّل WhatsApp لبدء ربط هذا الجهاز.",
   "whatsAppLinkedOnboarding": "تم ربط WhatsApp. سيتمكن FlutterClaw من الرد بعد الإعداد الأولي.",
-  "cancelLink": "إلغاء الربط"
+  "cancelLink": "إلغاء الربط",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

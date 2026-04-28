@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Gdy wywołanie pasuje do niebezpiecznego wzorca, jest blokowane, a agent dostaje powód.",
   "securityHowItWorksUnsafeCmd": "Użyj /unsafe na czacie, by jednorazowo dopuścić zablokowane wywołanie, potem kontrole wracają.",
   "securityHowItWorksToggleSession": "Wyłącz tutaj „Wykrywanie niebezpiecznych wzorców”, by wyłączyć kontrole na całą sesję.",
-
   "firstHatchModeChoiceTitle": "Jak chcesz zacząć?",
   "firstHatchModeChoiceBody": "Możesz pisać z asystentem na czacie albo zacząć rozmowę głosową — jak krótki telefon. Wybierz to, co jest dla ciebie wygodniejsze.",
   "firstHatchModeChoiceChatButton": "Pisać na czacie",
   "firstHatchModeChoiceVoiceButton": "Rozmawiać głosowo",
-
   "holdToSetAsDefault": "Przytrzymaj, aby ustawić jako domyślny",
   "integrations": "Integracje",
   "shortcutsIntegrations": "Integracje Shortcuts",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Parowanie jest opcjonalne. Możesz teraz zakończyć konfigurację i dodać połączenie później.",
   "whatsAppEnableToLink": "Włącz WhatsApp, aby zacząć łączyć to urządzenie.",
   "whatsAppLinkedOnboarding": "WhatsApp połączony. FlutterClaw będzie mógł odpowiadać po konfiguracji.",
-  "cancelLink": "Anuluj połączenie"
+  "cancelLink": "Anuluj połączenie",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }
