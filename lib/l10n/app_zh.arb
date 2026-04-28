@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "当调用匹配危险模式时会被阻止，并告知智能体原因。",
   "securityHowItWorksUnsafeCmd": "在聊天中使用 /unsafe 可一次性放行被阻止的调用，随后检查会恢复。",
   "securityHowItWorksToggleSession": "在此关闭「安全模式检测」可禁用整个会话的检查。",
-
   "firstHatchModeChoiceTitle": "你想怎么开始？",
   "firstHatchModeChoiceBody": "你可以用文字和助手聊天，或开始语音对话，就像一通简短电话。选你觉得最轻松的方式就好。",
   "firstHatchModeChoiceChatButton": "用文字聊天",
   "firstHatchModeChoiceVoiceButton": "语音对话",
-
   "holdToSetAsDefault": "长按设为默认",
   "integrations": "集成",
   "shortcutsIntegrations": "快捷指令集成",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "绑定是可选的，您可以现在完成初始设置，稍后再完成绑定。",
   "whatsAppEnableToLink": "启用 WhatsApp 以开始绑定此设备。",
   "whatsAppLinkedOnboarding": "WhatsApp 已绑定。初始设置完成后 FlutterClaw 即可响应。",
-  "cancelLink": "取消绑定"
+  "cancelLink": "取消绑定",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

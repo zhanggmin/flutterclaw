@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "เมื่อการเรียกตรงกับรูปแบบอันตราย จะถูกบล็อกและแจ้งเหตุผลให้เอเจนต์",
   "securityHowItWorksUnsafeCmd": "ใช้ /unsafe ในแชทเพื่อยกเว้นครั้งเดียวสำหรับการเรียกที่ถูกบล็อก แล้วเปิดการตรวจอีกครั้ง",
   "securityHowItWorksToggleSession": "ปิด \"การตรวจจับรูปแบบความปลอดภัย\" ที่นี่เพื่อปิดการตรวจทั้งเซสชัน",
-
   "firstHatchModeChoiceTitle": "คุณอยากเริ่มแบบไหน?",
   "firstHatchModeChoiceBody": "คุณแชทเป็นข้อความกับผู้ช่วยได้ หรือเริ่มคุยด้วยเสียงเหมือนโทรสั้นๆ เลือกแบบที่สบายที่สุดสำหรับคุณ",
   "firstHatchModeChoiceChatButton": "พิมพ์ในแชท",
   "firstHatchModeChoiceVoiceButton": "คุยด้วยเสียง",
-
   "holdToSetAsDefault": "กดค้างเพื่อตั้งเป็นค่าเริ่มต้น",
   "integrations": "การผสานรวม",
   "shortcutsIntegrations": "การผสานรวม Shortcuts",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "การจับคู่เป็นทางเลือก คุณสามารถเสร็จสิ้นการตั้งค่าตอนนี้และเชื่อมต่อภายหลังได้",
   "whatsAppEnableToLink": "เปิดใช้งาน WhatsApp เพื่อเริ่มเชื่อมต่ออุปกรณ์นี้",
   "whatsAppLinkedOnboarding": "เชื่อมต่อ WhatsApp แล้ว FlutterClaw จะสามารถตอบกลับได้หลังการตั้งค่า",
-  "cancelLink": "ยกเลิกการเชื่อมต่อ"
+  "cancelLink": "ยกเลิกการเชื่อมต่อ",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }
