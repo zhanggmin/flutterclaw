@@ -28,6 +28,9 @@ import 'package:flutterclaw/services/pairing_service.dart';
 import 'package:flutterclaw/services/hook_runner.dart';
 import 'package:flutterclaw/services/plugin_service.dart';
 import 'package:flutterclaw/services/skills_service.dart';
+import 'package:flutterclaw/repositories/idea_repository.dart';
+import 'package:flutterclaw/repositories/local_idea_repository.dart';
+import 'package:flutterclaw/services/idea_service.dart';
 import 'package:flutterclaw/data/models/model_catalog.dart';
 import 'package:flutterclaw/core/agent/agent_loop.dart';
 import 'package:flutterclaw/core/agent/token_budget_manager.dart';
@@ -1148,6 +1151,16 @@ final skillsServiceProvider = Provider<SkillsService>((ref) {
       return response.content;
     },
   );
+});
+
+final ideaRepositoryProvider = Provider<IdeaRepository>((ref) {
+  return LocalIdeaRepository(
+    configManager: ref.read(configManagerProvider),
+  );
+});
+
+final ideaServiceProvider = Provider<IdeaService>((ref) {
+  return IdeaService(repository: ref.read(ideaRepositoryProvider));
 });
 
 /// Plugin lifecycle service — loads plugins from workspace/plugins/.
