@@ -3,97 +3,78 @@
   "@appTitle": {
     "description": "Application title"
   },
-
   "chat": "Chat",
   "@chat": {
     "description": "Chat tab label"
   },
-
   "channels": "Channels",
   "@channels": {
     "description": "Channels tab label"
   },
-
   "agent": "Agent",
   "@agent": {
     "description": "Agent tab label"
   },
-
   "settings": "Settings",
   "@settings": {
     "description": "Settings tab label"
   },
-
   "getStarted": "Get Started",
   "@getStarted": {
     "description": "Welcome page button"
   },
-
   "yourPersonalAssistant": "Your personal AI assistant",
   "@yourPersonalAssistant": {
     "description": "App tagline"
   },
-
   "multiChannelChat": "Multi-channel chat",
   "@multiChannelChat": {
     "description": "Feature description"
   },
-
   "multiChannelChatDesc": "Telegram, Discord, Chat and more",
   "@multiChannelChatDesc": {
     "description": "Multi-channel chat description"
   },
-
   "powerfulAIModels": "Powerful AI models",
   "@powerfulAIModels": {
     "description": "Feature description"
   },
-
   "powerfulAIModelsDesc": "OpenAI, Anthropic, Grok, and free models",
   "@powerfulAIModelsDesc": {
     "description": "AI models description"
   },
-
   "localGateway": "Local gateway",
   "@localGateway": {
     "description": "Feature description"
   },
-
   "localGatewayDesc": "Runs on your device, your data stays yours",
   "@localGatewayDesc": {
     "description": "Local gateway description"
   },
-
   "chooseProvider": "Choose a Provider",
   "@chooseProvider": {
     "description": "Provider selection page title"
   },
-
   "selectProviderDesc": "Select how you want to connect to AI models.",
   "@selectProviderDesc": {
     "description": "Provider selection description"
   },
-
   "startForFree": "Start for Free",
   "@startForFree": {
     "description": "Free providers section title"
   },
-
   "freeProvidersDesc": "These providers offer free models to get you started with no cost.",
   "@freeProvidersDesc": {
     "description": "Free providers description"
   },
-
   "free": "FREE",
   "@free": {
     "description": "Free badge label"
   },
-
   "otherProviders": "Other Providers",
   "@otherProviders": {
     "description": "Paid providers section title"
   },
-
   "connectToProvider": "Connect to {provider}",
   "@connectToProvider": {
     "description": "Auth page title",
@@ -103,147 +84,118 @@
       }
     }
   },
-
   "enterApiKeyDesc": "Enter your API key and select a model.",
   "@enterApiKeyDesc": {
     "description": "Auth page description"
   },
-
   "dontHaveApiKey": "Don't have an API key?",
   "@dontHaveApiKey": {
     "description": "API key prompt"
   },
-
   "createAccountCopyKey": "Create an account and copy your key.",
   "@createAccountCopyKey": {
     "description": "API key instructions"
   },
-
   "signUp": "Sign up",
   "@signUp": {
     "description": "Sign up button"
   },
-
   "apiKey": "API Key",
   "@apiKey": {
     "description": "API key field label"
   },
-
   "pasteFromClipboard": "Paste from clipboard",
   "@pasteFromClipboard": {
     "description": "Paste button tooltip"
   },
-
   "apiBaseUrl": "API Base URL",
   "@apiBaseUrl": {
     "description": "API base URL field label"
   },
-
   "selectModel": "Select Model",
   "@selectModel": {
     "description": "Model selection label"
   },
-
   "modelId": "Model ID",
   "@modelId": {
     "description": "Model ID field label"
   },
-
   "validateKey": "Validate Key",
   "@validateKey": {
     "description": "Validate button label"
   },
-
   "validating": "Validating...",
   "@validating": {
     "description": "Validating status"
   },
-
   "invalidApiKey": "Invalid API key",
   "@invalidApiKey": {
     "description": "Invalid key error"
   },
-
   "gatewayConfiguration": "Gateway Configuration",
   "@gatewayConfiguration": {
     "description": "Gateway page title"
   },
-
   "gatewayConfigDesc": "The gateway is the local control plane for your assistant.",
   "@gatewayConfigDesc": {
     "description": "Gateway configuration description"
   },
-
   "defaultSettingsNote": "The default settings work for most users. Only change these if you know what you need.",
   "@defaultSettingsNote": {
     "description": "Gateway settings note"
   },
-
   "host": "Host",
   "@host": {
     "description": "Host field label"
   },
-
   "port": "Port",
   "@port": {
     "description": "Port field label"
   },
-
   "autoStartGateway": "Auto-start gateway",
   "@autoStartGateway": {
     "description": "Auto-start toggle label"
   },
-
   "autoStartGatewayDesc": "Start the gateway automatically when the app launches.",
   "@autoStartGatewayDesc": {
     "description": "Auto-start description"
   },
-
   "channelsPageTitle": "Channels",
   "@channelsPageTitle": {
     "description": "Channels page title"
   },
-
   "channelsPageDesc": "Optionally connect messaging channels. You can always set these up later in Settings.",
   "@channelsPageDesc": {
     "description": "Channels page description"
   },
-
   "telegram": "Telegram",
   "@telegram": {
     "description": "Telegram channel name"
   },
-
   "connectTelegramBot": "Connect a Telegram bot.",
   "@connectTelegramBot": {
     "description": "Telegram description"
   },
-
   "openBotFather": "Open BotFather",
   "@openBotFather": {
     "description": "BotFather link label"
   },
-
   "discord": "Discord",
   "@discord": {
     "description": "Discord channel name"
   },
-
   "connectDiscordBot": "Connect a Discord bot.",
   "@connectDiscordBot": {
     "description": "Discord description"
   },
-
   "developerPortal": "Developer Portal",
   "@developerPortal": {
     "description": "Discord developer portal link"
   },
-
   "botToken": "Bot Token",
   "@botToken": {
     "description": "Bot token field label"
   },
-
   "telegramBotToken": "{platform} Bot Token",
   "@telegramBotToken": {
     "description": "Platform-specific bot token",
@@ -253,22 +205,18 @@
       }
     }
   },
-
   "readyToGo": "Ready to Go",
   "@readyToGo": {
     "description": "Completion page title"
   },
-
   "reviewConfiguration": "Review your configuration and start FlutterClaw.",
   "@reviewConfiguration": {
     "description": "Completion page description"
   },
-
   "model": "Model",
   "@model": {
     "description": "Model section label"
   },
-
   "viaProvider": "via {provider}",
   "@viaProvider": {
     "description": "Provider attribution",
@@ -278,92 +226,74 @@
       }
     }
   },
-
   "gateway": "Gateway",
   "@gateway": {
     "description": "Gateway section label"
   },
-
   "webChatOnly": "Chat only (you can add more later)",
   "@webChatOnly": {
     "description": "Default channels message"
   },
-
   "webChat": "Chat",
   "@webChat": {
     "description": "In-app chat channel name"
   },
-
   "starting": "Starting...",
   "@starting": {
     "description": "Starting status"
   },
-
   "startFlutterClaw": "Start FlutterClaw",
   "@startFlutterClaw": {
     "description": "Start button label"
   },
-
   "newSession": "New session",
   "@newSession": {
     "description": "New session tooltip"
   },
-
   "photoLibrary": "Photo Library",
   "@photoLibrary": {
     "description": "Photo library option"
   },
-
   "camera": "Camera",
   "@camera": {
     "description": "Camera option"
   },
-
   "whatDoYouSeeInImage": "What do you see in this image?",
   "@whatDoYouSeeInImage": {
     "description": "Default image caption"
   },
-
   "imagePickerNotAvailable": "Image picker not available on Simulator. Use a real device.",
   "@imagePickerNotAvailable": {
     "description": "Simulator error"
   },
-
   "couldNotOpenImagePicker": "Could not open image picker.",
   "@couldNotOpenImagePicker": {
     "description": "Image picker error"
   },
-
   "copiedToClipboard": "Copied to clipboard",
   "@copiedToClipboard": {
     "description": "Copy confirmation"
   },
-
   "attachImage": "Attach image",
   "@attachImage": {
     "description": "Attach button tooltip"
   },
-
   "messageFlutterClaw": "Message FlutterClaw...",
   "@messageFlutterClaw": {
     "description": "Chat input placeholder"
   },
-
   "channelsAndGateway": "Channels & Gateway",
   "@channelsAndGateway": {
     "description": "Channels screen title"
   },
-
   "stop": "Stop",
   "@stop": {
     "description": "Stop button"
   },
-
   "start": "Start",
   "@start": {
     "description": "Start button"
   },
-
   "status": "Status: {status}",
   "@status": {
     "description": "Status label",
@@ -373,82 +303,66 @@
       }
     }
   },
-
   "builtInChatInterface": "Built-in chat interface",
   "@builtInChatInterface": {
     "description": "WebChat description"
   },
-
   "notConfigured": "Not configured",
   "@notConfigured": {
     "description": "Channel status"
   },
-
   "connected": "Connected",
   "@connected": {
     "description": "Channel status"
   },
-
   "configuredStarting": "Configured (starting...)",
   "@configuredStarting": {
     "description": "Channel status"
   },
-
   "telegramConfiguration": "Telegram Configuration",
   "@telegramConfiguration": {
     "description": "Telegram config dialog title"
   },
-
   "fromBotFather": "From @BotFather",
   "@fromBotFather": {
     "description": "Telegram token hint"
   },
-
   "allowedUserIds": "Allowed User IDs (comma separated)",
   "@allowedUserIds": {
     "description": "Allowed users field label"
   },
-
   "leaveEmptyToAllowAll": "Leave empty to allow all",
   "@leaveEmptyToAllowAll": {
     "description": "Allow all users hint"
   },
-
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button"
   },
-
   "saveAndConnect": "Save & Connect",
   "@saveAndConnect": {
     "description": "Save and connect button"
   },
-
   "discordConfiguration": "Discord Configuration",
   "@discordConfiguration": {
     "description": "Discord config dialog title"
   },
-
   "pendingPairingRequests": "Pending Pairing Requests",
   "@pendingPairingRequests": {
     "description": "Pairing section title"
   },
-
   "approve": "Approve",
   "@approve": {
     "description": "Approve button tooltip"
   },
-
   "reject": "Reject",
   "@reject": {
     "description": "Reject button tooltip"
   },
-
   "expired": "Expired",
   "@expired": {
     "description": "Expired status"
   },
-
   "minutesLeft": "{minutes}m left",
   "@minutesLeft": {
     "description": "Time remaining",
@@ -458,17 +372,14 @@
       }
     }
   },
-
   "workspaceFiles": "Workspace Files",
   "@workspaceFiles": {
     "description": "Workspace section title"
   },
-
   "personalAIAssistant": "Personal AI Assistant",
   "@personalAIAssistant": {
     "description": "Agent subtitle"
   },
-
   "sessionsCount": "Sessions ({count})",
   "@sessionsCount": {
     "description": "Sessions section title",
@@ -478,82 +389,66 @@
       }
     }
   },
-
   "noActiveSessions": "No active sessions",
   "@noActiveSessions": {
     "description": "Empty sessions message"
   },
-
   "startConversationToCreate": "Start a conversation to create one",
   "@startConversationToCreate": {
     "description": "Empty sessions hint"
   },
-
   "startConversationToSee": "Start a conversation to see sessions here",
   "@startConversationToSee": {
     "description": "Empty sessions hint (alternative)"
   },
-
   "reset": "Reset",
   "@reset": {
     "description": "Reset action"
   },
-
   "cronJobs": "Cron Jobs",
   "@cronJobs": {
     "description": "Cron jobs section title"
   },
-
   "noCronJobs": "No cron jobs",
   "@noCronJobs": {
     "description": "Empty cron jobs message"
   },
-
   "addScheduledTasks": "Add scheduled tasks for your agent",
   "@addScheduledTasks": {
     "description": "Cron jobs hint"
   },
-
   "runNow": "Run Now",
   "@runNow": {
     "description": "Run job action"
   },
-
   "enable": "Enable",
   "@enable": {
     "description": "Enable action"
   },
-
   "disable": "Disable",
   "@disable": {
     "description": "Disable action"
   },
-
   "delete": "Delete",
   "@delete": {
     "description": "Delete action"
   },
-
   "skills": "Skills",
   "@skills": {
     "description": "Skills section title"
   },
-
   "browseClawHub": "Browse ClawHub",
   "@browseClawHub": {
     "description": "ClawHub button tooltip"
   },
-
   "noSkillsInstalled": "No skills installed",
   "@noSkillsInstalled": {
     "description": "Empty skills message"
   },
-
   "browseClawHubToAdd": "Browse ClawHub to add skills",
   "@browseClawHubToAdd": {
     "description": "Skills hint"
   },
-
   "removeSkillConfirm": "Remove \"{name}\" from your skills?",
   "@removeSkillConfirm": {
     "description": "Remove skill confirmation",
@@ -563,22 +458,18 @@
       }
     }
   },
-
   "clawHubSkills": "ClawHub Skills",
   "@clawHubSkills": {
     "description": "ClawHub browser title"
   },
-
   "searchSkills": "Search skills...",
   "@searchSkills": {
     "description": "Search field hint"
   },
-
   "noSkillsFound": "No skills found. Try a different search.",
   "@noSkillsFound": {
     "description": "No results message"
   },
-
   "installedSkill": "Installed {name}",
   "@installedSkill": {
     "description": "Install success message",
@@ -588,7 +479,6 @@
       }
     }
   },
-
   "failedToInstallSkill": "Failed to install {name}",
   "@failedToInstallSkill": {
     "description": "Install failure message",
@@ -598,87 +488,70 @@
       }
     }
   },
-
   "addCronJob": "Add Cron Job",
   "@addCronJob": {
     "description": "Add cron job dialog title"
   },
-
   "jobName": "Job Name",
   "@jobName": {
     "description": "Job name field label"
   },
-
   "dailySummaryExample": "e.g. Daily Summary",
   "@dailySummaryExample": {
     "description": "Job name example"
   },
-
   "taskPrompt": "Task Prompt",
   "@taskPrompt": {
     "description": "Task prompt field label"
   },
-
   "whatShouldAgentDo": "What should the agent do?",
   "@whatShouldAgentDo": {
     "description": "Task prompt hint"
   },
-
   "interval": "Interval",
   "@interval": {
     "description": "Interval field label"
   },
-
   "every5Minutes": "Every 5 minutes",
   "@every5Minutes": {
     "description": "Interval option"
   },
-
   "every15Minutes": "Every 15 minutes",
   "@every15Minutes": {
     "description": "Interval option"
   },
-
   "every30Minutes": "Every 30 minutes",
   "@every30Minutes": {
     "description": "Interval option"
   },
-
   "everyHour": "Every hour",
   "@everyHour": {
     "description": "Interval option"
   },
-
   "every6Hours": "Every 6 hours",
   "@every6Hours": {
     "description": "Interval option"
   },
-
   "every12Hours": "Every 12 hours",
   "@every12Hours": {
     "description": "Interval option"
   },
-
   "every24Hours": "Every 24 hours",
   "@every24Hours": {
     "description": "Interval option"
   },
-
   "add": "Add",
   "@add": {
     "description": "Add button"
   },
-
   "save": "Save",
   "@save": {
     "description": "Save button"
   },
-
   "sessions": "Sessions",
   "@sessions": {
     "description": "Sessions screen title"
   },
-
   "messagesCount": "{count} messages",
   "@messagesCount": {
     "description": "Message count",
@@ -688,7 +561,6 @@
       }
     }
   },
-
   "tokensCount": "{count} tokens",
   "@tokensCount": {
     "description": "Token count",
@@ -698,62 +570,50 @@
       }
     }
   },
-
   "compact": "Compact",
   "@compact": {
     "description": "Compact action"
   },
-
   "models": "Models",
   "@models": {
     "description": "Models section title"
   },
-
   "noModelsConfigured": "No models configured",
   "@noModelsConfigured": {
     "description": "Empty models message"
   },
-
   "addModelToStartChatting": "Add a model to start chatting",
   "@addModelToStartChatting": {
     "description": "Models hint"
   },
-
   "addModel": "Add Model",
   "@addModel": {
     "description": "Add model button"
   },
-
   "default_": "DEFAULT",
   "@default_": {
     "description": "Default badge"
   },
-
   "autoStart": "Auto-start",
   "@autoStart": {
     "description": "Auto-start label"
   },
-
   "startGatewayWhenLaunches": "Start gateway when app launches",
   "@startGatewayWhenLaunches": {
     "description": "Auto-start description"
   },
-
   "heartbeat": "Heartbeat",
   "@heartbeat": {
     "description": "Heartbeat section title"
   },
-
   "enabled": "Enabled",
   "@enabled": {
     "description": "Enabled toggle"
   },
-
   "periodicAgentTasks": "Periodic agent tasks from HEARTBEAT.md",
   "@periodicAgentTasks": {
     "description": "Heartbeat description"
   },
-
   "intervalMinutes": "{minutes} min",
   "@intervalMinutes": {
     "description": "Interval display",
@@ -763,32 +623,26 @@
       }
     }
   },
-
   "about": "About",
   "@about": {
     "description": "About section title"
   },
-
   "personalAIAssistantForIOS": "Personal AI Assistant for iOS & Android",
   "@personalAIAssistantForIOS": {
     "description": "App description"
   },
-
   "version": "Version",
   "@version": {
     "description": "Version label"
   },
-
   "basedOnOpenClaw": "Based on OpenClaw",
   "@basedOnOpenClaw": {
     "description": "Attribution"
   },
-
   "removeModel": "Remove model?",
   "@removeModel": {
     "description": "Remove model dialog title"
   },
-
   "removeModelConfirm": "Remove \"{name}\" from your models?",
   "@removeModelConfirm": {
     "description": "Remove model confirmation",
@@ -798,37 +652,30 @@
       }
     }
   },
-
   "remove": "Remove",
   "@remove": {
     "description": "Remove button"
   },
-
   "setAsDefault": "Set as Default",
   "@setAsDefault": {
-    "description": "Set default button"
+    "description": "Set as default button"
   },
-
   "paste": "Paste",
   "@paste": {
     "description": "Paste tooltip"
   },
-
   "chooseProviderStep": "1. Choose Provider",
   "@chooseProviderStep": {
     "description": "Step 1 label"
   },
-
   "selectModelStep": "2. Select Model",
   "@selectModelStep": {
     "description": "Step 2 label"
   },
-
   "apiKeyStep": "3. API Key",
   "@apiKeyStep": {
     "description": "Step 3 label"
   },
-
   "getApiKeyAt": "Get API key at {provider}",
   "@getApiKeyAt": {
     "description": "API key link text",
@@ -838,12 +685,10 @@
       }
     }
   },
-
   "justNow": "just now",
   "@justNow": {
     "description": "Time ago format"
   },
-
   "minutesAgo": "{minutes}m ago",
   "@minutesAgo": {
     "description": "Time ago format",
@@ -853,7 +698,6 @@
       }
     }
   },
-
   "hoursAgo": "{hours}h ago",
   "@hoursAgo": {
     "description": "Time ago format",
@@ -863,7 +707,6 @@
       }
     }
   },
-
   "daysAgo": "{days}d ago",
   "@daysAgo": {
     "description": "Time ago format",
@@ -873,12 +716,10 @@
       }
     }
   },
-
   "microphonePermissionDenied": "Microphone permission denied",
   "@microphonePermissionDenied": {
     "description": "Microphone permission error"
   },
-
   "liveTranscriptionUnavailable": "Live transcription unavailable: {error}",
   "@liveTranscriptionUnavailable": {
     "description": "Transcription unavailable error",
@@ -888,7 +729,6 @@
       }
     }
   },
-
   "failedToStartRecording": "Failed to start recording: {error}",
   "@failedToStartRecording": {
     "description": "Recording start error",
@@ -898,17 +738,14 @@
       }
     }
   },
-
   "usingOnDeviceTranscription": "Using on-device transcription",
   "@usingOnDeviceTranscription": {
     "description": "Transcription method message"
   },
-
   "transcribingWithWhisper": "Transcribing with Whisper API...",
   "@transcribingWithWhisper": {
     "description": "Whisper transcription status"
   },
-
   "whisperApiFailed": "Whisper API failed: {error}",
   "@whisperApiFailed": {
     "description": "Whisper API error",
@@ -918,12 +755,10 @@
       }
     }
   },
-
   "noTranscriptionCaptured": "No transcription captured",
   "@noTranscriptionCaptured": {
     "description": "No transcription message"
   },
-
   "failedToStopRecording": "Failed to stop recording: {error}",
   "@failedToStopRecording": {
     "description": "Recording stop error",
@@ -933,7 +768,6 @@
       }
     }
   },
-
   "failedToPauseResume": "Failed to {action}: {error}",
   "@failedToPauseResume": {
     "description": "Pause/resume error",
@@ -946,32 +780,26 @@
       }
     }
   },
-
   "pause": "Pause",
   "@pause": {
     "description": "Pause tooltip"
   },
-
   "resume": "Resume",
   "@resume": {
     "description": "Resume tooltip"
   },
-
   "send": "Send",
   "@send": {
     "description": "Send tooltip"
   },
-
   "liveActivityActive": "Live Activity active",
   "@liveActivityActive": {
     "description": "Live Activity status message"
   },
-
   "restartGateway": "Restart Gateway",
   "@restartGateway": {
     "description": "Restart gateway tooltip"
   },
-
   "modelLabel": "Model: {model}",
   "@modelLabel": {
     "description": "Current model display",
@@ -981,7 +809,6 @@
       }
     }
   },
-
   "uptimeLabel": "Uptime: {uptime}",
   "@uptimeLabel": {
     "description": "Gateway uptime display",
@@ -991,112 +818,90 @@
       }
     }
   },
-
   "iosBackgroundSupportActive": "iOS: Background support enabled - gateway can continue responding",
   "@iosBackgroundSupportActive": {
     "description": "iOS background mode message"
   },
-
   "webChatBuiltIn": "Built-in chat interface",
   "@webChatBuiltIn": {
     "description": "WebChat description"
   },
-
   "configure": "Configure",
   "@configure": {
     "description": "Configure button"
   },
-
   "disconnect": "Disconnect",
   "@disconnect": {
     "description": "Disconnect button"
   },
-
   "agents": "Agents",
   "@agents": {
     "description": "Agents tab label"
   },
-
   "agentFiles": "Agent Files",
   "@agentFiles": {
     "description": "Agent files tab label"
   },
-
   "createAgent": "Create Agent",
   "@createAgent": {
     "description": "Create agent button"
   },
-
   "editAgent": "Edit Agent",
   "@editAgent": {
     "description": "Edit agent button"
   },
-
   "noAgentsYet": "No agents yet",
   "@noAgentsYet": {
     "description": "Empty state message"
   },
-
   "createYourFirstAgent": "Create your first agent!",
   "@createYourFirstAgent": {
     "description": "Empty state call to action"
   },
-
   "active": "Active",
   "@active": {
     "description": "Active agent status"
   },
-
   "agentName": "Agent Name",
   "@agentName": {
     "description": "Agent name field label"
   },
-
   "emoji": "Emoji",
   "@emoji": {
     "description": "Emoji field label"
   },
-
   "selectEmoji": "Select Emoji",
   "@selectEmoji": {
     "description": "Select emoji button"
   },
-
   "vibe": "Vibe",
   "@vibe": {
     "description": "Vibe field label"
   },
-
   "vibeHint": "e.g., friendly, formal, snarky",
   "@vibeHint": {
     "description": "Vibe field hint"
   },
-
   "modelConfiguration": "Model Configuration",
   "@modelConfiguration": {
     "description": "Model configuration section"
   },
-
   "advancedSettings": "Advanced Settings",
   "@advancedSettings": {
     "description": "Advanced settings section"
   },
-
   "agentCreated": "Agent created",
   "@agentCreated": {
     "description": "Success message"
   },
-
   "agentUpdated": "Agent updated",
   "@agentUpdated": {
     "description": "Success message"
   },
-
   "agentDeleted": "Agent deleted",
   "@agentDeleted": {
     "description": "Success message"
   },
-
   "switchedToAgent": "Switched to {name}",
   "@switchedToAgent": {
     "description": "Agent switched message",
@@ -1106,7 +911,6 @@
       }
     }
   },
-
   "deleteAgentConfirm": "Delete {name}? This will remove all workspace data.",
   "@deleteAgentConfirm": {
     "description": "Delete agent confirmation",
@@ -1116,62 +920,46 @@
       }
     }
   },
-
-  "setAsDefault": "Set as Default",
-  "@setAsDefault": {
-    "description": "Set as default button"
-  },
-
   "agentDetails": "Agent Details",
   "@agentDetails": {
     "description": "Agent details screen title"
   },
-
   "createdAt": "Created",
   "@createdAt": {
     "description": "Created date label"
   },
-
   "lastUsed": "Last Used",
   "@lastUsed": {
     "description": "Last used date label"
   },
-
   "basicInformation": "Basic Information",
   "@basicInformation": {
     "description": "Basic information section"
   },
-
   "switchToAgent": "Switch Agent",
   "@switchToAgent": {
     "description": "Switch agent modal title"
   },
-
   "providers": "Providers",
   "@providers": {
     "description": "Settings section header"
   },
-
   "addProvider": "Add provider",
   "@addProvider": {
     "description": "Add provider button"
   },
-
   "noProvidersConfigured": "No providers configured.",
   "@noProvidersConfigured": {
     "description": "Empty providers message"
   },
-
   "editCredentials": "Edit credentials",
   "@editCredentials": {
     "description": "Edit credentials tooltip"
   },
-
   "defaultModelHint": "The default model is used by agents that don't specify their own.",
   "@defaultModelHint": {
     "description": "Default model explanation"
   },
-
   "voiceCallModelSection": "Voice call (Live)",
   "@voiceCallModelSection": {
     "description": "Settings section for Gemini Live voice model"
@@ -1252,7 +1040,6 @@
   "@cannotAddLiveModelAsChat": {
     "description": "Snack when user tries to add a Live-only model as primary"
   },
-
   "authBearerTokenLabel": "Bearer Token",
   "@authBearerTokenLabel": {
     "description": "Auth segment / field label for bearer token (e.g. Bedrock)"
@@ -1377,57 +1164,46 @@
   "@securityHowItWorksToggleSession": {
     "description": "How-it-works bullet for settings toggle"
   },
-
   "holdToSetAsDefault": "Hold to set as default",
   "@holdToSetAsDefault": {
     "description": "Tooltip for model long-press"
   },
-
   "integrations": "Integrations",
   "@integrations": {
     "description": "Settings section header"
   },
-
   "shortcutsIntegrations": "Shortcuts Integrations",
   "@shortcutsIntegrations": {
     "description": "Shortcuts integration title"
   },
-
   "shortcutsIntegrationsDesc": "Install iOS Shortcuts to run third-party app actions",
   "@shortcutsIntegrationsDesc": {
     "description": "Shortcuts integration description"
   },
-
   "dangerZone": "Danger zone",
   "@dangerZone": {
     "description": "Settings section header"
   },
-
   "resetOnboarding": "Reset & re-run onboarding",
   "@resetOnboarding": {
     "description": "Reset onboarding title"
   },
-
   "resetOnboardingDesc": "Deletes all configuration and returns to the setup wizard.",
   "@resetOnboardingDesc": {
     "description": "Reset onboarding description"
   },
-
   "resetAllConfiguration": "Reset all configuration?",
   "@resetAllConfiguration": {
     "description": "Reset confirmation dialog title"
   },
-
   "resetAllConfigurationDesc": "This will delete your API keys, models, and all settings. The app will return to the setup wizard.\n\nYour conversation history is not deleted.",
   "@resetAllConfigurationDesc": {
     "description": "Reset confirmation dialog body"
   },
-
   "removeProvider": "Remove provider",
   "@removeProvider": {
     "description": "Remove provider dialog title"
   },
-
   "removeProviderConfirm": "Remove credentials for {provider}?",
   "@removeProviderConfirm": {
     "description": "Remove provider confirmation",
@@ -1437,7 +1213,6 @@
       }
     }
   },
-
   "modelSetAsDefault": "{name} set as default model",
   "@modelSetAsDefault": {
     "description": "Model set as default confirmation",
@@ -1447,17 +1222,14 @@
       }
     }
   },
-
   "photoImage": "Photo / Image",
   "@photoImage": {
     "description": "Attach menu option"
   },
-
   "documentPdfTxt": "Document (PDF / TXT)",
   "@documentPdfTxt": {
     "description": "Attach menu option"
   },
-
   "couldNotOpenDocument": "Could not open document: {error}",
   "@couldNotOpenDocument": {
     "description": "Document open error",
@@ -1467,22 +1239,18 @@
       }
     }
   },
-
   "retry": "Retry",
   "@retry": {
     "description": "Retry button"
   },
-
   "gatewayStopped": "Gateway stopped",
   "@gatewayStopped": {
     "description": "Gateway stopped snackbar"
   },
-
   "gatewayStarted": "Gateway started successfully!",
   "@gatewayStarted": {
     "description": "Gateway started snackbar"
   },
-
   "gatewayFailed": "Gateway failed: {error}",
   "@gatewayFailed": {
     "description": "Gateway failure snackbar",
@@ -1492,7 +1260,6 @@
       }
     }
   },
-
   "exceptionError": "Exception: {error}",
   "@exceptionError": {
     "description": "Generic exception message",
@@ -1502,107 +1269,86 @@
       }
     }
   },
-
   "pairingRequestApproved": "Pairing request approved",
   "@pairingRequestApproved": {
     "description": "Pairing approved snackbar"
   },
-
   "pairingRequestRejected": "Pairing request rejected",
   "@pairingRequestRejected": {
     "description": "Pairing rejected snackbar"
   },
-
   "addDevice": "Add Device",
   "@addDevice": {
     "description": "Add device dialog title"
   },
-
   "telegramConfigSaved": "Telegram configuration saved",
   "@telegramConfigSaved": {
     "description": "Telegram config saved snackbar"
   },
-
   "discordConfigSaved": "Discord configuration saved",
   "@discordConfigSaved": {
     "description": "Discord config saved snackbar"
   },
-
   "securityMethod": "Security Method",
   "@securityMethod": {
     "description": "Security method section header"
   },
-
   "pairingRecommended": "Pairing (Recommended)",
   "@pairingRecommended": {
     "description": "Security mode option"
   },
-
   "pairingDescription": "New users get a pairing code. You approve or reject them.",
   "@pairingDescription": {
     "description": "Pairing mode description"
   },
-
   "allowlistTitle": "Allowlist",
   "@allowlistTitle": {
     "description": "Security mode option"
   },
-
   "allowlistDescription": "Only specific user IDs can access the bot.",
   "@allowlistDescription": {
     "description": "Allowlist mode description"
   },
-
   "openAccess": "Open",
   "@openAccess": {
     "description": "Security mode option"
   },
-
   "openAccessDescription": "Anyone can use the bot immediately (not recommended).",
   "@openAccessDescription": {
     "description": "Open access description"
   },
-
   "disabledAccess": "Disabled",
   "@disabledAccess": {
     "description": "Security mode option"
   },
-
   "disabledAccessDescription": "No DMs allowed. Bot will not respond to any messages.",
   "@disabledAccessDescription": {
     "description": "Disabled access description"
   },
-
   "approvedDevices": "Approved Devices",
   "@approvedDevices": {
     "description": "Approved devices section header"
   },
-
   "noApprovedDevicesYet": "No approved devices yet",
   "@noApprovedDevicesYet": {
     "description": "Empty approved devices"
   },
-
   "devicesAppearAfterApproval": "Devices will appear here after you approve their pairing requests",
   "@devicesAppearAfterApproval": {
     "description": "Empty devices hint"
   },
-
   "noAllowedUsersConfigured": "No allowed users configured",
   "@noAllowedUsersConfigured": {
     "description": "Empty allowed users"
   },
-
   "addUserIdsHint": "Add user IDs to allow them to use the bot",
   "@addUserIdsHint": {
     "description": "Empty allowed users hint"
   },
-
   "removeDevice": "Remove device?",
   "@removeDevice": {
     "description": "Remove device dialog title"
   },
-
   "removeAccessFor": "Remove access for {name}?",
   "@removeAccessFor": {
     "description": "Remove device confirmation",
@@ -1612,77 +1358,62 @@
       }
     }
   },
-
   "saving": "Saving...",
   "@saving": {
     "description": "Saving button state"
   },
-
   "channelsLabel": "Channels",
   "@channelsLabel": {
     "description": "Channels section label in gateway screen"
   },
-
   "clawHubAccount": "ClawHub Account",
   "@clawHubAccount": {
     "description": "ClawHub account dialog title"
   },
-
   "loggedInToClawHub": "You are currently logged in to ClawHub.",
   "@loggedInToClawHub": {
     "description": "Logged in status message"
   },
-
   "loggedOutFromClawHub": "Logged out from ClawHub",
   "@loggedOutFromClawHub": {
     "description": "Logged out snackbar"
   },
-
   "login": "Login",
   "@login": {
     "description": "Login button"
   },
-
   "logout": "Logout",
   "@logout": {
     "description": "Logout button"
   },
-
   "connect": "Connect",
   "@connect": {
     "description": "Connect button"
   },
-
   "pasteClawHubToken": "Paste your ClawHub API token",
   "@pasteClawHubToken": {
     "description": "ClawHub token hint"
   },
-
   "pleaseEnterApiToken": "Please enter an API token",
   "@pleaseEnterApiToken": {
     "description": "Token validation message"
   },
-
   "successfullyConnected": "Successfully connected to ClawHub",
   "@successfullyConnected": {
     "description": "Connection success snackbar"
   },
-
   "browseSkillsButton": "Browse Skills",
   "@browseSkillsButton": {
     "description": "Browse skills button label"
   },
-
   "installSkill": "Install Skill",
   "@installSkill": {
     "description": "Install skill button"
   },
-
   "incompatibleSkill": "Incompatible Skill",
   "@incompatibleSkill": {
     "description": "Incompatible skill dialog title"
   },
-
   "incompatibleSkillDesc": "This skill cannot run on mobile (iOS/Android).\n\n{reason}",
   "@incompatibleSkillDesc": {
     "description": "Incompatible skill dialog body",
@@ -1692,12 +1423,10 @@
       }
     }
   },
-
   "compatibilityWarning": "Compatibility Warning",
   "@compatibilityWarning": {
     "description": "Compatibility warning dialog title"
   },
-
   "compatibilityWarningDesc": "This skill was designed for desktop and may not work as-is on mobile.\n\n{reason}\n\nWould you like to install an adapted version optimized for mobile?",
   "@compatibilityWarningDesc": {
     "description": "Compatibility warning dialog body",
@@ -1707,27 +1436,22 @@
       }
     }
   },
-
   "ok": "OK",
   "@ok": {
     "description": "OK button"
   },
-
   "installOriginal": "Install Original",
   "@installOriginal": {
     "description": "Install original button"
   },
-
   "installAdapted": "Install Adapted",
   "@installAdapted": {
     "description": "Install adapted button"
   },
-
   "resetSession": "Reset Session",
   "@resetSession": {
     "description": "Reset session dialog title"
   },
-
   "resetSessionConfirm": "Reset session \"{key}\"? This will clear all messages.",
   "@resetSessionConfirm": {
     "description": "Reset session confirmation",
@@ -1737,27 +1461,22 @@
       }
     }
   },
-
   "sessionReset": "Session reset",
   "@sessionReset": {
     "description": "Session reset snackbar"
   },
-
   "activeSessions": "Active Sessions",
   "@activeSessions": {
     "description": "Active sessions section header"
   },
-
   "scheduledTasks": "Scheduled Tasks",
   "@scheduledTasks": {
     "description": "Scheduled tasks section header"
   },
-
   "defaultBadge": "Default",
   "@defaultBadge": {
     "description": "Default badge label"
   },
-
   "errorGeneric": "Error: {error}",
   "@errorGeneric": {
     "description": "Generic error message",
@@ -1767,7 +1486,6 @@
       }
     }
   },
-
   "fileSaved": "{fileName} saved",
   "@fileSaved": {
     "description": "File saved snackbar",
@@ -1777,7 +1495,6 @@
       }
     }
   },
-
   "errorSavingFile": "Error saving file: {error}",
   "@errorSavingFile": {
     "description": "File save error",
@@ -1787,27 +1504,22 @@
       }
     }
   },
-
   "cannotDeleteLastAgent": "Cannot delete the last agent",
   "@cannotDeleteLastAgent": {
     "description": "Cannot delete last agent error"
   },
-
   "close": "Close",
   "@close": {
     "description": "Close button"
   },
-
   "nameIsRequired": "Name is required",
   "@nameIsRequired": {
-    "description": "Name validation error"
+    "description": "Validation error when name is empty"
   },
-
   "pleaseSelectModel": "Please select a model",
   "@pleaseSelectModel": {
     "description": "Model validation error"
   },
-
   "temperatureLabel": "Temperature: {value}",
   "@temperatureLabel": {
     "description": "Temperature slider label",
@@ -1817,187 +1529,150 @@
       }
     }
   },
-
   "maxTokens": "Max Tokens",
   "@maxTokens": {
     "description": "Max tokens field label"
   },
-
   "maxTokensRequired": "Max tokens is required",
   "@maxTokensRequired": {
     "description": "Max tokens validation error"
   },
-
   "mustBePositiveNumber": "Must be a positive number",
   "@mustBePositiveNumber": {
     "description": "Number validation error"
   },
-
   "maxToolIterations": "Max Tool Iterations",
   "@maxToolIterations": {
     "description": "Max iterations field label"
   },
-
   "maxIterationsRequired": "Max iterations is required",
   "@maxIterationsRequired": {
     "description": "Max iterations validation error"
   },
-
   "restrictToWorkspace": "Restrict to Workspace",
   "@restrictToWorkspace": {
     "description": "Workspace restriction toggle"
   },
-
   "restrictToWorkspaceDesc": "Limit file operations to agent workspace",
   "@restrictToWorkspaceDesc": {
     "description": "Workspace restriction description"
   },
-
   "noModelsConfiguredLong": "Please add at least one model in Settings before creating an agent.",
   "@noModelsConfiguredLong": {
     "description": "Long no models message"
   },
-
   "selectProviderFirst": "Select a provider first",
   "@selectProviderFirst": {
     "description": "Provider not selected placeholder"
   },
-
   "skip": "Skip",
   "@skip": {
     "description": "Skip button"
   },
-
   "continueButton": "Continue",
   "@continueButton": {
     "description": "Continue button"
   },
-
   "uiAutomation": "UI Automation",
   "@uiAutomation": {
     "description": "Accessibility page title"
   },
-
   "uiAutomationDesc": "FlutterClaw can control your screen on your behalf — tapping buttons, filling forms, scrolling, and automating repetitive tasks across any app.",
   "@uiAutomationDesc": {
     "description": "UI automation description"
   },
-
   "uiAutomationAccessibilityNote": "This requires enabling the Accessibility Service in Android Settings. You can skip this and enable it later.",
   "@uiAutomationAccessibilityNote": {
     "description": "Accessibility service note"
   },
-
   "openAccessibilitySettings": "Open Accessibility Settings",
   "@openAccessibilitySettings": {
     "description": "Open accessibility settings button"
   },
-
   "skipForNow": "Skip for now",
   "@skipForNow": {
     "description": "Skip for now button"
   },
-
   "checkingPermission": "Checking permission…",
   "@checkingPermission": {
     "description": "Permission check status"
   },
-
   "accessibilityEnabled": "Accessibility Service is enabled",
   "@accessibilityEnabled": {
     "description": "Accessibility enabled status"
   },
-
   "accessibilityNotEnabled": "Accessibility Service is not enabled",
   "@accessibilityNotEnabled": {
     "description": "Accessibility not enabled status"
   },
-
   "exploreIntegrations": "Explore Integrations",
   "@exploreIntegrations": {
     "description": "Explore integrations button"
   },
-
   "requestTimedOut": "Request timed out",
   "@requestTimedOut": {
     "description": "Request timeout error"
   },
-
   "myShortcuts": "My Shortcuts",
   "@myShortcuts": {
     "description": "Shortcuts screen title"
   },
-
   "addShortcut": "Add Shortcut",
   "@addShortcut": {
     "description": "Add shortcut button/dialog title"
   },
-
   "noShortcutsYet": "No shortcuts yet",
   "@noShortcutsYet": {
     "description": "Empty shortcuts message"
   },
-
   "shortcutsInstructions": "Create a shortcut in the iOS Shortcuts app, add the callback action at the end, then register it here so the AI can run it.",
   "@shortcutsInstructions": {
     "description": "Shortcuts empty state instructions"
   },
-
   "shortcutName": "Shortcut name",
   "@shortcutName": {
     "description": "Shortcut name field label"
   },
-
   "shortcutNameHint": "Exact name from the Shortcuts app",
   "@shortcutNameHint": {
     "description": "Shortcut name hint"
   },
-
   "descriptionOptional": "Description (optional)",
   "@descriptionOptional": {
     "description": "Optional description field label"
   },
-
   "whatDoesShortcutDo": "What does this shortcut do?",
   "@whatDoesShortcutDo": {
     "description": "Shortcut description hint"
   },
-
   "callbackSetup": "Callback setup",
   "@callbackSetup": {
     "description": "Callback setup section title"
   },
-
   "callbackInstructions": "Each shortcut must end with:\n① Get Value for Key → \"callbackUrl\" (from Shortcut Input parsed as dict)\n② Open URLs ← output of ①",
   "@callbackInstructions": {
     "description": "Callback setup instructions"
   },
-
   "channelApp": "App",
   "@channelApp": {
     "description": "App channel label"
   },
-
   "channelHeartbeat": "Heartbeat",
   "@channelHeartbeat": {
     "description": "Heartbeat channel label"
   },
-
   "channelCron": "Cron",
   "@channelCron": {
     "description": "Cron channel label"
   },
-
   "channelSubagent": "Subagent",
   "@channelSubagent": {
     "description": "Subagent channel label"
   },
-
   "channelSystem": "System",
   "@channelSystem": {
     "description": "System channel label"
   },
-
   "secondsAgo": "{seconds}s ago",
   "@secondsAgo": {
     "description": "Seconds ago time format",
@@ -2007,7 +1682,6 @@
       }
     }
   },
-
   "messagesAbbrev": "msgs",
   "@messagesAbbrev": {
     "description": "Messages abbreviation"
@@ -2016,691 +1690,929 @@
   "@modelAlreadyAdded": {
     "description": "Error shown when the user tries to add a duplicate model"
   },
-
   "bothTokensRequired": "Both tokens are required",
-  "@bothTokensRequired": { "description": "Slack validation error" },
-
+  "@bothTokensRequired": {
+    "description": "Slack validation error"
+  },
   "slackSavedRestart": "Slack saved — restart the gateway to connect",
-  "@slackSavedRestart": { "description": "Slack config saved snackbar" },
-
+  "@slackSavedRestart": {
+    "description": "Slack config saved snackbar"
+  },
   "slackConfiguration": "Slack Configuration",
-  "@slackConfiguration": { "description": "Slack config screen title" },
-
+  "@slackConfiguration": {
+    "description": "Slack config screen title"
+  },
   "setupTitle": "Setup",
-  "@setupTitle": { "description": "Setup section title" },
-
+  "@setupTitle": {
+    "description": "Setup section title"
+  },
   "slackSetupInstructions": "1. Create a Slack App at api.slack.com/apps\n2. Enable Socket Mode → generate App-Level Token (xapp-…)\n   with scope: connections:write\n3. Add Bot Token Scopes: chat:write, channels:history,\n   groups:history, im:history, mpim:history\n4. Install app to workspace → copy Bot Token (xoxb-…)",
-  "@slackSetupInstructions": { "description": "Slack setup instructions" },
-
+  "@slackSetupInstructions": {
+    "description": "Slack setup instructions"
+  },
   "botTokenXoxb": "Bot Token (xoxb-…)",
-  "@botTokenXoxb": { "description": "Slack bot token label" },
-
+  "@botTokenXoxb": {
+    "description": "Slack bot token label"
+  },
   "appLevelToken": "App-Level Token (xapp-…)",
-  "@appLevelToken": { "description": "Slack app-level token label" },
-
+  "@appLevelToken": {
+    "description": "Slack app-level token label"
+  },
   "apiUrlPhoneRequired": "API URL and phone number are required",
-  "@apiUrlPhoneRequired": { "description": "Signal validation error" },
-
+  "@apiUrlPhoneRequired": {
+    "description": "Signal validation error"
+  },
   "signalSavedRestart": "Signal saved — restart gateway to connect",
-  "@signalSavedRestart": { "description": "Signal config saved snackbar" },
-
+  "@signalSavedRestart": {
+    "description": "Signal config saved snackbar"
+  },
   "signalConfiguration": "Signal Configuration",
-  "@signalConfiguration": { "description": "Signal config screen title" },
-
+  "@signalConfiguration": {
+    "description": "Signal config screen title"
+  },
   "requirementsTitle": "Requirements",
-  "@requirementsTitle": { "description": "Requirements section title" },
-
+  "@requirementsTitle": {
+    "description": "Requirements section title"
+  },
   "signalRequirements": "Requires signal-cli-rest-api running on a server:\n\n  docker run -p 8080:8080 \\\n    -v /data:/home/.local/share/signal-cli \\\n    bbernhard/signal-cli-rest-api\n\nRegister/link your Signal number via the REST API, then enter the URL and your phone number below.",
-  "@signalRequirements": { "description": "Signal setup requirements" },
-
+  "@signalRequirements": {
+    "description": "Signal setup requirements"
+  },
   "signalApiUrl": "signal-cli-rest-api URL",
-  "@signalApiUrl": { "description": "Signal API URL label" },
-
+  "@signalApiUrl": {
+    "description": "Signal API URL label"
+  },
   "signalPhoneNumber": "Your Signal phone number",
-  "@signalPhoneNumber": { "description": "Signal phone number label" },
-
+  "@signalPhoneNumber": {
+    "description": "Signal phone number label"
+  },
   "userIdLabel": "User ID",
-  "@userIdLabel": { "description": "User ID field label" },
-
+  "@userIdLabel": {
+    "description": "User ID field label"
+  },
   "enterDiscordUserId": "Enter Discord user ID",
-  "@enterDiscordUserId": { "description": "Discord user ID hint" },
-
+  "@enterDiscordUserId": {
+    "description": "Discord user ID hint"
+  },
   "enterTelegramUserId": "Enter Telegram user ID",
-  "@enterTelegramUserId": { "description": "Telegram user ID hint" },
-
+  "@enterTelegramUserId": {
+    "description": "Telegram user ID hint"
+  },
   "fromDiscordDevPortal": "From Discord Developer Portal",
-  "@fromDiscordDevPortal": { "description": "Discord bot token hint" },
-
+  "@fromDiscordDevPortal": {
+    "description": "Discord bot token hint"
+  },
   "allowedUserIdsTitle": "Allowed User IDs",
-  "@allowedUserIdsTitle": { "description": "Allowed user IDs section title" },
-
+  "@allowedUserIdsTitle": {
+    "description": "Allowed user IDs section title"
+  },
   "approvedDevice": "Approved device",
-  "@approvedDevice": { "description": "Approved device subtitle" },
-
+  "@approvedDevice": {
+    "description": "Approved device subtitle"
+  },
   "allowedUser": "Allowed user",
-  "@allowedUser": { "description": "Allowed user subtitle" },
-
+  "@allowedUser": {
+    "description": "Allowed user subtitle"
+  },
   "howToGetBotToken": "How to get your bot token",
-  "@howToGetBotToken": { "description": "Help section title" },
-
+  "@howToGetBotToken": {
+    "description": "Help section title"
+  },
   "discordTokenInstructions": "1. Go to Discord Developer Portal\n2. Create a new application and bot\n3. Copy the token and paste it above\n4. Enable Message Content Intent",
-  "@discordTokenInstructions": { "description": "Discord token help instructions" },
-
+  "@discordTokenInstructions": {
+    "description": "Discord token help instructions"
+  },
   "telegramTokenInstructions": "1. Open Telegram and search for @BotFather\n2. Send /newbot and follow the instructions\n3. Copy the token and paste it above",
-  "@telegramTokenInstructions": { "description": "Telegram token help instructions" },
-
+  "@telegramTokenInstructions": {
+    "description": "Telegram token help instructions"
+  },
   "fromBotFatherHint": "Get from @BotFather",
-  "@fromBotFatherHint": { "description": "Telegram token hint" },
-
+  "@fromBotFatherHint": {
+    "description": "Telegram token hint"
+  },
   "accessTokenLabel": "Access token",
-  "@accessTokenLabel": { "description": "Gateway access token title" },
-
+  "@accessTokenLabel": {
+    "description": "Gateway access token title"
+  },
   "notSetOpenAccess": "Not set — open access (loopback only)",
-  "@notSetOpenAccess": { "description": "No token set message" },
-
+  "@notSetOpenAccess": {
+    "description": "No token set message"
+  },
   "gatewayAccessToken": "Gateway access token",
-  "@gatewayAccessToken": { "description": "Gateway access token dialog title" },
-
+  "@gatewayAccessToken": {
+    "description": "Gateway access token dialog title"
+  },
   "tokenFieldLabel": "Token",
-  "@tokenFieldLabel": { "description": "Token field label" },
-
+  "@tokenFieldLabel": {
+    "description": "Token field label"
+  },
   "leaveEmptyDisableAuth": "Leave empty to disable auth",
-  "@leaveEmptyDisableAuth": { "description": "Token field hint" },
-
+  "@leaveEmptyDisableAuth": {
+    "description": "Token field hint"
+  },
   "toolPolicies": "Tool Policies",
-  "@toolPolicies": { "description": "Tool policies screen title" },
-
+  "@toolPolicies": {
+    "description": "Tool policies screen title"
+  },
   "toolPoliciesDesc": "Control what the agent can access. Disabled tools are hidden from the AI and blocked at runtime.",
-  "@toolPoliciesDesc": { "description": "Tool policies description" },
-
+  "@toolPoliciesDesc": {
+    "description": "Tool policies description"
+  },
   "privacySensors": "Privacy & Sensors",
-  "@privacySensors": { "description": "Tool category" },
-
+  "@privacySensors": {
+    "description": "Tool category"
+  },
   "networkCategory": "Network",
-  "@networkCategory": { "description": "Tool category" },
-
+  "@networkCategory": {
+    "description": "Tool category"
+  },
   "systemCategory": "System",
-  "@systemCategory": { "description": "Tool category" },
-
+  "@systemCategory": {
+    "description": "Tool category"
+  },
   "toolTakePhotos": "Take Photos",
-  "@toolTakePhotos": { "description": "Tool label" },
+  "@toolTakePhotos": {
+    "description": "Tool label"
+  },
   "toolTakePhotosDesc": "Allow the agent to take photos using the camera",
-  "@toolTakePhotosDesc": { "description": "Tool description" },
-
+  "@toolTakePhotosDesc": {
+    "description": "Tool description"
+  },
   "toolRecordVideo": "Record Video",
-  "@toolRecordVideo": { "description": "Tool label" },
+  "@toolRecordVideo": {
+    "description": "Tool label"
+  },
   "toolRecordVideoDesc": "Allow the agent to record video",
-  "@toolRecordVideoDesc": { "description": "Tool description" },
-
+  "@toolRecordVideoDesc": {
+    "description": "Tool description"
+  },
   "toolLocation": "Location",
-  "@toolLocation": { "description": "Tool label" },
+  "@toolLocation": {
+    "description": "Tool label"
+  },
   "toolLocationDesc": "Allow the agent to read your current GPS location",
-  "@toolLocationDesc": { "description": "Tool description" },
-
+  "@toolLocationDesc": {
+    "description": "Tool description"
+  },
   "toolHealthData": "Health Data",
-  "@toolHealthData": { "description": "Tool label" },
+  "@toolHealthData": {
+    "description": "Tool label"
+  },
   "toolHealthDataDesc": "Allow the agent to read health/fitness data",
-  "@toolHealthDataDesc": { "description": "Tool description" },
-
+  "@toolHealthDataDesc": {
+    "description": "Tool description"
+  },
   "toolContacts": "Contacts",
-  "@toolContacts": { "description": "Tool label" },
+  "@toolContacts": {
+    "description": "Tool label"
+  },
   "toolContactsDesc": "Allow the agent to search your contacts",
-  "@toolContactsDesc": { "description": "Tool description" },
-
+  "@toolContactsDesc": {
+    "description": "Tool description"
+  },
   "toolScreenshots": "Screenshots",
-  "@toolScreenshots": { "description": "Tool label" },
+  "@toolScreenshots": {
+    "description": "Tool label"
+  },
   "toolScreenshotsDesc": "Allow the agent to take screenshots of the screen",
-  "@toolScreenshotsDesc": { "description": "Tool description" },
-
+  "@toolScreenshotsDesc": {
+    "description": "Tool description"
+  },
   "toolWebFetch": "Web Fetch",
-  "@toolWebFetch": { "description": "Tool label" },
+  "@toolWebFetch": {
+    "description": "Tool label"
+  },
   "toolWebFetchDesc": "Allow the agent to fetch content from URLs",
-  "@toolWebFetchDesc": { "description": "Tool description" },
-
+  "@toolWebFetchDesc": {
+    "description": "Tool description"
+  },
   "toolWebSearch": "Web Search",
-  "@toolWebSearch": { "description": "Tool label" },
+  "@toolWebSearch": {
+    "description": "Tool label"
+  },
   "toolWebSearchDesc": "Allow the agent to search the web",
-  "@toolWebSearchDesc": { "description": "Tool description" },
-
+  "@toolWebSearchDesc": {
+    "description": "Tool description"
+  },
   "toolHttpRequests": "HTTP Requests",
-  "@toolHttpRequests": { "description": "Tool label" },
+  "@toolHttpRequests": {
+    "description": "Tool label"
+  },
   "toolHttpRequestsDesc": "Allow the agent to make arbitrary HTTP requests",
-  "@toolHttpRequestsDesc": { "description": "Tool description" },
-
+  "@toolHttpRequestsDesc": {
+    "description": "Tool description"
+  },
   "toolSandboxShell": "Sandbox Shell",
-  "@toolSandboxShell": { "description": "Tool label" },
+  "@toolSandboxShell": {
+    "description": "Tool label"
+  },
   "toolSandboxShellDesc": "Allow the agent to run shell commands in the sandbox",
-  "@toolSandboxShellDesc": { "description": "Tool description" },
-
+  "@toolSandboxShellDesc": {
+    "description": "Tool description"
+  },
   "toolImageGeneration": "Image Generation",
-  "@toolImageGeneration": { "description": "Tool label" },
+  "@toolImageGeneration": {
+    "description": "Tool label"
+  },
   "toolImageGenerationDesc": "Allow the agent to generate images via AI",
-  "@toolImageGenerationDesc": { "description": "Tool description" },
-
+  "@toolImageGenerationDesc": {
+    "description": "Tool description"
+  },
   "toolLaunchApps": "Launch Apps",
-  "@toolLaunchApps": { "description": "Tool label" },
+  "@toolLaunchApps": {
+    "description": "Tool label"
+  },
   "toolLaunchAppsDesc": "Allow the agent to open installed apps",
-  "@toolLaunchAppsDesc": { "description": "Tool description" },
-
+  "@toolLaunchAppsDesc": {
+    "description": "Tool description"
+  },
   "toolLaunchIntents": "Launch Intents",
-  "@toolLaunchIntents": { "description": "Tool label" },
+  "@toolLaunchIntents": {
+    "description": "Tool label"
+  },
   "toolLaunchIntentsDesc": "Allow the agent to fire Android intents (deep links, system screens)",
-  "@toolLaunchIntentsDesc": { "description": "Tool description" },
-
+  "@toolLaunchIntentsDesc": {
+    "description": "Tool description"
+  },
   "renameSession": "Rename session",
-  "@renameSession": { "description": "Rename session dialog title" },
-
+  "@renameSession": {
+    "description": "Rename session dialog title"
+  },
   "myConversationName": "My conversation name",
-  "@myConversationName": { "description": "Session rename hint" },
-
+  "@myConversationName": {
+    "description": "Session rename hint"
+  },
   "renameAction": "Rename",
-  "@renameAction": { "description": "Rename menu action" },
-
+  "@renameAction": {
+    "description": "Rename menu action"
+  },
   "couldNotTranscribeAudio": "Could not transcribe audio",
-  "@couldNotTranscribeAudio": { "description": "Transcription error" },
-
+  "@couldNotTranscribeAudio": {
+    "description": "Transcription error"
+  },
   "stopRecording": "Stop recording",
-  "@stopRecording": { "description": "Stop recording tooltip" },
-
+  "@stopRecording": {
+    "description": "Stop recording tooltip"
+  },
   "voiceInput": "Voice input",
-  "@voiceInput": { "description": "Voice input tooltip" },
-
+  "@voiceInput": {
+    "description": "Voice input tooltip"
+  },
   "speakMessage": "Speak",
-  "@speakMessage": { "description": "Context menu action: speak this message aloud" },
-
+  "@speakMessage": {
+    "description": "Context menu TTS action"
+  },
   "stopSpeaking": "Stop speaking",
-  "@stopSpeaking": { "description": "Context menu action: stop current TTS playback" },
-
+  "@stopSpeaking": {
+    "description": "Context menu stop TTS action"
+  },
   "selectText": "Select Text",
-  "@selectText": { "description": "Context menu action: open text selection dialog" },
-
+  "@selectText": {
+    "description": "Context menu select text action"
+  },
   "messageCopied": "Message copied",
-  "@messageCopied": { "description": "Snackbar shown after copying a message" },
-
+  "@messageCopied": {
+    "description": "Snackbar after copying a message"
+  },
   "copyTooltip": "Copy",
-  "@copyTooltip": { "description": "Copy button tooltip" },
-
+  "@copyTooltip": {
+    "description": "Copy button tooltip"
+  },
   "commandsTooltip": "Commands",
-  "@commandsTooltip": { "description": "Commands button tooltip" },
-
+  "@commandsTooltip": {
+    "description": "Commands button tooltip"
+  },
   "providersAndModels": "Providers & Models",
-  "@providersAndModels": { "description": "Settings tile title" },
-
+  "@providersAndModels": {
+    "description": "Settings tile title"
+  },
   "modelsConfiguredCount": "{count, plural, =1{1 model configured} other{{count} models configured}}",
   "@modelsConfiguredCount": {
     "description": "Models configured count",
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "autoStartEnabledLabel": "Auto-start enabled",
-  "@autoStartEnabledLabel": { "description": "Gateway auto-start status" },
-
+  "@autoStartEnabledLabel": {
+    "description": "Gateway auto-start status"
+  },
   "autoStartOffLabel": "Auto-start off",
-  "@autoStartOffLabel": { "description": "Gateway auto-start off status" },
-
+  "@autoStartOffLabel": {
+    "description": "Gateway auto-start off status"
+  },
   "allToolsEnabled": "All tools enabled",
-  "@allToolsEnabled": { "description": "Tool policies all enabled" },
-
+  "@allToolsEnabled": {
+    "description": "Tool policies all enabled"
+  },
   "toolsDisabledCount": "{count, plural, =1{1 tool disabled} other{{count} tools disabled}}",
   "@toolsDisabledCount": {
     "description": "Tools disabled count",
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "appVersionSubtitle": "{appName} v{version} ({buildNumber})",
   "@appVersionSubtitle": {
     "description": "Settings About row: app name and runtime version from PackageInfo",
     "placeholders": {
-      "appName": { "type": "String" },
-      "version": { "type": "String" },
-      "buildNumber": { "type": "String" }
+      "appName": {
+        "type": "String"
+      },
+      "version": {
+        "type": "String"
+      },
+      "buildNumber": {
+        "type": "String"
+      }
     }
   },
-
   "officialWebsite": "Official website",
-  "@officialWebsite": { "description": "Link label for flutterclaw.ai in About" },
-
+  "@officialWebsite": {
+    "description": "Link label for flutterclaw.ai in About"
+  },
   "noPendingPairingRequests": "No pending pairing requests",
-  "@noPendingPairingRequests": { "description": "Empty pairing requests" },
-
+  "@noPendingPairingRequests": {
+    "description": "Empty pairing requests"
+  },
   "pairingRequestsTitle": "Pairing Requests",
-  "@pairingRequestsTitle": { "description": "Pairing requests section title" },
-
+  "@pairingRequestsTitle": {
+    "description": "Pairing requests section title"
+  },
   "gatewayStartingStatus": "Starting gateway...",
-  "@gatewayStartingStatus": { "description": "Gateway starting status" },
-
+  "@gatewayStartingStatus": {
+    "description": "Gateway starting status"
+  },
   "gatewayRetryingStatus": "Retrying gateway start...",
-  "@gatewayRetryingStatus": { "description": "Gateway retrying status" },
-
+  "@gatewayRetryingStatus": {
+    "description": "Gateway retrying status"
+  },
   "errorStartingGateway": "Error starting gateway",
-  "@errorStartingGateway": { "description": "Gateway error fallback" },
-
+  "@errorStartingGateway": {
+    "description": "Gateway error fallback"
+  },
   "runningStatus": "Running",
-  "@runningStatus": { "description": "Gateway running status" },
-
+  "@runningStatus": {
+    "description": "Gateway running status"
+  },
   "stoppedStatus": "Stopped",
-  "@stoppedStatus": { "description": "Gateway stopped status" },
-
+  "@stoppedStatus": {
+    "description": "Gateway stopped status"
+  },
   "notSetUpStatus": "Not set up",
-  "@notSetUpStatus": { "description": "Channel not set up status" },
-
+  "@notSetUpStatus": {
+    "description": "Channel not set up status"
+  },
   "configuredStatus": "Configured",
-  "@configuredStatus": { "description": "Channel configured status" },
-
+  "@configuredStatus": {
+    "description": "Channel configured status"
+  },
   "whatsAppConfigSaved": "WhatsApp configuration saved",
-  "@whatsAppConfigSaved": { "description": "WhatsApp config saved snackbar" },
-
+  "@whatsAppConfigSaved": {
+    "description": "WhatsApp config saved snackbar"
+  },
   "whatsAppDisconnected": "WhatsApp disconnected",
-  "@whatsAppDisconnected": { "description": "WhatsApp disconnected snackbar" },
-
+  "@whatsAppDisconnected": {
+    "description": "WhatsApp disconnected snackbar"
+  },
   "whatsAppTitle": "WhatsApp",
-  "@whatsAppTitle": { "description": "WhatsApp screen title" },
-
+  "@whatsAppTitle": {
+    "description": "WhatsApp screen title"
+  },
   "applyingSettings": "Applying...",
-  "@applyingSettings": { "description": "Applying settings button state" },
-
+  "@applyingSettings": {
+    "description": "Applying settings button state"
+  },
   "reconnectWhatsApp": "Reconnect WhatsApp",
-  "@reconnectWhatsApp": { "description": "Reconnect button label" },
-
+  "@reconnectWhatsApp": {
+    "description": "Reconnect button label"
+  },
   "saveSettingsLabel": "Save Settings",
-  "@saveSettingsLabel": { "description": "Save settings button label" },
-
+  "@saveSettingsLabel": {
+    "description": "Save settings button label"
+  },
   "applySettingsRestart": "Apply Settings & Restart",
-  "@applySettingsRestart": { "description": "Apply and restart button label" },
-
+  "@applySettingsRestart": {
+    "description": "Apply and restart button label"
+  },
   "whatsAppMode": "WhatsApp Mode",
-  "@whatsAppMode": { "description": "WhatsApp mode section title" },
-
+  "@whatsAppMode": {
+    "description": "WhatsApp mode section title"
+  },
   "myPersonalNumber": "My personal number",
-  "@myPersonalNumber": { "description": "WhatsApp mode option" },
-
+  "@myPersonalNumber": {
+    "description": "WhatsApp mode option"
+  },
   "myPersonalNumberDesc": "Messages you send to your own WhatsApp chat wake the agent.",
-  "@myPersonalNumberDesc": { "description": "Personal number description" },
-
+  "@myPersonalNumberDesc": {
+    "description": "Personal number description"
+  },
   "dedicatedBotAccount": "Dedicated bot account",
-  "@dedicatedBotAccount": { "description": "WhatsApp mode option" },
-
+  "@dedicatedBotAccount": {
+    "description": "WhatsApp mode option"
+  },
   "dedicatedBotAccountDesc": "Messages sent from the linked account itself are ignored as outbound.",
-  "@dedicatedBotAccountDesc": { "description": "Dedicated bot description" },
-
+  "@dedicatedBotAccountDesc": {
+    "description": "Dedicated bot description"
+  },
   "allowedNumbers": "Allowed Numbers",
-  "@allowedNumbers": { "description": "Allowed numbers section title" },
-
+  "@allowedNumbers": {
+    "description": "Allowed numbers section title"
+  },
   "addNumberTitle": "Add Number",
-  "@addNumberTitle": { "description": "Add number dialog title" },
-
+  "@addNumberTitle": {
+    "description": "Add number dialog title"
+  },
   "phoneNumberJid": "Phone number / JID",
-  "@phoneNumberJid": { "description": "Phone number field label" },
-
+  "@phoneNumberJid": {
+    "description": "Phone number field label"
+  },
   "noAllowedNumbersConfigured": "No allowed numbers configured",
-  "@noAllowedNumbersConfigured": { "description": "Empty allowed numbers" },
-
+  "@noAllowedNumbersConfigured": {
+    "description": "Empty allowed numbers"
+  },
   "devicesAppearAfterPairing": "Devices appear here after you approve pairing requests",
-  "@devicesAppearAfterPairing": { "description": "Empty approved devices hint" },
-
+  "@devicesAppearAfterPairing": {
+    "description": "Empty approved devices hint"
+  },
   "addPhoneNumbersHint": "Add phone numbers to allow them to use the bot",
-  "@addPhoneNumbersHint": { "description": "Empty allowed numbers hint" },
-
+  "@addPhoneNumbersHint": {
+    "description": "Empty allowed numbers hint"
+  },
   "allowedNumber": "Allowed number",
-  "@allowedNumber": { "description": "Allowed number subtitle" },
-
+  "@allowedNumber": {
+    "description": "Allowed number subtitle"
+  },
   "howToConnect": "How to connect",
-  "@howToConnect": { "description": "WhatsApp help section title" },
-
+  "@howToConnect": {
+    "description": "WhatsApp help section title"
+  },
   "whatsAppConnectInstructions": "1. Tap \"Connect WhatsApp\" above\n2. A QR code will appear — scan it with WhatsApp\n   (Settings → Linked Devices → Link a Device)\n3. Once connected, incoming messages are routed\n   to your active AI agent automatically",
-  "@whatsAppConnectInstructions": { "description": "WhatsApp connect instructions" },
-
+  "@whatsAppConnectInstructions": {
+    "description": "WhatsApp connect instructions"
+  },
   "whatsAppPairingDesc": "New senders get a pairing code. You approve them.",
-  "@whatsAppPairingDesc": { "description": "WhatsApp pairing description" },
-
+  "@whatsAppPairingDesc": {
+    "description": "WhatsApp pairing description"
+  },
   "whatsAppAllowlistDesc": "Only specific phone numbers can message the bot.",
-  "@whatsAppAllowlistDesc": { "description": "WhatsApp allowlist description" },
-
+  "@whatsAppAllowlistDesc": {
+    "description": "WhatsApp allowlist description"
+  },
   "whatsAppOpenDesc": "Anyone who messages you can use the bot.",
-  "@whatsAppOpenDesc": { "description": "WhatsApp open access description" },
-
+  "@whatsAppOpenDesc": {
+    "description": "WhatsApp open access description"
+  },
   "whatsAppDisabledDesc": "Bot will not respond to any incoming messages.",
-  "@whatsAppDisabledDesc": { "description": "WhatsApp disabled description" },
-
+  "@whatsAppDisabledDesc": {
+    "description": "WhatsApp disabled description"
+  },
   "sessionExpiredRelink": "Session expired. Tap \"Reconnect\" below to scan a fresh QR code.",
-  "@sessionExpiredRelink": { "description": "WhatsApp session expired message" },
-
+  "@sessionExpiredRelink": {
+    "description": "WhatsApp session expired message"
+  },
   "connectWhatsAppBelow": "Tap \"Connect WhatsApp\" below to link your account.",
-  "@connectWhatsAppBelow": { "description": "WhatsApp idle description" },
-
+  "@connectWhatsAppBelow": {
+    "description": "WhatsApp idle description"
+  },
   "whatsAppAcceptedQr": "WhatsApp accepted the QR. Finalizing the link...",
-  "@whatsAppAcceptedQr": { "description": "WhatsApp restart pending message" },
-
+  "@whatsAppAcceptedQr": {
+    "description": "Connecting description when restart is pending"
+  },
   "waitingForWhatsApp": "Waiting for WhatsApp to complete the link...",
-  "@waitingForWhatsApp": { "description": "WhatsApp connecting message" },
-
+  "@waitingForWhatsApp": {
+    "description": "Connecting description in WhatsApp pairing card"
+  },
   "focusedLabel": "Focused",
-  "@focusedLabel": { "description": "Temperature slider label" },
-
+  "@focusedLabel": {
+    "description": "Temperature slider label"
+  },
   "balancedLabel": "Balanced",
-  "@balancedLabel": { "description": "Temperature slider label" },
-
+  "@balancedLabel": {
+    "description": "Temperature slider label"
+  },
   "creativeLabel": "Creative",
-  "@creativeLabel": { "description": "Temperature slider label" },
-
+  "@creativeLabel": {
+    "description": "Temperature slider label"
+  },
   "preciseLabel": "Precise",
-  "@preciseLabel": { "description": "Temperature description" },
-
+  "@preciseLabel": {
+    "description": "Temperature description"
+  },
   "expressiveLabel": "Expressive",
-  "@expressiveLabel": { "description": "Temperature description" },
-
+  "@expressiveLabel": {
+    "description": "Temperature description"
+  },
   "browseLabel": "Browse",
-  "@browseLabel": { "description": "Browse button label" },
-
+  "@browseLabel": {
+    "description": "Browse button label"
+  },
   "apiTokenLabel": "API Token",
-  "@apiTokenLabel": { "description": "API token field label" },
-
+  "@apiTokenLabel": {
+    "description": "API token field label"
+  },
   "connectToClawHub": "Connect to ClawHub",
-  "@connectToClawHub": { "description": "ClawHub connection title" },
-
+  "@connectToClawHub": {
+    "description": "ClawHub connection title"
+  },
   "clawHubLoginHint": "Login to ClawHub to access premium skills and install packages",
-  "@clawHubLoginHint": { "description": "ClawHub login banner" },
-
+  "@clawHubLoginHint": {
+    "description": "ClawHub login banner"
+  },
   "howToGetApiToken": "How to get your API token:",
-  "@howToGetApiToken": { "description": "API token help title" },
-
+  "@howToGetApiToken": {
+    "description": "API token help title"
+  },
   "clawHubApiTokenInstructions": "1. Visit clawhub.ai and login with GitHub\n2. Run \"clawhub login\" in terminal\n3. Copy your token and paste it here",
-  "@clawHubApiTokenInstructions": { "description": "ClawHub token help" },
-
+  "@clawHubApiTokenInstructions": {
+    "description": "ClawHub token help"
+  },
   "connectionFailed": "Connection failed: {error}",
   "@connectionFailed": {
     "description": "Connection failure message",
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "cronJobRuns": "{count} runs",
   "@cronJobRuns": {
     "description": "Cron job run count",
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "nextRunLabel": "Next run: {time}",
   "@nextRunLabel": {
     "description": "Next run time display",
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
-
   "lastErrorLabel": "Last error: {error}",
   "@lastErrorLabel": {
     "description": "Last error display",
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "cronJobHintText": "Instructions for the agent when this job fires…",
-  "@cronJobHintText": { "description": "Cron job task hint" },
-
+  "@cronJobHintText": {
+    "description": "Cron job task hint"
+  },
   "androidPermissions": "Android Permissions",
-  "@androidPermissions": { "description": "Accessibility page title" },
-
+  "@androidPermissions": {
+    "description": "Accessibility page title"
+  },
   "androidPermissionsDesc": "FlutterClaw can control your screen on your behalf — tapping buttons, filling forms, scrolling, and automating repetitive tasks across any app.",
-  "@androidPermissionsDesc": { "description": "Android permissions description" },
-
+  "@androidPermissionsDesc": {
+    "description": "Android permissions description"
+  },
   "twoPermissionsNeeded": "Two permissions are needed for the full experience. You can skip this and enable them later in Settings.",
-  "@twoPermissionsNeeded": { "description": "Permissions skip note" },
-
+  "@twoPermissionsNeeded": {
+    "description": "Permissions skip note"
+  },
   "accessibilityService": "Accessibility Service",
-  "@accessibilityService": { "description": "Accessibility service title" },
-
+  "@accessibilityService": {
+    "description": "Accessibility service title"
+  },
   "accessibilityServiceDesc": "Allows tapping, swiping, typing, and reading screen content",
-  "@accessibilityServiceDesc": { "description": "Accessibility service description" },
-
+  "@accessibilityServiceDesc": {
+    "description": "Accessibility service description"
+  },
   "displayOverOtherApps": "Display Over Other Apps",
-  "@displayOverOtherApps": { "description": "Overlay permission title" },
-
+  "@displayOverOtherApps": {
+    "description": "Overlay permission title"
+  },
   "displayOverOtherAppsDesc": "Shows a floating status chip so you can see what the agent is doing",
-  "@displayOverOtherAppsDesc": { "description": "Overlay permission description" },
-
+  "@displayOverOtherAppsDesc": {
+    "description": "Overlay permission description"
+  },
   "changeDefaultModel": "Change default model",
-  "@changeDefaultModel": { "description": "Change default model dialog title" },
-
+  "@changeDefaultModel": {
+    "description": "Change default model dialog title"
+  },
   "setModelAsDefault": "Set {name} as the default model.",
   "@setModelAsDefault": {
     "description": "Set model as default description",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-
   "alsoUpdateAgents": "Also update {count} agent{count, plural, =1{} other{s}}",
   "@alsoUpdateAgents": {
     "description": "Update agents checkbox",
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "startNewSessions": "Start new sessions",
-  "@startNewSessions": { "description": "Start new sessions checkbox" },
-
+  "@startNewSessions": {
+    "description": "Start new sessions checkbox"
+  },
   "currentConversationsArchived": "Current conversations will be archived",
-  "@currentConversationsArchived": { "description": "Archive conversations note" },
-
+  "@currentConversationsArchived": {
+    "description": "Archive conversations note"
+  },
   "applyAction": "Apply",
-  "@applyAction": { "description": "Apply button" },
-
+  "@applyAction": {
+    "description": "Apply button"
+  },
   "applyModelQuestion": "Apply {name}?",
   "@applyModelQuestion": {
     "description": "Apply model dialog title",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-
   "setAsDefaultModel": "Set as default model",
-  "@setAsDefaultModel": { "description": "Set as default model checkbox" },
-
+  "@setAsDefaultModel": {
+    "description": "Set as default model checkbox"
+  },
   "usedByAgentsWithout": "Used by agents without a specific model",
-  "@usedByAgentsWithout": { "description": "Default model subtitle" },
-
+  "@usedByAgentsWithout": {
+    "description": "Default model subtitle"
+  },
   "applyToAgents": "Apply to {count} agent{count, plural, =1{} other{s}}",
   "@applyToAgents": {
     "description": "Apply to agents checkbox",
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "providerAlreadyAuth": "Provider already authenticated — no API key needed.",
-  "@providerAlreadyAuth": { "description": "Provider authenticated message" },
-
+  "@providerAlreadyAuth": {
+    "description": "Provider authenticated message"
+  },
   "selectFromList": "Select from list",
-  "@selectFromList": { "description": "Select from model list button" },
-
+  "@selectFromList": {
+    "description": "Select from model list button"
+  },
   "enterCustomModelId": "Enter a custom model ID",
-  "@enterCustomModelId": { "description": "Custom model ID button" },
-
+  "@enterCustomModelId": {
+    "description": "Custom model ID button"
+  },
   "removeSkillTitle": "Remove skill?",
-  "@removeSkillTitle": { "description": "Remove skill dialog title" },
-
+  "@removeSkillTitle": {
+    "description": "Remove skill dialog title"
+  },
   "browseClawHubToDiscover": "Browse ClawHub to discover and install skills",
-  "@browseClawHubToDiscover": { "description": "Skills empty state hint" },
-
+  "@browseClawHubToDiscover": {
+    "description": "Skills empty state hint"
+  },
   "addDeviceTooltip": "Add device",
-  "@addDeviceTooltip": { "description": "Add device tooltip" },
-
+  "@addDeviceTooltip": {
+    "description": "Add device tooltip"
+  },
   "addNumberTooltip": "Add number",
-  "@addNumberTooltip": { "description": "Add number tooltip" },
-
+  "@addNumberTooltip": {
+    "description": "Add number tooltip"
+  },
   "searchSkillsHint": "Search skills...",
-  "@searchSkillsHint": { "description": "Search skills hint" },
-
+  "@searchSkillsHint": {
+    "description": "Search skills hint"
+  },
   "loginToClawHub": "Login to ClawHub",
-  "@loginToClawHub": { "description": "Login to ClawHub tooltip" },
-
+  "@loginToClawHub": {
+    "description": "Login to ClawHub tooltip"
+  },
   "accountTooltip": "Account",
-  "@accountTooltip": { "description": "Account tooltip" },
-
+  "@accountTooltip": {
+    "description": "Account tooltip"
+  },
   "editAction": "Edit",
-  "@editAction": { "description": "Edit menu action" },
-
+  "@editAction": {
+    "description": "Edit menu action"
+  },
   "setAsDefaultAction": "Set as default",
-  "@setAsDefaultAction": { "description": "Set as default menu action" },
-
+  "@setAsDefaultAction": {
+    "description": "Set as default menu action"
+  },
   "chooseProviderTitle": "Choose provider",
-  "@chooseProviderTitle": { "description": "Choose provider section title" },
-
+  "@chooseProviderTitle": {
+    "description": "Choose provider section title"
+  },
   "apiKeyTitle": "API Key",
-  "@apiKeyTitle": { "description": "API Key section title" },
-
+  "@apiKeyTitle": {
+    "description": "API Key section title"
+  },
   "slackConfigSaved": "Slack saved — restart the gateway to connect",
-  "@slackConfigSaved": { "description": "Slack config saved snackbar" },
-
+  "@slackConfigSaved": {
+    "description": "Slack config saved snackbar"
+  },
   "signalConfigSaved": "Signal saved — restart gateway to connect",
-  "@signalConfigSaved": { "description": "Signal config saved snackbar" },
-
+  "@signalConfigSaved": {
+    "description": "Signal config saved snackbar"
+  },
   "idPrefix": "ID: {id}",
   "@idPrefix": {
     "description": "ID display prefix",
-    "placeholders": { "id": { "type": "String" } }
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
   },
-
   "addDeviceHint": "Add device",
-  "@addDeviceHint": { "description": "Add device tooltip for allowlist" },
-
+  "@addDeviceHint": {
+    "description": "Add device tooltip for allowlist"
+  },
   "skipAction": "Skip",
-  "@skipAction": { "description": "Skip button in dialog" },
-
-  "speakMessage": "Speak",
-  "@speakMessage": { "description": "Context menu TTS action" },
-
-  "stopSpeaking": "Stop speaking",
-  "@stopSpeaking": { "description": "Context menu stop TTS action" },
-
-  "selectText": "Select Text",
-  "@selectText": { "description": "Context menu select text action" },
-
-  "messageCopied": "Message copied",
-  "@messageCopied": { "description": "Snackbar after copying a message" },
-
+  "@skipAction": {
+    "description": "Skip button in dialog"
+  },
   "mcpServers": "MCP Servers",
-  "@mcpServers": { "description": "MCP Servers screen title" },
-
+  "@mcpServers": {
+    "description": "MCP Servers screen title"
+  },
   "noMcpServersConfigured": "No MCP servers configured",
-  "@noMcpServersConfigured": { "description": "Empty state title for MCP servers list" },
-
+  "@noMcpServersConfigured": {
+    "description": "Empty state title for MCP servers list"
+  },
   "mcpServersEmptyHint": "Add MCP servers to give your agent access to tools from GitHub, Notion, Slack, databases, and more.",
-  "@mcpServersEmptyHint": { "description": "Empty state hint for MCP servers list" },
-
+  "@mcpServersEmptyHint": {
+    "description": "Empty state hint for MCP servers list"
+  },
   "addMcpServer": "Add MCP Server",
-  "@addMcpServer": { "description": "Button label to add an MCP server" },
-
+  "@addMcpServer": {
+    "description": "Button label to add an MCP server"
+  },
   "editMcpServer": "Edit MCP Server",
-  "@editMcpServer": { "description": "Screen title when editing an MCP server" },
-
+  "@editMcpServer": {
+    "description": "Screen title when editing an MCP server"
+  },
   "removeMcpServer": "Remove MCP Server",
-  "@removeMcpServer": { "description": "Dialog title to remove an MCP server" },
-
+  "@removeMcpServer": {
+    "description": "Dialog title to remove an MCP server"
+  },
   "removeMcpServerConfirm": "Remove \"{name}\"? Its tools will no longer be available.",
   "@removeMcpServerConfirm": {
     "description": "Confirmation message to remove an MCP server",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-
   "mcpTransport": "Transport",
-  "@mcpTransport": { "description": "Label for MCP transport type selector" },
-
+  "@mcpTransport": {
+    "description": "Label for MCP transport type selector"
+  },
   "testConnection": "Test Connection",
-  "@testConnection": { "description": "Button label to test MCP server connection" },
-
+  "@testConnection": {
+    "description": "Button label to test MCP server connection"
+  },
   "mcpServerNameLabel": "Server name",
-  "@mcpServerNameLabel": { "description": "Label for MCP server name field" },
-
+  "@mcpServerNameLabel": {
+    "description": "Label for MCP server name field"
+  },
   "mcpServerNameHint": "e.g. GitHub, Notion, My DB",
-  "@mcpServerNameHint": { "description": "Hint for MCP server name field" },
-
+  "@mcpServerNameHint": {
+    "description": "Hint for MCP server name field"
+  },
   "mcpServerUrlLabel": "Server URL",
-  "@mcpServerUrlLabel": { "description": "Label for MCP server URL field" },
-
+  "@mcpServerUrlLabel": {
+    "description": "Label for MCP server URL field"
+  },
   "mcpBearerTokenLabel": "Bearer token (optional)",
-  "@mcpBearerTokenLabel": { "description": "Label for MCP bearer token field" },
-
+  "@mcpBearerTokenLabel": {
+    "description": "Label for MCP bearer token field"
+  },
   "mcpBearerTokenHint": "Leave blank if no auth required",
-  "@mcpBearerTokenHint": { "description": "Hint for MCP bearer token field" },
-
+  "@mcpBearerTokenHint": {
+    "description": "Hint for MCP bearer token field"
+  },
   "mcpCommandLabel": "Command",
-  "@mcpCommandLabel": { "description": "Label for MCP stdio command field" },
-
+  "@mcpCommandLabel": {
+    "description": "Label for MCP stdio command field"
+  },
   "mcpArgumentsLabel": "Arguments (space-separated)",
-  "@mcpArgumentsLabel": { "description": "Label for MCP stdio arguments field" },
-
+  "@mcpArgumentsLabel": {
+    "description": "Label for MCP stdio arguments field"
+  },
   "mcpEnvVarsLabel": "Environment variables (KEY=VALUE, one per line)",
-  "@mcpEnvVarsLabel": { "description": "Label for MCP stdio env vars field" },
-
+  "@mcpEnvVarsLabel": {
+    "description": "Label for MCP stdio env vars field"
+  },
   "mcpStdioNotOnIos": "stdio is not available on iOS. Use HTTP or SSE instead.",
-  "@mcpStdioNotOnIos": { "description": "Warning shown when stdio is selected on iOS" },
-
+  "@mcpStdioNotOnIos": {
+    "description": "Warning shown when stdio is selected on iOS"
+  },
   "connectedStatus": "Connected",
-  "@connectedStatus": { "description": "Generic connected status label" },
-
+  "@connectedStatus": {
+    "description": "Generic connected status label"
+  },
   "mcpConnecting": "Connecting...",
-  "@mcpConnecting": { "description": "MCP server connecting status" },
-
+  "@mcpConnecting": {
+    "description": "MCP server connecting status"
+  },
   "mcpConnectionError": "Connection error",
-  "@mcpConnectionError": { "description": "MCP server connection error status" },
-
+  "@mcpConnectionError": {
+    "description": "MCP server connection error status"
+  },
   "mcpDisconnected": "Disconnected",
-  "@mcpDisconnected": { "description": "MCP server disconnected status" },
-
+  "@mcpDisconnected": {
+    "description": "MCP server disconnected status"
+  },
   "mcpToolsCount": "{count} tools",
   "@mcpToolsCount": {
     "description": "Number of tools discovered on an MCP server",
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "mcpTestOkTools": "OK — {count} tools discovered",
   "@mcpTestOkTools": {
     "description": "MCP test connection success with tools",
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "mcpTestOkNoTools": "OK — Connected (0 tools)",
-  "@mcpTestOkNoTools": { "description": "MCP test connection success with no tools" },
-
+  "@mcpTestOkNoTools": {
+    "description": "MCP test connection success with no tools"
+  },
   "mcpTestFailed": "Connection failed. Check server URL/token.",
-  "@mcpTestFailed": { "description": "MCP test connection failure message" },
-
+  "@mcpTestFailed": {
+    "description": "MCP test connection failure message"
+  },
   "mcpAddServer": "Add server",
-  "@mcpAddServer": { "description": "Button label to add an MCP server in the editor" },
-
+  "@mcpAddServer": {
+    "description": "Button label to add an MCP server in the editor"
+  },
   "mcpSaveChanges": "Save changes",
-  "@mcpSaveChanges": { "description": "Button label to save MCP server changes" },
-
+  "@mcpSaveChanges": {
+    "description": "Button label to save MCP server changes"
+  },
   "urlIsRequired": "URL is required",
-  "@urlIsRequired": { "description": "Validation error when URL is empty" },
-
+  "@urlIsRequired": {
+    "description": "Validation error when URL is empty"
+  },
   "enterValidUrl": "Enter a valid URL",
-  "@enterValidUrl": { "description": "Validation error when URL is invalid" },
-
+  "@enterValidUrl": {
+    "description": "Validation error when URL is invalid"
+  },
   "commandIsRequired": "Command is required",
-  "@commandIsRequired": { "description": "Validation error when stdio command is empty" },
-
-  "nameIsRequired": "Name is required",
-  "@nameIsRequired": { "description": "Validation error when name is empty" },
-
+  "@commandIsRequired": {
+    "description": "Validation error when stdio command is empty"
+  },
   "skillRemoved": "Skill \"{name}\" removed",
   "@skillRemoved": {
     "description": "Snackbar when a skill is removed",
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-
   "editFileContentHint": "Edit file content...",
-  "@editFileContentHint": { "description": "Hint text for file content editor" },
-
+  "@editFileContentHint": {
+    "description": "Hint text for file content editor"
+  },
   "whatsAppPairSubtitle": "Pair your personal WhatsApp account with a QR code",
-  "@whatsAppPairSubtitle": { "description": "Subtitle on WhatsApp toggle in channels page" },
-
+  "@whatsAppPairSubtitle": {
+    "description": "Subtitle on WhatsApp toggle in channels page"
+  },
   "whatsAppPairingOptional": "Pairing is optional. You can finish onboarding now and complete the link later.",
-  "@whatsAppPairingOptional": { "description": "Info text on WhatsApp pairing during onboarding" },
-
+  "@whatsAppPairingOptional": {
+    "description": "Info text on WhatsApp pairing during onboarding"
+  },
   "whatsAppEnableToLink": "Enable WhatsApp to start linking this device.",
-  "@whatsAppEnableToLink": { "description": "Idle description in WhatsApp pairing card" },
-
-  "whatsAppAcceptedQr": "WhatsApp accepted the QR. Finalizing the link...",
-  "@whatsAppAcceptedQr": { "description": "Connecting description when restart is pending" },
-
-  "waitingForWhatsApp": "Waiting for WhatsApp to complete the link...",
-  "@waitingForWhatsApp": { "description": "Connecting description in WhatsApp pairing card" },
-
+  "@whatsAppEnableToLink": {
+    "description": "Idle description in WhatsApp pairing card"
+  },
   "whatsAppLinkedOnboarding": "WhatsApp is linked. FlutterClaw will be able to respond after onboarding.",
-  "@whatsAppLinkedOnboarding": { "description": "Connected description in onboarding WhatsApp pairing card" },
-
+  "@whatsAppLinkedOnboarding": {
+    "description": "Connected description in onboarding WhatsApp pairing card"
+  },
   "cancelLink": "Cancel Link",
-  "@cancelLink": { "description": "Button to cancel WhatsApp linking" }
+  "@cancelLink": {
+    "description": "Button to cancel WhatsApp linking"
+  },
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

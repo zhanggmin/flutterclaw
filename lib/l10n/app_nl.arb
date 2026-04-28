@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Als een aanroep overeenkomt met een gevaarlijk patroon, wordt deze geblokkeerd en krijgt de agent de reden.",
   "securityHowItWorksUnsafeCmd": "Gebruik /unsafe in de chat voor een eenmalige uitzondering voor een geblokkeerde aanroep; daarna zijn controles weer actief.",
   "securityHowItWorksToggleSession": "Schakel hier \"Detectie van onveilige patronen\" uit om controles voor de hele sessie uit te zetten.",
-
   "firstHatchModeChoiceTitle": "Hoe wil je beginnen?",
   "firstHatchModeChoiceBody": "Je kunt met je assistent chatten via tekst of een gesprek starten met je stem, als een kort telefoongesprek. Kies wat het makkelijkst voor je voelt.",
   "firstHatchModeChoiceChatButton": "Typen in de chat",
   "firstHatchModeChoiceVoiceButton": "Praten met stem",
-
   "holdToSetAsDefault": "Houd ingedrukt om als standaard in te stellen",
   "integrations": "Integraties",
   "shortcutsIntegrations": "Shortcuts Integraties",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Koppelen is optioneel. U kunt de onboarding nu afronden en de koppeling later voltooien.",
   "whatsAppEnableToLink": "Schakel WhatsApp in om dit apparaat te koppelen.",
   "whatsAppLinkedOnboarding": "WhatsApp is gekoppeld. FlutterClaw kan reageren na de onboarding.",
-  "cancelLink": "Koppeling annuleren"
+  "cancelLink": "Koppeling annuleren",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

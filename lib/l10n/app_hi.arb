@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "जब कॉल खतरनाक पैटर्न से मेल खाती है तो अवरुद्ध होती है और एजेंट को कारण बताया जाता है।",
   "securityHowItWorksUnsafeCmd": "चैट में /unsafe से एक बार अवरुद्ध कॉल की अनुमति, फिर जाँच पुनः चालू।",
   "securityHowItWorksToggleSession": "पूरे सत्र के लिए जाँच बंद करने हेतु यहाँ \"सुरक्षा पैटर्न पहचान\" बंद करें।",
-
   "firstHatchModeChoiceTitle": "आप कैसे शुरू करना चाहेंगे?",
   "firstHatchModeChoiceBody": "आप अपने सहायक से टेक्स्ट चैट कर सकते हैं या छोटी कॉल जैसी आवाज़ वाली बातचीत शुरू कर सकते हैं। जो आपको आसान लगे वह चुनें।",
   "firstHatchModeChoiceChatButton": "चैट में लिखें",
   "firstHatchModeChoiceVoiceButton": "आवाज़ से बात करें",
-
   "holdToSetAsDefault": "डिफ़ॉल्ट के रूप में सेट करने के लिए दबाकर रखें",
   "integrations": "इंटीग्रेशन",
   "shortcutsIntegrations": "Shortcuts इंटीग्रेशन",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "लिंकिंग वैकल्पिक है। आप अभी ऑनबोर्डिंग पूरी कर सकते हैं और बाद में लिंक जोड़ सकते हैं।",
   "whatsAppEnableToLink": "इस डिवाइस को लिंक करने के लिए WhatsApp सक्षम करें।",
   "whatsAppLinkedOnboarding": "WhatsApp लिंक हो गया। ऑनबोर्डिंग के बाद FlutterClaw जवाब दे सकेगा।",
-  "cancelLink": "लिंक रद्द करें"
+  "cancelLink": "लिंक रद्द करें",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }
