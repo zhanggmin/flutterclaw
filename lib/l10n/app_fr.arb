@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Lorsqu’un appel correspond à un motif dangereux, il est bloqué et l’agent en est informé.",
   "securityHowItWorksUnsafeCmd": "Utilisez /unsafe dans le chat pour une exception ponctuelle autorisant un appel bloqué, puis les vérifications reprennent.",
   "securityHowItWorksToggleSession": "Désactivez ici « Détection de motifs de sécurité » pour désactiver les vérifications pour toute la session.",
-
   "firstHatchModeChoiceTitle": "Comment souhaitez-vous commencer ?",
   "firstHatchModeChoiceBody": "Vous pouvez discuter par écrit avec votre assistant ou lancer une conversation vocale, comme un appel rapide. Choisissez ce qui vous semble le plus simple.",
   "firstHatchModeChoiceChatButton": "Écrire dans le chat",
   "firstHatchModeChoiceVoiceButton": "Parler à voix haute",
-
   "holdToSetAsDefault": "Maintenez pour définir par défaut",
   "integrations": "Intégrations",
   "shortcutsIntegrations": "Intégrations de Raccourcis",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "L'association est optionnelle. Vous pouvez terminer le processus maintenant et compléter le lien plus tard.",
   "whatsAppEnableToLink": "Activez WhatsApp pour commencer à lier cet appareil.",
   "whatsAppLinkedOnboarding": "WhatsApp est lié. FlutterClaw pourra répondre après la configuration initiale.",
-  "cancelLink": "Annuler le lien"
+  "cancelLink": "Annuler le lien",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

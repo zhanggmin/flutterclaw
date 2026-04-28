@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Khi lệnh gọi khớp mẫu nguy hiểm, nó bị chặn và tác nhân được biết lý do.",
   "securityHowItWorksUnsafeCmd": "Dùng /unsafe trong chat để cho phép một lần lệnh gọi bị chặn, sau đó kiểm tra bật lại.",
   "securityHowItWorksToggleSession": "Tắt \"Phát hiện mẫu bảo mật\" tại đây để tắt kiểm tra cả phiên.",
-
   "firstHatchModeChoiceTitle": "Bạn muốn bắt đầu thế nào?",
   "firstHatchModeChoiceBody": "Bạn có thể nhắn chữ với trợ lý hoặc bắt đầu trò chuyện bằng giọng nói như một cuộc gọi ngắn. Hãy chọn cách bạn thấy dễ nhất.",
   "firstHatchModeChoiceChatButton": "Nhắn trong chat",
   "firstHatchModeChoiceVoiceButton": "Nói chuyện bằng giọng nói",
-
   "holdToSetAsDefault": "Giữ để đặt làm mặc định",
   "integrations": "Tích hợp",
   "shortcutsIntegrations": "Tích hợp Phím tắt",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Ghép nối là tùy chọn. Bạn có thể hoàn tất thiết lập ngay bây giờ và kết nối sau.",
   "whatsAppEnableToLink": "Bật WhatsApp để bắt đầu liên kết thiết bị này.",
   "whatsAppLinkedOnboarding": "WhatsApp đã được liên kết. FlutterClaw có thể phản hồi sau khi hoàn tất thiết lập.",
-  "cancelLink": "Hủy liên kết"
+  "cancelLink": "Hủy liên kết",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

@@ -104,6 +104,7 @@ import 'package:flutterclaw/services/battery_service.dart';
 import 'package:flutterclaw/services/auth_profile_service.dart';
 import 'package:flutterclaw/services/secrets_resolver.dart';
 import 'package:flutterclaw/services/secure_key_store.dart';
+import 'package:flutterclaw/services/idea_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutterclaw/services/gemini_live/gemini_live_service.dart';
 import 'package:flutterclaw/services/gemini_live/live_event.dart';
@@ -122,6 +123,34 @@ final configManagerProvider = Provider<ConfigManager>((ref) {
       );
   return mgr;
 });
+
+final ideaServiceProvider = Provider<IdeaService>((ref) {
+  return IdeaService(
+    ref.read(configManagerProvider),
+    ref.read(sessionManagerProvider),
+  );
+});
+
+class IdeaBrainstormCoordinator {
+  final Ref _ref;
+
+  const IdeaBrainstormCoordinator(this._ref);
+
+  Future<String> startOrResumeAndSwitchToChat(String ideaId) async {
+    final result =
+        await _ref.read(ideaServiceProvider).startOrResumeBrainstorm(ideaId);
+    await _ref.read(chatProvider.notifier).switchToSession(result.sessionKey);
+    return result.sessionKey;
+  }
+
+  Future<void> markBrainstormSucceeded(String ideaId) {
+    return _ref.read(ideaServiceProvider).markBrainstormSucceeded(ideaId);
+  }
+}
+
+final ideaBrainstormCoordinatorProvider = Provider<IdeaBrainstormCoordinator>(
+  IdeaBrainstormCoordinator.new,
+);
 
 /// Provider for list of all agent profiles
 final agentProfilesProvider = Provider<List<AgentProfile>>((ref) {

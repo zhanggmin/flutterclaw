@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Shoduje-li se volání s nebezpečným vzorem, je zablokováno a agent se dozví důvod.",
   "securityHowItWorksUnsafeCmd": "V chatu použijte /unsafe pro jednorázovou výjimku u zablokovaného volání, pak se kontroly obnoví.",
   "securityHowItWorksToggleSession": "Vypněte zde „Detekce bezpečnostních vzorů“, abyste kontroly vypnuli pro celou relaci.",
-
   "firstHatchModeChoiceTitle": "Jak chcete začít?",
   "firstHatchModeChoiceBody": "Můžete si s asistentem psát v chatu nebo začít hlasovou konverzaci — jako krátký hovor. Vyberte si, co vám vyhovuje víc.",
   "firstHatchModeChoiceChatButton": "Psát v chatu",
   "firstHatchModeChoiceVoiceButton": "Mluvit hlasem",
-
   "holdToSetAsDefault": "Podržte pro nastavení jako výchozí",
   "integrations": "Integrace",
   "shortcutsIntegrations": "Integrace Shortcuts",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Párování je volitelné. Můžete dokončit onboarding nyní a odkaz přidat později.",
   "whatsAppEnableToLink": "Zapněte WhatsApp a začněte propojovat toto zařízení.",
   "whatsAppLinkedOnboarding": "WhatsApp je propojen. FlutterClaw bude moci odpovídat po dokončení onboardingu.",
-  "cancelLink": "Zrušit propojení"
+  "cancelLink": "Zrušit propojení",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

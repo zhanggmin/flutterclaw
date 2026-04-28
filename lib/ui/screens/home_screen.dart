@@ -9,7 +9,9 @@ import 'package:flutterclaw/services/background_service.dart';
 import 'package:flutterclaw/services/ios_gateway_service.dart';
 import 'package:flutterclaw/services/analytics_service.dart';
 import 'package:flutterclaw/ui/screens/chat_screen.dart';
+import 'package:flutterclaw/ui/screens/ideas_home_screen.dart';
 import 'package:flutterclaw/ui/screens/channels_screen.dart';
+import 'package:flutterclaw/ui/screens/ideas/ideas_screen.dart';
 import 'package:flutterclaw/ui/screens/unified_agents_screen.dart';
 import 'package:flutterclaw/ui/screens/settings_screen.dart';
 
@@ -21,7 +23,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _currentIndex = 0;
+  static const int _chatTabIndex = 0;
+  int _currentIndex = _chatTabIndex;
   StreamSubscription<String>? _notifTapSub;
 
   @override
@@ -45,7 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final notifService = ref.read(notificationServiceProvider);
     _notifTapSub = notifService.tapPayloadStream.listen((sessionKey) {
       if (!mounted) return;
-      setState(() => _currentIndex = 0); // switch to Chat tab
+      setState(() => _currentIndex = 1); // switch to Chat tab
       ref.read(chatProvider.notifier).switchToSession(sessionKey);
     });
   }
@@ -89,21 +92,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  static const _screens = <Widget>[
-    ChatScreen(),
-    ChannelsScreen(),
-    UnifiedAgentsScreen(),
-    SettingsScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final analytics = ref.read(analyticsServiceProvider);
 
+    final screens = <Widget>[
+      IdeasHomeScreen(
+        onEnterSession: () => setState(() => _currentIndex = 1),
+      ),
+      const ChatScreen(),
+      const ChannelsScreen(),
+      const UnifiedAgentsScreen(),
+      const SettingsScreen(),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
@@ -111,19 +117,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           setState(() => _currentIndex = i);
           analytics.logTap(
             name: switch (i) {
-              0 => 'bottom_nav_chat',
-              1 => 'bottom_nav_channels',
-              2 => 'bottom_nav_agents',
-              3 => 'bottom_nav_settings',
+              0 => 'bottom_nav_ideas',
+              1 => 'bottom_nav_chat',
+              2 => 'bottom_nav_channels',
+              3 => 'bottom_nav_agents',
+              4 => 'bottom_nav_settings',
               _ => 'bottom_nav_unknown',
             },
           );
         },
         destinations: [
+          const NavigationDestination(
+            icon: Icon(Icons.lightbulb_outline),
+            selectedIcon: Icon(Icons.lightbulb),
+            label: '首页',
+          ),
           NavigationDestination(
             icon: const Icon(Icons.chat_outlined),
             selectedIcon: const Icon(Icons.chat),
             label: context.l10n.chat,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.lightbulb_outline),
+            selectedIcon: const Icon(Icons.lightbulb),
+            label: 'Ideas',
           ),
           NavigationDestination(
             icon: const Icon(Icons.hub_outlined),
