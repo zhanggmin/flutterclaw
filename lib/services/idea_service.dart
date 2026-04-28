@@ -1,249 +1,189 @@
+library;
+
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutterclaw/core/agent/session_manager.dart';
-import 'package:flutterclaw/core/providers/provider_interface.dart';
 import 'package:flutterclaw/data/models/config.dart';
+import 'package:logging/logging.dart';
+import 'package:uuid/uuid.dart';
 
-class IdeaRecord {
+final _log = Logger('flutterclaw.idea_service');
+const _uuid = Uuid();
+
+enum IdeaSourceType { chatMessage, chatSummary }
+
+class IdeaItem {
   final String id;
-  final String title;
-  final String content;
-  final String summary;
-  final List<String> tags;
-  final String status;
-  final List<String> nextActions;
-  final List<String> lastInsights;
-  final List<String> linkedSessionKeys;
-  final DateTime? lastBrainstormedAt;
-  final DateTime updatedAt;
+  String title;
+  String body;
+  String summary;
+  List<String> tags;
+  List<String> nextActions;
+  DateTime createdAt;
+  DateTime updatedAt;
 
-  const IdeaRecord({
-    required this.id,
+  IdeaItem({
+    String? id,
     required this.title,
-    required this.content,
+    required this.body,
     this.summary = '',
     this.tags = const [],
-    this.status = 'draft',
     this.nextActions = const [],
-    this.lastInsights = const [],
-    this.linkedSessionKeys = const [],
-    this.lastBrainstormedAt,
-    required this.updatedAt,
-  });
-
-  IdeaRecord copyWith({
-    String? title,
-    String? content,
-    String? summary,
-    List<String>? tags,
-    String? status,
-    List<String>? nextActions,
-    List<String>? lastInsights,
-    List<String>? linkedSessionKeys,
-    DateTime? lastBrainstormedAt,
-    bool clearLastBrainstormedAt = false,
+    DateTime? createdAt,
     DateTime? updatedAt,
-  }) {
-    return IdeaRecord(
-      id: id,
-      title: title ?? this.title,
-      content: content ?? this.content,
-      summary: summary ?? this.summary,
-      tags: tags ?? this.tags,
-      status: status ?? this.status,
-      nextActions: nextActions ?? this.nextActions,
-      lastInsights: lastInsights ?? this.lastInsights,
-      linkedSessionKeys: linkedSessionKeys ?? this.linkedSessionKeys,
-      lastBrainstormedAt: clearLastBrainstormedAt
-          ? null
-          : lastBrainstormedAt ?? this.lastBrainstormedAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
+  })  : id = id ?? _uuid.v4(),
+        createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
-        'content': content,
-        'summary': summary,
-        'tags': tags,
-        'status': status,
-        'nextActions': nextActions,
-        'lastInsights': lastInsights,
-        'linkedSessionKeys': linkedSessionKeys,
-        if (lastBrainstormedAt != null)
-          'lastBrainstormedAt': lastBrainstormedAt!.toIso8601String(),
+        'body': body,
+        if (summary.isNotEmpty) 'summary': summary,
+        if (tags.isNotEmpty) 'tags': tags,
+        if (nextActions.isNotEmpty) 'nextActions': nextActions,
+        'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
       };
 
-  factory IdeaRecord.fromJson(Map<String, dynamic> json) {
-    return IdeaRecord(
-      id: json['id'] as String,
-      title: (json['title'] as String?) ?? '',
-      content: (json['content'] as String?) ?? '',
-      summary: (json['summary'] as String?) ?? '',
-      tags: (json['tags'] as List<dynamic>? ?? const [])
-          .map((e) => e.toString())
-          .toList(),
-      status: (json['status'] as String?) ?? 'draft',
-      nextActions: (json['nextActions'] as List<dynamic>? ?? const [])
-          .map((e) => e.toString())
-          .toList(),
-      lastInsights: (json['lastInsights'] as List<dynamic>? ?? const [])
-          .map((e) => e.toString())
-          .toList(),
-      linkedSessionKeys:
-          (json['linkedSessionKeys'] as List<dynamic>? ?? const [])
-              .map((e) => e.toString())
-              .toList(),
-      lastBrainstormedAt: json['lastBrainstormedAt'] == null
-          ? null
-          : DateTime.tryParse(json['lastBrainstormedAt'] as String),
-      updatedAt: DateTime.tryParse((json['updatedAt'] as String?) ?? '') ??
-          DateTime.now(),
-    );
-  }
+  factory IdeaItem.fromJson(Map<String, dynamic> json) => IdeaItem(
+        id: json['id'] as String?,
+        title: json['title'] as String? ?? '',
+        body: json['body'] as String? ?? '',
+        summary: json['summary'] as String? ?? '',
+        tags: (json['tags'] as List<dynamic>? ?? []).cast<String>(),
+        nextActions:
+            (json['nextActions'] as List<dynamic>? ?? []).cast<String>(),
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'] as String)
+            : null,
+        updatedAt: json['updatedAt'] != null
+            ? DateTime.parse(json['updatedAt'] as String)
+            : null,
+      );
 }
 
-class BrainstormSessionResult {
-  final String sessionKey;
-  final bool createdNew;
-
-  const BrainstormSessionResult({
-    required this.sessionKey,
-    required this.createdNew,
-  });
-}
+typedef IdeaLlmCall = Future<String?> Function(String systemPrompt, String userPrompt);
 
 class IdeaService {
-  final ConfigManager _configManager;
-  final SessionManager _sessionManager;
+  final ConfigManager configManager;
+  final IdeaLlmCall? llmCall;
+  final List<IdeaItem> _items = [];
+  bool _loaded = false;
 
-  const IdeaService(this._configManager, this._sessionManager);
+  IdeaService({required this.configManager, this.llmCall});
 
-  static String sessionKeyForIdea(String ideaId) => 'ideas:$ideaId';
+  List<IdeaItem> get items => List.unmodifiable(_items);
 
-  Future<BrainstormSessionResult> startOrResumeBrainstorm(String ideaId) async {
-    final ideas = await _loadIdeas();
-    final idea = ideas[ideaId];
-    if (idea == null) {
-      throw StateError('Idea not found: $ideaId');
+  Future<void> load() async {
+    if (_loaded) return;
+    _loaded = true;
+    try {
+      final file = await _ideasFile();
+      if (!await file.exists()) return;
+      final raw = await file.readAsString();
+      final decoded = jsonDecode(raw) as List<dynamic>;
+      _items
+        ..clear()
+        ..addAll(
+          decoded.map((e) => IdeaItem.fromJson(e as Map<String, dynamic>)),
+        );
+      _items.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    } catch (e) {
+      _log.warning('Failed to load ideas: $e');
     }
+  }
 
+  Future<IdeaItem> saveFromChat({
+    required String content,
+    required IdeaSourceType sourceType,
+    required String sourceRef,
+    bool append = false,
+    String? existingIdeaId,
+    bool organizeWithAi = false,
+  }) async {
+    await load();
     final now = DateTime.now();
-    final recentKey = _pickMostRecentLinkedSession(idea.linkedSessionKeys);
-    if (recentKey != null) {
-      return BrainstormSessionResult(sessionKey: recentKey, createdNew: false);
-    }
+    final sourceLabel = sourceType == IdeaSourceType.chatMessage ? 'chat_message' : 'chat_summary';
+    final normalizedContent = content.trim();
+    final section = '[来源] $sourceLabel\n[sourceRef] $sourceRef\n\n$normalizedContent';
 
-    final sessionKey = '${sessionKeyForIdea(ideaId)}:${now.millisecondsSinceEpoch}';
-    await _sessionManager.getOrCreate(sessionKey, 'webchat', 'idea:$ideaId');
-
-    final injectedContext = _buildInitialIdeaContextMessage(idea);
-    await _sessionManager.addMessage(
-      sessionKey,
-      LlmMessage(role: 'user', content: injectedContext),
-    );
-
-    final mergedKeys = [
-      ...idea.linkedSessionKeys.where((k) => k.isNotEmpty),
-      sessionKey,
-    ];
-    ideas[ideaId] = idea.copyWith(
-      linkedSessionKeys: mergedKeys,
-      updatedAt: now,
-    );
-    await _saveIdeas(ideas);
-
-    return BrainstormSessionResult(sessionKey: sessionKey, createdNew: true);
-  }
-
-  Future<void> markBrainstormSucceeded(String ideaId) async {
-    final ideas = await _loadIdeas();
-    final idea = ideas[ideaId];
-    if (idea == null) return;
-
-    final now = DateTime.now();
-    ideas[ideaId] = idea.copyWith(
-      lastBrainstormedAt: now,
-      updatedAt: now,
-    );
-    await _saveIdeas(ideas);
-  }
-
-  Future<void> upsertIdea(IdeaRecord idea) async {
-    final ideas = await _loadIdeas();
-    ideas[idea.id] = idea.copyWith(updatedAt: DateTime.now());
-    await _saveIdeas(ideas);
-  }
-
-  String? _pickMostRecentLinkedSession(List<String> keys) {
-    SessionMeta? best;
-    for (final key in keys) {
-      final meta = _sessionManager.getMeta(key);
-      if (meta == null) continue;
-      if (best == null || meta.lastActivity.isAfter(best.lastActivity)) {
-        best = meta;
+    if (append && existingIdeaId != null) {
+      final target = _items.where((i) => i.id == existingIdeaId).firstOrNull;
+      if (target != null) {
+        target.body = '${target.body.trim()}\n\n---\n\n$section';
+        target.updatedAt = now;
+        if (organizeWithAi) {
+          await _organizeInto(target);
+          target.updatedAt = DateTime.now();
+        }
+        await _save();
+        return target;
       }
     }
-    return best?.key;
-  }
 
-  String _buildInitialIdeaContextMessage(IdeaRecord idea) {
-    final tags = idea.tags.isEmpty ? '无' : idea.tags.join(' / ');
-    final nextActions =
-        idea.nextActions.isEmpty ? '- 无' : idea.nextActions.map((e) => '- $e').join('\n');
-    final insights =
-        idea.lastInsights.isEmpty ? '- 无' : idea.lastInsights.map((e) => '- $e').join('\n');
-
-    return '''
-请基于以下 Idea 继续发散，并给出结构化建议：
-
-- ideaId: ${idea.id}
-- title: ${idea.title}
-- content: ${idea.content}
-- summary: ${idea.summary.isEmpty ? '无' : idea.summary}
-- tags: $tags
-- status: ${idea.status}
-
-nextActions:
-$nextActions
-
-last insights:
-$insights
-''';
-  }
-
-  Future<Map<String, IdeaRecord>> _loadIdeas() async {
-    final file = await _ideasStoreFile();
-    if (!await file.exists()) return {};
-
-    final raw = await file.readAsString();
-    if (raw.trim().isEmpty) return {};
-
-    final decoded = jsonDecode(raw);
-    if (decoded is! Map<String, dynamic>) return {};
-
-    final records = <String, IdeaRecord>{};
-    for (final entry in decoded.entries) {
-      final value = entry.value;
-      if (value is Map<String, dynamic>) {
-        records[entry.key] = IdeaRecord.fromJson(value);
-      }
+    final item = IdeaItem(
+      title: _defaultTitle(normalizedContent, sourceType),
+      body: section,
+      createdAt: now,
+      updatedAt: now,
+    );
+    if (organizeWithAi) {
+      await _organizeInto(item);
+      item.updatedAt = DateTime.now();
     }
-    return records;
+    _items.insert(0, item);
+    await _save();
+    return item;
   }
 
-  Future<void> _saveIdeas(Map<String, IdeaRecord> ideas) async {
-    final file = await _ideasStoreFile();
-    await file.parent.create(recursive: true);
-    final payload = ideas.map((k, v) => MapEntry(k, v.toJson()));
-    await file.writeAsString(const JsonEncoder.withIndent('  ').convert(payload));
+  String _defaultTitle(String content, IdeaSourceType type) {
+    final prefix = type == IdeaSourceType.chatMessage ? '聊天灵感' : '会话总结';
+    final firstLine = content.split('\n').first.trim();
+    if (firstLine.isEmpty) return prefix;
+    return '$prefix - ${firstLine.length > 24 ? '${firstLine.substring(0, 24)}…' : firstLine}';
   }
 
-  Future<File> _ideasStoreFile() async {
-    final workspace = await _configManager.workspacePath;
-    return File('$workspace/state/ideas.json');
+  Future<void> _organizeInto(IdeaItem item) async {
+    final call = llmCall;
+    if (call == null) return;
+    try {
+      final result = await call(
+        '你是知识整理助手。请把输入内容整理为 JSON，字段: title(string), summary(string), tags(string[]), nextActions(string[])。仅返回 JSON。',
+        item.body,
+      );
+      if (result == null || result.trim().isEmpty) return;
+      final start = result.indexOf('{');
+      final end = result.lastIndexOf('}');
+      if (start < 0 || end <= start) return;
+      final obj = jsonDecode(result.substring(start, end + 1)) as Map<String, dynamic>;
+      item.title = (obj['title'] as String?)?.trim().isNotEmpty == true
+          ? (obj['title'] as String).trim()
+          : item.title;
+      item.summary = (obj['summary'] as String?)?.trim() ?? item.summary;
+      item.tags = (obj['tags'] as List<dynamic>? ?? []).map((e) => '$e'.trim()).where((e) => e.isNotEmpty).toList();
+      item.nextActions = (obj['nextActions'] as List<dynamic>? ?? [])
+          .map((e) => '$e'.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    } catch (e) {
+      _log.warning('AI organize failed: $e');
+    }
+  }
+
+  Future<void> _save() async {
+    try {
+      final file = await _ideasFile();
+      await file.parent.create(recursive: true);
+      final encoder = const JsonEncoder.withIndent('  ');
+      await file.writeAsString(encoder.convert(_items.map((e) => e.toJson()).toList()));
+    } catch (e) {
+      _log.warning('Failed to save ideas: $e');
+    }
+  }
+
+  Future<File> _ideasFile() async {
+    final ws = await configManager.workspacePath;
+    return File('$ws/ideas/items.json');
   }
 }

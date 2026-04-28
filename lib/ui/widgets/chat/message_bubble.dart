@@ -8,6 +8,8 @@ import 'package:flutterclaw/core/app_providers.dart';
 import 'package:flutterclaw/l10n/l10n_extension.dart';
 import 'package:flutterclaw/data/models/interactive_reply.dart';
 import 'package:flutterclaw/ui/theme/semantic_colors.dart';
+import 'package:flutterclaw/services/idea_service.dart';
+import 'package:flutterclaw/ui/widgets/ideas/save_to_idea_sheet.dart';
 import 'copyable_code_block.dart';
 import 'terminal_output.dart';
 import 'typing_indicator.dart';
@@ -273,10 +275,38 @@ class _MessageBubbleState extends ConsumerState<MessageBubble> {
                     );
                   },
                 ),
+              if (canSelectText)
+                ListTile(
+                  leading: const Icon(Icons.lightbulb_outline),
+                  title: const Text('保存为灵感'),
+                  onTap: () {
+                    Navigator.pop(sheetCtx);
+                    _saveMessageAsIdea(context, msg);
+                  },
+                ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Future<void> _saveMessageAsIdea(BuildContext context, ChatMessage msg) async {
+    final sessionKey = ref.read(activeSessionKeyProvider);
+    final sourceRef = '$sessionKey#message:${msg.timestamp.millisecondsSinceEpoch}';
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+        ),
+        child: SaveToIdeaSheet(
+          content: msg.text,
+          sourceType: IdeaSourceType.chatMessage,
+          sourceRef: sourceRef,
+        ),
+      ),
     );
   }
 
@@ -1253,4 +1283,3 @@ class _InteractiveSelectState extends State<_InteractiveSelect> {
     );
   }
 }
-
