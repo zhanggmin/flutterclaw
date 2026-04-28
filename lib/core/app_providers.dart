@@ -28,6 +28,7 @@ import 'package:flutterclaw/services/pairing_service.dart';
 import 'package:flutterclaw/services/hook_runner.dart';
 import 'package:flutterclaw/services/plugin_service.dart';
 import 'package:flutterclaw/services/skills_service.dart';
+import 'package:flutterclaw/services/idea_service.dart';
 import 'package:flutterclaw/data/models/model_catalog.dart';
 import 'package:flutterclaw/core/agent/agent_loop.dart';
 import 'package:flutterclaw/core/agent/token_budget_manager.dart';
@@ -1144,6 +1145,50 @@ final skillsServiceProvider = Provider<SkillsService>((ref) {
         awsAuthMode: cred?.awsAuthMode,
       );
 
+      final response = await provider.chatCompletion(request);
+      return response.content;
+    },
+  );
+});
+
+final ideaServiceProvider = Provider<IdeaService>((ref) {
+  final configManager = ref.read(configManagerProvider);
+  return IdeaService(
+    configManager: configManager,
+    llmCall: (systemPrompt, userPrompt) async {
+      final config = configManager.config;
+      final modelName =
+          config.activeAgent?.modelName ?? config.agents.defaults.modelName;
+      final entry = config.getModel(modelName);
+      if (entry == null) return null;
+      final apiKey = config.resolveApiKey(entry);
+      if (apiKey.isEmpty) return null;
+      final router = model_router.ProviderRouter(config: config);
+      final vendorConfig = router.getVendorConfig(entry.provider);
+      final apiBase =
+          entry.apiBase ?? vendorConfig?.defaultApiBase ?? 'https://api.openai.com/v1';
+      final modelForApi = entry.provider == 'openrouter'
+          ? entry.model
+          : entry.provider == 'bedrock'
+              ? entry.model
+              : entry.modelId;
+      final cred = config.providerCredentials[entry.provider];
+      final provider = vendorConfig?.provider ?? OpenAiProvider();
+      final request = LlmRequest(
+        model: modelForApi,
+        apiKey: apiKey,
+        apiBase: apiBase,
+        messages: [
+          LlmMessage(role: 'system', content: systemPrompt),
+          LlmMessage(role: 'user', content: userPrompt),
+        ],
+        maxTokens: 1024,
+        temperature: 0.2,
+        timeoutSeconds: entry.requestTimeout,
+        awsSecretKey: cred?.awsSecretKey,
+        awsRegion: cred?.awsRegion,
+        awsAuthMode: cred?.awsAuthMode,
+      );
       final response = await provider.chatCompletion(request);
       return response.content;
     },

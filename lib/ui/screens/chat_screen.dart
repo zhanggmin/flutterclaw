@@ -14,6 +14,8 @@ import 'package:flutterclaw/ui/widgets/chat/message_bubble.dart';
 import 'package:flutterclaw/ui/widgets/chat/date_separator.dart';
 import 'package:flutterclaw/ui/widgets/chat/input_bar.dart';
 import 'package:flutterclaw/ui/widgets/chat/live_voice_overlay.dart';
+import 'package:flutterclaw/services/idea_service.dart';
+import 'package:flutterclaw/ui/widgets/ideas/save_to_idea_sheet.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -358,6 +360,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               tooltip: context.l10n.newSession,
               onPressed: () => ref.read(chatProvider.notifier).clear(),
             ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (v) {
+                if (v == 'summary_idea') {
+                  unawaited(_summarizeToIdea());
+                }
+              },
+              itemBuilder: (ctx) => const [
+                PopupMenuItem<String>(
+                  value: 'summary_idea',
+                  child: Text('总结为灵感'),
+                ),
+              ],
+            ),
           ],
         ),
         body: Column(
@@ -477,6 +493,32 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final p = prev.timestamp;
     final c = current.timestamp;
     return p.year != c.year || p.month != c.month || p.day != c.day;
+  }
+
+  Future<void> _summarizeToIdea() async {
+    final messages = ref.read(chatProvider);
+    if (messages.isEmpty || !mounted) return;
+    final sessionKey = ref.read(activeSessionKeyProvider);
+    final now = DateTime.now();
+    final content = StringBuffer('会话总结 (${now.toIso8601String()})\n\n');
+    final tail = messages.length > 30 ? messages.sublist(messages.length - 30) : messages;
+    for (final m in tail) {
+      if (m.text.trim().isEmpty) continue;
+      content.writeln('${m.isUser ? "用户" : "助手"}: ${m.text.trim()}');
+    }
+    final sourceRef = '$sessionKey#summary:${now.toIso8601String()}';
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: SaveToIdeaSheet(
+          content: content.toString().trim(),
+          sourceType: IdeaSourceType.chatSummary,
+          sourceRef: sourceRef,
+        ),
+      ),
+    );
   }
 }
 
