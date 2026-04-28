@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Passt ein Tool-Aufruf zu einem gefährlichen Muster, wird er blockiert und dem Agenten der Grund mitgeteilt.",
   "securityHowItWorksUnsafeCmd": "Nutzen Sie /unsafe im Chat für eine einmalige Ausnahme für einen blockierten Aufruf; danach gelten die Prüfungen wieder.",
   "securityHowItWorksToggleSession": "Schalten Sie hier „Erkennung gefährlicher Muster“ aus, um Prüfungen für die ganze Sitzung zu deaktivieren.",
-
   "firstHatchModeChoiceTitle": "Wie möchtest du starten?",
   "firstHatchModeChoiceBody": "Du kannst mit deinem Assistenten schreiben oder eine Sprachunterhaltung beginnen – wie ein kurzes Telefonat. Wähle, was dir lieber ist.",
   "firstHatchModeChoiceChatButton": "Per Text chatten",
   "firstHatchModeChoiceVoiceButton": "Per Sprache sprechen",
-
   "holdToSetAsDefault": "Halten Sie gedrückt, um als Standard festzulegen",
   "integrations": "Integrationen",
   "shortcutsIntegrations": "Shortcuts-Integrationen",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Die Verknüpfung ist optional. Sie können den Prozess jetzt abschließen und den Link später vervollständigen.",
   "whatsAppEnableToLink": "WhatsApp aktivieren, um dieses Gerät zu verknüpfen.",
   "whatsAppLinkedOnboarding": "WhatsApp ist verknüpft. FlutterClaw kann nach dem Onboarding antworten.",
-  "cancelLink": "Link abbrechen"
+  "cancelLink": "Link abbrechen",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }

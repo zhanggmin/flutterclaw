@@ -11,6 +11,7 @@ import 'package:flutterclaw/services/analytics_service.dart';
 import 'package:flutterclaw/ui/screens/chat_screen.dart';
 import 'package:flutterclaw/ui/screens/ideas_home_screen.dart';
 import 'package:flutterclaw/ui/screens/channels_screen.dart';
+import 'package:flutterclaw/ui/screens/ideas/ideas_screen.dart';
 import 'package:flutterclaw/ui/screens/unified_agents_screen.dart';
 import 'package:flutterclaw/ui/screens/settings_screen.dart';
 
@@ -22,7 +23,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _currentIndex = 0;
+  static const int _chatTabIndex = 0;
+  int _currentIndex = _chatTabIndex;
   StreamSubscription<String>? _notifTapSub;
 
   @override
@@ -134,6 +136,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: const Icon(Icons.chat_outlined),
             selectedIcon: const Icon(Icons.chat),
             label: context.l10n.chat,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.lightbulb_outline),
+            selectedIcon: const Icon(Icons.lightbulb),
+            label: 'Ideas',
           ),
           NavigationDestination(
             icon: const Icon(Icons.hub_outlined),

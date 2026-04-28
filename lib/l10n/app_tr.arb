@@ -248,12 +248,10 @@
   "securityHowItWorksBlocked": "Bir çağrı tehlikeli bir desenle eşleşirse engellenir ve aracıya neden bildirilir.",
   "securityHowItWorksUnsafeCmd": "Sohbette /unsafe ile tek seferlik istisna tanıyın, sonra kontroller yeniden açılır.",
   "securityHowItWorksToggleSession": "Tüm oturum için kontrolleri kapatmak için burada \"Güvenlik deseni algılama\"yı kapatın.",
-
   "firstHatchModeChoiceTitle": "Nasıl başlamak istersiniz?",
   "firstHatchModeChoiceBody": "Asistanınızla yazılı sohbet edebilir veya kısa bir arama gibi sesli konuşmaya başlayabilirsiniz. Size en kolay geleni seçin.",
   "firstHatchModeChoiceChatButton": "Sohbette yaz",
   "firstHatchModeChoiceVoiceButton": "Sesle konuş",
-
   "holdToSetAsDefault": "Varsayılan olarak ayarlamak için basılı tutun",
   "integrations": "Entegrasyonlar",
   "shortcutsIntegrations": "Shortcuts Entegrasyonları",
@@ -576,5 +574,8 @@
   "whatsAppPairingOptional": "Eşleştirme isteğe bağlıdır. Şimdi kurulumu tamamlayıp bağlantıyı daha sonra kurabilirsiniz.",
   "whatsAppEnableToLink": "Bu cihazı bağlamaya başlamak için WhatsApp'ı etkinleştirin.",
   "whatsAppLinkedOnboarding": "WhatsApp bağlandı. FlutterClaw kurulum sonrasında yanıt verebilecek.",
-  "cancelLink": "Bağlantıyı iptal et"
+  "cancelLink": "Bağlantıyı iptal et",
+  "ideas": "Ideas",
+  "ideasWorkbenchTitle": "Ideas Workbench",
+  "ideasWorkbenchPlaceholder": "Ideas workbench is coming soon."
 }
