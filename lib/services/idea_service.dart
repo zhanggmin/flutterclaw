@@ -1,194 +1,249 @@
-library;
+import 'dart:convert';
+import 'dart:io';
 
-import 'dart:math';
+import 'package:flutterclaw/core/agent/session_manager.dart';
+import 'package:flutterclaw/core/providers/provider_interface.dart';
+import 'package:flutterclaw/data/models/config.dart';
 
-import 'package:flutterclaw/repositories/idea_repository.dart';
-import 'package:logging/logging.dart';
+class IdeaRecord {
+  final String id;
+  final String title;
+  final String content;
+  final String summary;
+  final List<String> tags;
+  final String status;
+  final List<String> nextActions;
+  final List<String> lastInsights;
+  final List<String> linkedSessionKeys;
+  final DateTime? lastBrainstormedAt;
+  final DateTime updatedAt;
 
-final _log = Logger('flutterclaw.idea_service');
+  const IdeaRecord({
+    required this.id,
+    required this.title,
+    required this.content,
+    this.summary = '',
+    this.tags = const [],
+    this.status = 'draft',
+    this.nextActions = const [],
+    this.lastInsights = const [],
+    this.linkedSessionKeys = const [],
+    this.lastBrainstormedAt,
+    required this.updatedAt,
+  });
 
-class IdeaServiceException implements Exception {
-  final String message;
-  final Object? cause;
+  IdeaRecord copyWith({
+    String? title,
+    String? content,
+    String? summary,
+    List<String>? tags,
+    String? status,
+    List<String>? nextActions,
+    List<String>? lastInsights,
+    List<String>? linkedSessionKeys,
+    DateTime? lastBrainstormedAt,
+    bool clearLastBrainstormedAt = false,
+    DateTime? updatedAt,
+  }) {
+    return IdeaRecord(
+      id: id,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      summary: summary ?? this.summary,
+      tags: tags ?? this.tags,
+      status: status ?? this.status,
+      nextActions: nextActions ?? this.nextActions,
+      lastInsights: lastInsights ?? this.lastInsights,
+      linkedSessionKeys: linkedSessionKeys ?? this.linkedSessionKeys,
+      lastBrainstormedAt: clearLastBrainstormedAt
+          ? null
+          : lastBrainstormedAt ?? this.lastBrainstormedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 
-  IdeaServiceException(this.message, {this.cause});
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'content': content,
+        'summary': summary,
+        'tags': tags,
+        'status': status,
+        'nextActions': nextActions,
+        'lastInsights': lastInsights,
+        'linkedSessionKeys': linkedSessionKeys,
+        if (lastBrainstormedAt != null)
+          'lastBrainstormedAt': lastBrainstormedAt!.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+      };
 
-  @override
-  String toString() => 'IdeaServiceException: $message';
+  factory IdeaRecord.fromJson(Map<String, dynamic> json) {
+    return IdeaRecord(
+      id: json['id'] as String,
+      title: (json['title'] as String?) ?? '',
+      content: (json['content'] as String?) ?? '',
+      summary: (json['summary'] as String?) ?? '',
+      tags: (json['tags'] as List<dynamic>? ?? const [])
+          .map((e) => e.toString())
+          .toList(),
+      status: (json['status'] as String?) ?? 'draft',
+      nextActions: (json['nextActions'] as List<dynamic>? ?? const [])
+          .map((e) => e.toString())
+          .toList(),
+      lastInsights: (json['lastInsights'] as List<dynamic>? ?? const [])
+          .map((e) => e.toString())
+          .toList(),
+      linkedSessionKeys:
+          (json['linkedSessionKeys'] as List<dynamic>? ?? const [])
+              .map((e) => e.toString())
+              .toList(),
+      lastBrainstormedAt: json['lastBrainstormedAt'] == null
+          ? null
+          : DateTime.tryParse(json['lastBrainstormedAt'] as String),
+      updatedAt: DateTime.tryParse((json['updatedAt'] as String?) ?? '') ??
+          DateTime.now(),
+    );
+  }
+}
+
+class BrainstormSessionResult {
+  final String sessionKey;
+  final bool createdNew;
+
+  const BrainstormSessionResult({
+    required this.sessionKey,
+    required this.createdNew,
+  });
 }
 
 class IdeaService {
-  final IdeaRepository repository;
+  final ConfigManager _configManager;
+  final SessionManager _sessionManager;
 
-  IdeaService({required this.repository});
+  const IdeaService(this._configManager, this._sessionManager);
 
-  Future<List<Map<String, dynamic>>> listIdeas({bool includeArchived = false}) {
-    return repository.listIdeas(includeArchived: includeArchived);
-  }
+  static String sessionKeyForIdea(String ideaId) => 'ideas:$ideaId';
 
-  Future<Map<String, dynamic>?> getIdeaById(String id) {
-    return repository.getIdeaById(id);
-  }
-
-  Future<Map<String, dynamic>> saveIdea(Map<String, dynamic> idea) async {
-    try {
-      final now = DateTime.now().toUtc().toIso8601String();
-      final normalized = <String, dynamic>{
-        ...idea,
-        'id': (idea['id'] as String?)?.trim().isNotEmpty == true
-            ? (idea['id'] as String).trim()
-            : _newIdeaId(),
-        'title': (idea['title'] as String? ?? '').trim(),
-        'content': (idea['content'] as String? ?? '').trim(),
-        'summary': (idea['summary'] as String? ?? '').trim(),
-        'tags': ((idea['tags'] as List<dynamic>?) ?? const [])
-            .map((e) => e.toString())
-            .toSet()
-            .toList(),
-        'nextActions': (idea['nextActions'] as List<dynamic>?) ?? const [],
-        'sources': (idea['sources'] as List<dynamic>?) ?? const [],
-        'archived': idea['archived'] == true,
-        'createdAt': idea['createdAt'] as String? ?? now,
-        'updatedAt': now,
-      };
-
-      await repository.upsertIdea(normalized);
-      return normalized;
-    } catch (e, st) {
-      _log.severe('saveIdea 失败: $e', e, st);
-      if (e is IdeaServiceException) rethrow;
-      throw IdeaServiceException('保存想法失败', cause: e);
+  Future<BrainstormSessionResult> startOrResumeBrainstorm(String ideaId) async {
+    final ideas = await _loadIdeas();
+    final idea = ideas[ideaId];
+    if (idea == null) {
+      throw StateError('Idea not found: $ideaId');
     }
+
+    final now = DateTime.now();
+    final recentKey = _pickMostRecentLinkedSession(idea.linkedSessionKeys);
+    if (recentKey != null) {
+      return BrainstormSessionResult(sessionKey: recentKey, createdNew: false);
+    }
+
+    final sessionKey = '${sessionKeyForIdea(ideaId)}:${now.millisecondsSinceEpoch}';
+    await _sessionManager.getOrCreate(sessionKey, 'webchat', 'idea:$ideaId');
+
+    final injectedContext = _buildInitialIdeaContextMessage(idea);
+    await _sessionManager.addMessage(
+      sessionKey,
+      LlmMessage(role: 'user', content: injectedContext),
+    );
+
+    final mergedKeys = [
+      ...idea.linkedSessionKeys.where((k) => k.isNotEmpty),
+      sessionKey,
+    ];
+    ideas[ideaId] = idea.copyWith(
+      linkedSessionKeys: mergedKeys,
+      updatedAt: now,
+    );
+    await _saveIdeas(ideas);
+
+    return BrainstormSessionResult(sessionKey: sessionKey, createdNew: true);
   }
 
-  /// 保存当前 idea，并基于它发散出一个新 idea。
-  Future<Map<String, dynamic>> saveAndDiverge({
-    required String ideaId,
-    required String divergedTitle,
-    String divergedContent = '',
-    String? sourceNote,
-  }) async {
-    try {
-      final base = await repository.getIdeaById(ideaId);
-      if (base == null) {
-        throw IdeaServiceException('想法不存在: $ideaId');
+  Future<void> markBrainstormSucceeded(String ideaId) async {
+    final ideas = await _loadIdeas();
+    final idea = ideas[ideaId];
+    if (idea == null) return;
+
+    final now = DateTime.now();
+    ideas[ideaId] = idea.copyWith(
+      lastBrainstormedAt: now,
+      updatedAt: now,
+    );
+    await _saveIdeas(ideas);
+  }
+
+  Future<void> upsertIdea(IdeaRecord idea) async {
+    final ideas = await _loadIdeas();
+    ideas[idea.id] = idea.copyWith(updatedAt: DateTime.now());
+    await _saveIdeas(ideas);
+  }
+
+  String? _pickMostRecentLinkedSession(List<String> keys) {
+    SessionMeta? best;
+    for (final key in keys) {
+      final meta = _sessionManager.getMeta(key);
+      if (meta == null) continue;
+      if (best == null || meta.lastActivity.isAfter(best.lastActivity)) {
+        best = meta;
       }
+    }
+    return best?.key;
+  }
 
-      final now = DateTime.now().toUtc().toIso8601String();
-      final source = <String, dynamic>{
-        'type': 'diverged_from',
-        'ideaId': ideaId,
-        'note': sourceNote ?? '',
-        'createdAt': now,
-      };
+  String _buildInitialIdeaContextMessage(IdeaRecord idea) {
+    final tags = idea.tags.isEmpty ? '无' : idea.tags.join(' / ');
+    final nextActions =
+        idea.nextActions.isEmpty ? '- 无' : idea.nextActions.map((e) => '- $e').join('\n');
+    final insights =
+        idea.lastInsights.isEmpty ? '- 无' : idea.lastInsights.map((e) => '- $e').join('\n');
 
-      final nextSources = [...((base['sources'] as List<dynamic>?) ?? const [])];
-      if (sourceNote != null && sourceNote.trim().isNotEmpty) {
-        nextSources.add(source);
+    return '''
+请基于以下 Idea 继续发散，并给出结构化建议：
+
+- ideaId: ${idea.id}
+- title: ${idea.title}
+- content: ${idea.content}
+- summary: ${idea.summary.isEmpty ? '无' : idea.summary}
+- tags: $tags
+- status: ${idea.status}
+
+nextActions:
+$nextActions
+
+last insights:
+$insights
+''';
+  }
+
+  Future<Map<String, IdeaRecord>> _loadIdeas() async {
+    final file = await _ideasStoreFile();
+    if (!await file.exists()) return {};
+
+    final raw = await file.readAsString();
+    if (raw.trim().isEmpty) return {};
+
+    final decoded = jsonDecode(raw);
+    if (decoded is! Map<String, dynamic>) return {};
+
+    final records = <String, IdeaRecord>{};
+    for (final entry in decoded.entries) {
+      final value = entry.value;
+      if (value is Map<String, dynamic>) {
+        records[entry.key] = IdeaRecord.fromJson(value);
       }
-
-      await repository.upsertIdea({
-        ...base,
-        'sources': nextSources,
-        'updatedAt': now,
-      });
-
-      final child = await saveIdea({
-        'title': divergedTitle,
-        'content': divergedContent,
-        'summary': '',
-        'tags': (base['tags'] as List<dynamic>?) ?? const [],
-        'sources': [source],
-        'parentId': ideaId,
-      });
-
-      return child;
-    } catch (e, st) {
-      _log.severe('saveAndDiverge 失败: $e', e, st);
-      if (e is IdeaServiceException) rethrow;
-      throw IdeaServiceException('保存并发散失败', cause: e);
     }
+    return records;
   }
 
-  Future<void> archiveIdea(String ideaId) async {
-    try {
-      final row = await repository.getIdeaById(ideaId);
-      if (row == null) throw IdeaServiceException('想法不存在: $ideaId');
-      final now = DateTime.now().toUtc().toIso8601String();
-      await repository.upsertIdea({
-        ...row,
-        'archived': true,
-        'archivedAt': now,
-        'updatedAt': now,
-      });
-    } catch (e, st) {
-      _log.severe('archiveIdea 失败: $e', e, st);
-      if (e is IdeaServiceException) rethrow;
-      throw IdeaServiceException('归档想法失败', cause: e);
-    }
+  Future<void> _saveIdeas(Map<String, IdeaRecord> ideas) async {
+    final file = await _ideasStoreFile();
+    await file.parent.create(recursive: true);
+    final payload = ideas.map((k, v) => MapEntry(k, v.toJson()));
+    await file.writeAsString(const JsonEncoder.withIndent('  ').convert(payload));
   }
 
-  Future<void> restoreIdea(String ideaId) async {
-    try {
-      final row = await repository.getIdeaById(ideaId);
-      if (row == null) throw IdeaServiceException('想法不存在: $ideaId');
-      final now = DateTime.now().toUtc().toIso8601String();
-      await repository.upsertIdea({
-        ...row,
-        'archived': false,
-        'archivedAt': null,
-        'updatedAt': now,
-      });
-    } catch (e, st) {
-      _log.severe('restoreIdea 失败: $e', e, st);
-      if (e is IdeaServiceException) rethrow;
-      throw IdeaServiceException('恢复想法失败', cause: e);
-    }
-  }
-
-  Future<void> appendSource(
-    String ideaId,
-    Map<String, dynamic> source,
-  ) async {
-    try {
-      final row = await repository.getIdeaById(ideaId);
-      if (row == null) throw IdeaServiceException('想法不存在: $ideaId');
-      final now = DateTime.now().toUtc().toIso8601String();
-
-      final nextSources = [...((row['sources'] as List<dynamic>?) ?? const [])]
-        ..add({
-          ...source,
-          'createdAt': source['createdAt'] as String? ?? now,
-        });
-
-      await repository.upsertIdea({
-        ...row,
-        'sources': nextSources,
-        'updatedAt': now,
-      });
-    } catch (e, st) {
-      _log.severe('appendSource 失败: $e', e, st);
-      if (e is IdeaServiceException) rethrow;
-      throw IdeaServiceException('追加来源失败', cause: e);
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> searchIdeas(
-    String query, {
-    bool includeArchived = false,
-  }) {
-    return repository.searchIdeas(query, includeArchived: includeArchived);
-  }
-
-  Future<String> ideasFilePath() => repository.getIdeasFilePath();
-
-  Future<String> attachmentDirectoryPath(String ideaId) {
-    return repository.getAttachmentDirectoryPath(ideaId);
-  }
-
-  String _newIdeaId() {
-    final t = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
-    final r = Random().nextInt(0xFFFFFF).toRadixString(36).padLeft(4, '0');
-    return 'idea_$t$r';
+  Future<File> _ideasStoreFile() async {
+    final workspace = await _configManager.workspacePath;
+    return File('$workspace/state/ideas.json');
   }
 }
